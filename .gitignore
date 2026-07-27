@@ -1,0 +1,22 @@
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node (only if tooling is ever added — the site itself has no build step)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Local scratch
+tmp/
+*.log

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aria — Mockups</title>
+<link rel="stylesheet" href="css/nocturne.css">
+<link rel="stylesheet" href="css/aria.css">
+</head>
+<body>
+
+<!-- Icon sprite. Line icons inherit stroke from the `.i` class; filled ones
+     (status bar, window controls) carry their own paint. -->
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-send" viewBox="0 0 24 24">
+    <path d="M12 16V4M12 4l-5 5M12 4l5 5"/>
+    <path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/>
+  </symbol>
+  <symbol id="i-receive" viewBox="0 0 24 24">
+    <path d="M12 4v12M12 16l-5-5M12 16l5-5"/>
+    <path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/>
+  </symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 16V4M12 4l-5 5M12 4l5 5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
+  </symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-desktop" viewBox="0 0 24 24">
+    <rect x="4" y="4" width="16" height="16" rx="2"/>
+    <path d="M8 20v-2M16 20v-2M8 6V4M16 6V4M4 8H2M4 16H2M22 8h-2M22 16h-2"/>
+  </symbol>
+  <symbol id="i-image" viewBox="0 0 24 24">
+    <rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5-9 9"/>
+  </symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M3 6a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V6z"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/>
+    <path d="M15 15h3v3M20 15v3h-2M15 20h2"/>
+  </symbol>
+  <!-- Android status-bar icons: wifi, cellular, battery, pre-spaced. -->
+  <symbol id="i-statusbar" viewBox="0 0 46 16">
+    <path d="M8 13.3L.67 5.97a10.37 10.37 0 0114.66 0L8 13.3z" fill="currentColor"/>
+    <path d="M28.67 14.67V1.33L15.33 14.67h13.34z" fill="currentColor"/>
+    <rect x="33.75" y="2" width="8.5" height="13" rx="1.5" fill="currentColor"/>
+    <rect x="35.5" y="0.9" width="5" height="2" rx="0.5" fill="currentColor"/>
+  </symbol>
+  <!-- Windows caption buttons. -->
+  <symbol id="i-win-min" viewBox="0 0 10 10"><rect y="4.5" width="10" height="1" fill="currentColor"/></symbol>
+  <symbol id="i-win-max" viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor"/></symbol>
+  <symbol id="i-win-close" viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10" fill="none" stroke="currentColor" stroke-width="1"/></symbol>
+</svg>
+
+<div class="gal-wrap">
+  <header class="gal-head">
+    <h6>Mockups &middot; Mobile + Desktop</h6>
+    <h1>Aria</h1>
+    <p>Envía documentos, imágenes y archivos entre dispositivos cercanos, sin cables ni cuentas en la nube.
+    La app móvil es Android (Material framing con estilo Nocturne); el escritorio es Windows. Cubren el flujo
+    principal: enviar, recibir, seguimiento, historial y ajustes — con estados de éxito, error y vacío.</p>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       Mobile — Android
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="gal-section">
+    <h2>App móvil</h2>
+    <p>Android &middot; envío por cercanía</p>
+    <div class="gal-row">
+
+      <!-- ── Enviar — inicio ────────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Enviar — inicio</span></figcaption>
+        <div class="android">
+          <div class="android-status"><svg class="ico" width="46" height="16" viewBox="0 0 46 16"><use href="#i-statusbar"/></svg></div>
+          <div class="android-screen">
+            <div class="screen">
+              <div class="screen-topbar">
+                <div class="screen-brand">Aria</div>
+                <button class="round-btn" type="button" aria-label="Ajustes">
+                  <svg class="i" style="--sw:1.5" width="17" height="17"><use href="#i-gear"/></svg>
+                </button>
+              </div>
+              <div class="screen-body">
+                <div class="dropzone">
+                  <div class="badge"><svg class="i" width="22" height="22"><use href="#i-send"/></svg></div>
+                  <div class="dropzone-title">Toca para elegir un archivo</div>
+                  <div class="dropzone-hint">documentos, fotos o cualquier tipo</div>
+                </div>
+                <div>
+                  <h6 class="section-label">Dispositivos cercanos</h6>
+                  <div class="stack">
+                    <div class="row">
+                      <div class="row-icon"><svg class="i" width="16" height="16"><use href="#i-phone"/></svg></div>
+                      <div class="row-main">
+                        <div class="row-title">Pixel de Ana</div>
+                        <div class="row-sub">A 2 metros</div>
+                      </div>
+                      <span class="tag tag-outline">Cerca</span>
+                    </div>
+                    <div class="row">
+                      <div class="row-icon row-icon-neutral"><svg class="i" width="16" height="16"><use href="#i-desktop"/></svg></div>
+                      <div class="row-main">
+                        <div class="row-title">PC de Luis</div>
+                        <div class="row-sub">Misma red Wi-Fi</div>
+                      </div>
+                      <span class="tag tag-neutral">Cerca</span>
+                    </div>
+                    <div class="row row-plain">
+                      <div class="row-icon row-icon-empty"></div>
+                      <div class="row-scan">Buscando más dispositivos…</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <nav class="bottom-nav">
+                <button class="bn-item active" type="button"><svg class="i" width="20" height="20"><use href="#i-send"/></svg><span>Enviar</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-receive"/></svg><span>Recibir</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-clock"/></svg><span>Historial</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-user"/></svg><span>Perfil</span></button>
+              </nav>
+            </div>
+          </div>
+          <div class="android-nav"></div>
+        </div>
+      </figure>
+
+      <!-- ── Enviando ───────────────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Enviando</span><span class="tag tag-outline">progreso</span></figcaption>
+        <div class="android">
+          <div class="android-status"><svg class="ico" width="46" height="16" viewBox="0 0 46 16"><use href="#i-statusbar"/></svg></div>
+          <div class="android-screen">
+            <div class="screen">
+              <div class="screen-topbar screen-topbar-back">
+                <button class="round-btn" type="button" aria-label="Cerrar">
+                  <svg class="i" style="--sw:1.8" width="15" height="15"><use href="#i-close"/></svg>
+                </button>
+              </div>
+              <div class="screen-center" style="--gap:22px">
+                <!-- 64% of a r=66 ring: circumference 414.7, offset 149. -->
+                <svg width="150" height="150" viewBox="0 0 150 150" role="img" aria-label="64 por ciento enviado">
+                  <circle cx="75" cy="75" r="66" fill="none" stroke="var(--color-neutral-800)" stroke-width="8"/>
+                  <circle cx="75" cy="75" r="66" fill="none" stroke="var(--color-accent)" stroke-width="8"
+                          stroke-linecap="round" stroke-dasharray="414.7" stroke-dashoffset="149"
+                          transform="rotate(-90 75 75)"/>
+                  <text x="75" y="82" text-anchor="middle" font-size="30" font-weight="500"
+                        fill="var(--color-text)" font-family="Inter, system-ui, sans-serif">64%</text>
+                </svg>
+                <div>
+                  <div class="transfer-name">Presentación_Q3.pdf</div>
+                  <div class="transfer-detail">12.4 MB &middot; enviando a Pixel de Ana</div>
+                </div>
+              </div>
+              <div class="screen-actions">
+                <button class="btn btn-secondary btn-block" type="button">Cancelar envío</button>
+              </div>
+            </div>
+          </div>
+          <div class="android-nav"></div>
+        </div>
+      </figure>
+
+      <!-- ── Completado ─────────────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Completado</span><span class="tag tag-accent">éxito</span></figcaption>
+        <div class="android">
+          <div class="android-status"><svg class="ico" width="46" height="16" viewBox="0 0 46 16"><use href="#i-statusbar"/></svg></div>
+          <div class="android-screen">
+            <div class="screen">
+              <div class="screen-center">
+                <div class="badge" style="--size:76px"><svg class="i" style="--sw:1.8" width="34" height="34"><use href="#i-check-circle"/></svg></div>
+                <div>
+                  <h3>Envío completado</h3>
+                  <div class="screen-lede">Presentación_Q3.pdf se envió a Pixel de Ana</div>
+                </div>
+                <span class="tag tag-accent">Completado en 8s</span>
+              </div>
+              <div class="screen-actions">
+                <button class="btn btn-primary btn-block" type="button">Enviar otro archivo</button>
+                <button class="btn btn-ghost btn-block" type="button">Volver al inicio</button>
+              </div>
+            </div>
+          </div>
+          <div class="android-nav"></div>
+        </div>
+      </figure>
+
+      <!-- ── Error al enviar ────────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Error al enviar</span><span class="tag tag-neutral">error</span></figcaption>
+        <div class="android">
+          <div class="android-status"><svg class="ico" width="46" height="16" viewBox="0 0 46 16"><use href="#i-statusbar"/></svg></div>
+          <div class="android-screen">
+            <div class="screen">
+              <div class="screen-center">
+                <div class="badge badge-neutral" style="--size:76px"><svg class="i" style="--sw:1.8" width="34" height="34"><use href="#i-x-circle"/></svg></div>
+                <div>
+                  <h3>No se pudo enviar</h3>
+                  <div class="screen-lede">Se perdió la conexión con Pixel de Ana. Verifica que ambos dispositivos estén cerca y conectados a la misma red.</div>
+                </div>
+                <span class="tag tag-neutral">Fallido</span>
+              </div>
+              <div class="screen-actions">
+                <button class="btn btn-primary btn-block" type="button">Reintentar</button>
+                <button class="btn btn-ghost btn-block" type="button">Cancelar</button>
+              </div>
+            </div>
+          </div>
+          <div class="android-nav"></div>
+        </div>
+      </figure>
+
+      <!-- ── Recibir ────────────────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Recibir</span></figcaption>
+        <div class="android">
+          <div class="android-status"><svg class="ico" width="46" height="16" viewBox="0 0 46 16"><use href="#i-statusbar"/></svg></div>
+          <div class="android-screen">
+            <div class="screen">
+              <div class="screen-topbar"><div class="screen-brand">Aria</div></div>
+              <div class="screen-center" style="--gap:20px;--pad:28px">
+                <div class="card elev-sm code-card">
+                  <div class="code-kicker">Tu código</div>
+                  <div class="code-value">482 913</div>
+                  <div class="code-hint">Compártelo para que te envíen un archivo</div>
+                </div>
+                <div class="code-or">o</div>
+                <button class="btn btn-secondary" type="button">
+                  <svg class="i" width="16" height="16"><use href="#i-qr"/></svg>
+                  Escanear código QR
+                </button>
+                <div class="status-live">Esperando conexión…</div>
+              </div>
+              <nav class="bottom-nav">
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-send"/></svg><span>Enviar</span></button>
+                <button class="bn-item active" type="button"><svg class="i" width="20" height="20"><use href="#i-receive"/></svg><span>Recibir</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-clock"/></svg><span>Historial</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-user"/></svg><span>Perfil</span></button>
+              </nav>
+            </div>
+          </div>
+          <div class="android-nav"></div>
+        </div>
+      </figure>
+
+      <!-- ── Historial ──────────────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Historial</span></figcaption>
+        <div class="android">
+          <div class="android-status"><svg class="ico" width="46" height="16" viewBox="0 0 46 16"><use href="#i-statusbar"/></svg></div>
+          <div class="android-screen">
+            <div class="screen">
+              <div class="screen-topbar"><div class="screen-brand">Historial</div></div>
+              <div class="screen-body" style="--gap:8px">
+                <div class="row row-sm" style="--size:34px">
+                  <div class="row-icon"><svg class="i" width="15" height="15"><use href="#i-image"/></svg></div>
+                  <div class="row-main">
+                    <div class="row-title">Foto_playa.jpg</div>
+                    <div class="row-sub">A Ana &middot; hoy, 14:32</div>
+                  </div>
+                  <span class="tag tag-accent">Completado</span>
+                </div>
+                <div class="row row-sm" style="--size:34px">
+                  <div class="row-icon row-icon-neutral"><svg class="i" width="15" height="15"><use href="#i-file"/></svg></div>
+                  <div class="row-main">
+                    <div class="row-title">Contrato_v2.docx</div>
+                    <div class="row-sub">De Luis &middot; hoy, 11:05</div>
+                  </div>
+                  <span class="tag tag-accent">Completado</span>
+                </div>
+                <div class="row row-sm row-muted" style="--size:34px">
+                  <div class="row-icon row-icon-quiet"><svg class="i" width="15" height="15"><use href="#i-file"/></svg></div>
+                  <div class="row-main">
+                    <div class="row-title">Reporte_final.pdf</div>
+                    <div class="row-sub">A Ana &middot; ayer, 19:10</div>
+                  </div>
+                  <span class="tag tag-neutral">Fallido</span>
+                </div>
+                <div class="row row-sm" style="--size:34px">
+                  <div class="row-icon"><svg class="i" width="15" height="15"><use href="#i-image"/></svg></div>
+                  <div class="row-main">
+                    <div class="row-title">Logo_cliente.png</div>
+                    <div class="row-sub">De Ana &middot; ayer, 09:47</div>
+                  </div>
+                  <span class="tag tag-accent">Completado</span>
+                </div>
+              </div>
+              <nav class="bottom-nav">
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-send"/></svg><span>Enviar</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-receive"/></svg><span>Recibir</span></button>
+                <button class="bn-item active" type="button"><svg class="i" width="20" height="20"><use href="#i-clock"/></svg><span>Historial</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-user"/></svg><span>Perfil</span></button>
+              </nav>
+            </div>
+          </div>
+          <div class="android-nav"></div>
+        </div>
+      </figure>
+
+      <!-- ── Historial — vacío ──────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Historial — vacío</span><span class="tag tag-neutral">vacío</span></figcaption>
+        <div class="android">
+          <div class="android-status"><svg class="ico" width="46" height="16" viewBox="0 0 46 16"><use href="#i-statusbar"/></svg></div>
+          <div class="android-screen">
+            <div class="screen">
+              <div class="screen-topbar"><div class="screen-brand">Historial</div></div>
+              <div class="screen-center" style="--gap:14px">
+                <div class="badge badge-quiet" style="--size:64px"><svg class="i" width="26" height="26"><use href="#i-clock"/></svg></div>
+                <div>
+                  <div class="empty-title">Aún no hay envíos</div>
+                  <div class="empty-hint">Tus archivos enviados y recibidos aparecerán aquí.</div>
+                </div>
+                <button class="btn btn-primary" type="button" style="margin-top:6px">Enviar un archivo</button>
+              </div>
+              <nav class="bottom-nav">
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-send"/></svg><span>Enviar</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-receive"/></svg><span>Recibir</span></button>
+                <button class="bn-item active" type="button"><svg class="i" width="20" height="20"><use href="#i-clock"/></svg><span>Historial</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-user"/></svg><span>Perfil</span></button>
+              </nav>
+            </div>
+          </div>
+          <div class="android-nav"></div>
+        </div>
+      </figure>
+
+      <!-- ── Perfil / Ajustes ───────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Perfil / Ajustes</span></figcaption>
+        <div class="android">
+          <div class="android-status"><svg class="ico" width="46" height="16" viewBox="0 0 46 16"><use href="#i-statusbar"/></svg></div>
+          <div class="android-screen">
+            <div class="screen">
+              <div class="screen-topbar"><div class="screen-brand">Perfil</div></div>
+              <div class="screen-body" style="--gap:20px">
+                <div class="profile">
+                  <div class="badge profile-avatar">TU</div>
+                  <div>
+                    <div class="profile-name">Tu dispositivo</div>
+                    <div class="profile-device">Pixel 9</div>
+                  </div>
+                </div>
+                <div class="setting-list">
+                  <div class="setting">
+                    <span class="setting-label">Nombre del dispositivo</span>
+                    <span class="setting-value">Pixel de mí &rsaquo;</span>
+                  </div>
+                  <div class="setting">
+                    <span class="setting-label">Visibilidad</span>
+                    <span class="tag tag-outline">Contactos</span>
+                  </div>
+                  <div class="setting">
+                    <span class="setting-label">Guardar fotos en Galería</span>
+                    <span class="toggle toggle-on" role="img" aria-label="Activado"></span>
+                  </div>
+                  <div class="setting">
+                    <span class="setting-label">Notificaciones</span>
+                    <span class="toggle" role="img" aria-label="Desactivado"></span>
+                  </div>
+                  <div class="setting">
+                    <span class="setting-label">Acerca de Aria</span>
+                    <span class="setting-chevron">&rsaquo;</span>
+                  </div>
+                </div>
+                <button class="btn btn-ghost" type="button" style="align-self:flex-start;padding-left:0">Cerrar sesión</button>
+              </div>
+              <nav class="bottom-nav">
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-send"/></svg><span>Enviar</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-receive"/></svg><span>Recibir</span></button>
+                <button class="bn-item" type="button"><svg class="i" width="20" height="20"><use href="#i-clock"/></svg><span>Historial</span></button>
+                <button class="bn-item active" type="button"><svg class="i" width="20" height="20"><use href="#i-user"/></svg><span>Perfil</span></button>
+              </nav>
+            </div>
+          </div>
+          <div class="android-nav"></div>
+        </div>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       Desktop — Windows
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="gal-section">
+    <h2>App de escritorio</h2>
+    <p>Windows &middot; envío por cercanía</p>
+    <div class="gal-row">
+
+      <!-- ── Ventana principal ──────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Ventana principal</span></figcaption>
+        <div class="win">
+          <div class="win-titlebar">
+            <div class="win-brand">
+              <span class="win-logo"><svg class="i" style="--sw:2" width="9" height="9"><use href="#i-arrow-up"/></svg></span>
+              <span>Aria</span>
+            </div>
+            <div class="win-controls">
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-min"/></svg></span>
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-max"/></svg></span>
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-close"/></svg></span>
+            </div>
+          </div>
+          <div class="win-body">
+            <div class="desk-send">
+              <div class="dropzone">
+                <div class="badge" style="--size:60px"><svg class="i" width="26" height="26"><use href="#i-send"/></svg></div>
+                <div>
+                  <div class="dropzone-title">Arrastra archivos aquí para enviarlos</div>
+                  <div class="dropzone-hint">o elige un destino y selecciona un archivo desde tu PC</div>
+                </div>
+                <button class="btn btn-secondary" type="button">Elegir archivos</button>
+              </div>
+              <div class="desk-rail">
+                <h6 class="section-label" style="margin-bottom:0">Dispositivos cercanos</h6>
+                <div class="row">
+                  <div class="row-icon"><svg class="i" width="14" height="14"><use href="#i-phone"/></svg></div>
+                  <div class="row-main">
+                    <div class="row-title">Pixel de Ana</div>
+                    <div class="row-sub">A 3 metros</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="row-icon row-icon-neutral"><svg class="i" width="14" height="14"><use href="#i-desktop"/></svg></div>
+                  <div class="row-main">
+                    <div class="row-title">PC de Luis</div>
+                    <div class="row-sub">Misma red Wi-Fi</div>
+                  </div>
+                </div>
+                <div class="row row-plain">
+                  <div class="row-icon row-icon-empty"></div>
+                  <div class="row-scan">Buscando más dispositivos…</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </figure>
+
+      <!-- ── Cola de transferencias ─────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Cola de transferencias</span><span class="tag tag-neutral">incluye error</span></figcaption>
+        <div class="win">
+          <div class="win-titlebar">
+            <div class="win-brand">
+              <span class="win-logo"><svg class="i" style="--sw:2" width="9" height="9"><use href="#i-arrow-up"/></svg></span>
+              <span>Transferencias activas</span>
+            </div>
+            <div class="win-controls">
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-min"/></svg></span>
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-max"/></svg></span>
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-close"/></svg></span>
+            </div>
+          </div>
+          <div class="win-body desk-queue">
+            <div class="card transfer">
+              <div class="row-icon"><svg class="i" width="16" height="16"><use href="#i-file"/></svg></div>
+              <div class="row-main">
+                <div class="transfer-head"><span>Video_producto.mp4</span><span>73%</span></div>
+                <div class="pbar"><span style="width:73%"></span></div>
+                <div class="transfer-meta">A Pixel de Ana &middot; 340 MB</div>
+              </div>
+              <button class="btn btn-ghost btn-icon" type="button" aria-label="Cancelar">
+                <svg class="i" width="15" height="15"><use href="#i-close"/></svg>
+              </button>
+            </div>
+            <div class="card transfer">
+              <div class="row-icon"><svg class="i" width="16" height="16"><use href="#i-image"/></svg></div>
+              <div class="row-main">
+                <div class="transfer-head"><span>Mockups_v3.zip</span><span>100%</span></div>
+                <div class="pbar"><span style="width:100%"></span></div>
+                <div class="transfer-meta">A PC de Luis &middot; 88 MB</div>
+              </div>
+              <span class="tag tag-accent" style="flex:none">Completado</span>
+            </div>
+            <div class="card transfer">
+              <div class="row-icon row-icon-neutral"><svg class="i" width="16" height="16"><use href="#i-file"/></svg></div>
+              <div class="row-main">
+                <div class="transfer-head"><span>Reporte_final.pdf</span><span class="transfer-failed">Fallido</span></div>
+                <div class="pbar pbar-failed"><span style="width:41%"></span></div>
+                <div class="transfer-meta">A Pixel de Ana &middot; conexión perdida</div>
+              </div>
+              <button class="btn btn-ghost btn-sm" type="button">Reintentar</button>
+            </div>
+          </div>
+        </div>
+      </figure>
+
+      <!-- ── Historial ──────────────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Historial</span></figcaption>
+        <div class="win">
+          <div class="win-titlebar">
+            <div class="win-brand">
+              <span class="win-logo"><svg class="i" style="--sw:2" width="9" height="9"><use href="#i-arrow-up"/></svg></span>
+              <span>Historial</span>
+            </div>
+            <div class="win-controls">
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-min"/></svg></span>
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-max"/></svg></span>
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-close"/></svg></span>
+            </div>
+          </div>
+          <div class="win-body">
+            <table class="table">
+              <thead>
+                <tr><th>Archivo</th><th>Dirección</th><th>Dispositivo</th><th>Fecha</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Foto_playa.jpg</td><td>Enviado</td><td>Pixel de Ana</td><td>Hoy, 14:32</td><td><span class="tag tag-accent">Completado</span></td></tr>
+                <tr><td>Contrato_v2.docx</td><td>Recibido</td><td>PC de Luis</td><td>Hoy, 11:05</td><td><span class="tag tag-accent">Completado</span></td></tr>
+                <tr><td>Reporte_final.pdf</td><td>Enviado</td><td>Pixel de Ana</td><td>Ayer, 19:10</td><td><span class="tag tag-neutral">Fallido</span></td></tr>
+                <tr><td>Logo_cliente.png</td><td>Recibido</td><td>Pixel de Ana</td><td>Ayer, 09:47</td><td><span class="tag tag-accent">Completado</span></td></tr>
+                <tr><td>Mockups_v3.zip</td><td>Enviado</td><td>PC de Luis</td><td>Lun, 16:02</td><td><span class="tag tag-accent">Completado</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </figure>
+
+      <!-- ── Ajustes ────────────────────────────────────────────────── -->
+      <figure class="gal-item">
+        <figcaption class="gal-label"><span>Ajustes</span></figcaption>
+        <div class="win">
+          <div class="win-titlebar">
+            <div class="win-brand">
+              <span class="win-logo"><svg class="i" style="--sw:2" width="9" height="9"><use href="#i-arrow-up"/></svg></span>
+              <span>Ajustes</span>
+            </div>
+            <div class="win-controls">
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-min"/></svg></span>
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-max"/></svg></span>
+              <span><svg class="ico" width="10" height="10" viewBox="0 0 10 10"><use href="#i-win-close"/></svg></span>
+            </div>
+          </div>
+          <div class="win-body desk-settings">
+            <div class="field">
+              <label for="dev-name">Nombre del dispositivo</label>
+              <input id="dev-name" class="input" value="PC de mí" readonly>
+            </div>
+            <div class="field">
+              <span class="field-label">Visibilidad</span>
+              <div class="seg">
+                <label class="seg-opt"><input type="radio" name="vis" checked><span>Todos</span></label>
+                <label class="seg-opt"><input type="radio" name="vis"><span>Contactos</span></label>
+                <label class="seg-opt"><input type="radio" name="vis"><span>Oculto</span></label>
+              </div>
+            </div>
+            <div class="setting setting-wide">
+              <div>
+                <div class="setting-label">Guardar en Descargas</div>
+                <div class="setting-hint">Los archivos recibidos se guardan aquí automáticamente</div>
+              </div>
+              <span class="toggle toggle-on" role="img" aria-label="Activado"></span>
+            </div>
+            <div class="setting setting-wide">
+              <div>
+                <div class="setting-label">Notificaciones de transferencia</div>
+                <div class="setting-hint">Avisar al completar o fallar un envío</div>
+              </div>
+              <span class="toggle" role="img" aria-label="Desactivado"></span>
+            </div>
+            <button class="btn btn-secondary" type="button" style="align-self:flex-start">Cerrar sesión en este equipo</button>
+          </div>
+        </div>
+      </figure>
+
+    </div>
+  </section>
+</div>
+
+</body>
+</html>
