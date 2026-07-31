@@ -136,14 +136,20 @@ class NsdDiscoveryService implements DiscoveryService {
   }
 
   Peer? _toPeer(nsd.Service service) {
-    final String? host = service.addresses?.isNotEmpty ?? false
-        ? service.addresses!.first.address
-        : service.host;
+    // Todas, no la primera: un equipo con adaptadores virtuales resuelve a
+    // varias y desde aqui no hay forma de saber cual es la alcanzable. La
+    // eleccion es del que conecta.
+    final List<String> addresses = <String>[
+      for (final InternetAddress address in service.addresses ?? const [])
+        address.address,
+    ];
+    if (addresses.isEmpty && service.host != null) addresses.add(service.host!);
+
     // El puerto del TXT manda sobre el del SRV: es el que el par acaba de
     // obtener de su bind(0).
     final int? port =
         int.tryParse(_decode(service.txt?[TxtKeys.port]) ?? '') ?? service.port;
-    if (host == null || port == null || port <= 0) return null;
+    if (addresses.isEmpty || port == null || port <= 0) return null;
 
     return Peer(
       serviceName: service.name!,
@@ -152,7 +158,7 @@ class NsdDiscoveryService implements DiscoveryService {
       platform: DevicePlatform.fromWire(
         _decode(service.txt?[TxtKeys.platform]),
       ),
-      host: host,
+      addresses: addresses,
       port: port,
     );
   }
@@ -191,19 +197,28 @@ class NsdDiscoveryService implements DiscoveryService {
 /// persona lo cambie en Ajustes.
 String defaultDeviceName() => Platform.localHostname;
 
-/// La direccion IPv4 de este dispositivo en la red local, o `null` si no hay
-/// ninguna. Es lo que se teclea cuando el descubrimiento no funciona.
-Future<String?> localAddress() async {
+/// Todas las direcciones IPv4 de este equipo, sin loopback.
+///
+/// En un equipo con adaptadores virtuales son varias. Sirven para ordenar las
+/// candidatas de un par por cercania (ver [orderCandidates]), no para
+/// mostrarlas.
+Future<List<String>> localAddresses() async {
   final List<NetworkInterface> interfaces = await NetworkInterface.list(
     type: InternetAddressType.IPv4,
     includeLoopback: false,
   );
-  for (final NetworkInterface interface in interfaces) {
-    for (final InternetAddress address in interface.addresses) {
-      if (!address.isLoopback) return address.address;
-    }
-  }
-  return null;
+  return <String>[
+    for (final NetworkInterface interface in interfaces)
+      for (final InternetAddress address in interface.addresses)
+        if (!address.isLoopback) address.address,
+  ];
+}
+
+/// La direccion IPv4 de este dispositivo en la red local, o `null` si no hay
+/// ninguna. Es lo que se teclea cuando el descubrimiento no funciona.
+Future<String?> localAddress() async {
+  final List<String> all = await localAddresses();
+  return all.isEmpty ? null : all.first;
 }
 
 DevicePlatform currentPlatform() => Platform.isAndroid

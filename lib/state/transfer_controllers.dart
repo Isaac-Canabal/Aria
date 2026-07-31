@@ -297,11 +297,12 @@ class SendController extends Notifier<SendState> {
     );
 
     final SendSession session = SendSession(
-      host: peer.host,
+      addresses: peer.addresses,
       port: peer.port,
       identity: identity,
       channel: PlainChannelInitiator(code),
       files: files,
+      localAddresses: localAddresses,
     );
     _session = session;
     _clock = Stopwatch()..start();

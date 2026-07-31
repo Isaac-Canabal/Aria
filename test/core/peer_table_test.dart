@@ -8,12 +8,12 @@ Peer peer({
   String name = 'Pixel de Ana',
   String host = '192.168.1.5',
   int port = 4000,
-}) => Peer(
+}) => Peer.at(
+  host: host,
   serviceName: serviceName,
   deviceId: deviceId,
   name: name,
   platform: DevicePlatform.android,
-  host: host,
   port: port,
 );
 
@@ -110,7 +110,7 @@ void main() {
       isTrue,
     );
 
-    expect(table.peers.single.host, '192.168.1.9');
+    expect(table.peers.single.addresses.single, '192.168.1.9');
   });
 
   test('el mismo anuncio repetido no reporta cambio', () {

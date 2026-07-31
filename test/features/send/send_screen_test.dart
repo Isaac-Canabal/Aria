@@ -116,13 +116,13 @@ void main() {
   ) async {
     await pumpSendScreen(tester);
 
-    discovery._peers.add(const <Peer>[
-      Peer(
+    discovery._peers.add(<Peer>[
+      Peer.at(
+        host: '192.168.1.5',
         serviceName: 'pixel',
         deviceId: 'abc',
         name: 'Pixel de Ana',
         platform: DevicePlatform.android,
-        host: '192.168.1.5',
         port: 4000,
       ),
     ]);

@@ -129,7 +129,7 @@ void main() {
   }) {
     final ChannelInitiator plain = PlainChannelInitiator(code);
     return SendSession(
-      host: InternetAddress.loopbackIPv4.address,
+      addresses: <String>[InternetAddress.loopbackIPv4.address],
       port: server.port,
       identity: phone,
       channel: corrupt ? _CorruptingChannel(plain) : plain,
@@ -163,23 +163,20 @@ void main() {
     ]).run().toList();
 
     // El emisor ve el lote completo antes de mover un byte.
-    final SessionManifest manifest =
-        events.whereType<SessionManifest>().single;
+    final SessionManifest manifest = events.whereType<SessionManifest>().single;
     expect(manifest.files.map((ManifestEntry e) => e.name), <String>[
       'Foto_playa.jpg',
       'Contrato_v2.docx',
     ]);
     expect(manifest.totalBytes, first.length + second.length);
 
-    final SessionAuthorized authorized =
-        events.whereType<SessionAuthorized>().single;
+    final SessionAuthorized authorized = events
+        .whereType<SessionAuthorized>()
+        .single;
     expect(authorized.device, 'PC de Luis');
     // El identificador estable del par: es lo que se empareja, no el nombre.
     expect(authorized.deviceId, desktopId);
-    expect(
-      received.whereType<SessionAuthorized>().single.deviceId,
-      phoneId,
-    );
+    expect(received.whereType<SessionAuthorized>().single.deviceId, phoneId);
     expect(events.whereType<FileStarted>(), hasLength(2));
     expect(
       events.whereType<FileFinished>().every((FileFinished e) => e.ok),
@@ -191,13 +188,15 @@ void main() {
     expect(done.total, 2);
 
     expect(
-      await File('${inbox.path}${Platform.pathSeparator}Foto_playa.jpg')
-          .readAsBytes(),
+      await File(
+        '${inbox.path}${Platform.pathSeparator}Foto_playa.jpg',
+      ).readAsBytes(),
       first,
     );
     expect(
-      await File('${inbox.path}${Platform.pathSeparator}Contrato_v2.docx')
-          .readAsBytes(),
+      await File(
+        '${inbox.path}${Platform.pathSeparator}Contrato_v2.docx',
+      ).readAsBytes(),
       second,
     );
     // Ningun parcial sobrevive a una sesion que termino bien.
@@ -211,11 +210,13 @@ void main() {
     await boot();
     final Uint8List data = payload(chunkBytes * 3 + 10);
 
-    final List<SessionEvent> events =
-        await sender(<OutgoingFile>[fileOf('grande.bin', data)]).run().toList();
+    final List<SessionEvent> events = await sender(<OutgoingFile>[
+      fileOf('grande.bin', data),
+    ]).run().toList();
 
-    final List<FileProgress> progress =
-        events.whereType<FileProgress>().toList();
+    final List<FileProgress> progress = events
+        .whereType<FileProgress>()
+        .toList();
     expect(progress.length, 4);
     expect(progress.first.bytes, chunkBytes);
     expect(progress.last.bytes, data.length);
@@ -227,9 +228,9 @@ void main() {
     await boot();
 
     await expectLater(
-      sender(<OutgoingFile>[fileOf('x.txt', payload(10))], code: '000000')
-          .run()
-          .toList(),
+      sender(<OutgoingFile>[
+        fileOf('x.txt', payload(10)),
+      ], code: '000000').run().toList(),
       throwsA(
         isA<AuthError>().having(
           (AuthError e) => e.failure,
@@ -271,10 +272,9 @@ void main() {
     await boot();
     final Uint8List data = payload(5000);
 
-    final List<SessionEvent> events = await sender(
-      <OutgoingFile>[fileOf('corrupto.bin', data)],
-      corrupt: true,
-    ).run().toList();
+    final List<SessionEvent> events = await sender(<OutgoingFile>[
+      fileOf('corrupto.bin', data),
+    ], corrupt: true).run().toList();
 
     final FileFinished finished = events.whereType<FileFinished>().single;
     expect(finished.ok, isFalse);
@@ -287,8 +287,7 @@ void main() {
 
   test('rechazar un archivo no mata la sesion', () async {
     await boot(
-      policy: (Directory dir) =>
-          _PickyPolicy(dir, blocked: <String>{'no.bin'}),
+      policy: (Directory dir) => _PickyPolicy(dir, blocked: <String>{'no.bin'}),
     );
 
     final List<SessionEvent> events = await sender(<OutgoingFile>[
@@ -296,8 +295,9 @@ void main() {
       fileOf('si.bin', payload(100)),
     ]).run().toList();
 
-    final List<FileFinished> finished =
-        events.whereType<FileFinished>().toList();
+    final List<FileFinished> finished = events
+        .whereType<FileFinished>()
+        .toList();
     expect(finished, hasLength(2));
     expect(finished.first.rejection, RejectionReason.userDeclined);
     expect(finished.first.failure, isNull);
@@ -319,11 +319,10 @@ void main() {
           DefaultReceivePolicy(directory: dir, freeBytes: () async => 1000),
     );
 
-
     await expectLater(
-      sender(<OutgoingFile>[fileOf('enorme.bin', payload(50000))])
-          .run()
-          .toList(),
+      sender(<OutgoingFile>[
+        fileOf('enorme.bin', payload(50000)),
+      ]).run().toList(),
       throwsA(
         isA<RejectedByPeer>()
             .having(
@@ -369,13 +368,15 @@ void main() {
     ]).run().toList();
 
     expect(
-      await File('${inbox.path}${Platform.pathSeparator}repetido.bin')
-          .readAsBytes(),
+      await File(
+        '${inbox.path}${Platform.pathSeparator}repetido.bin',
+      ).readAsBytes(),
       a,
     );
     expect(
-      await File('${inbox.path}${Platform.pathSeparator}repetido (2).bin')
-          .readAsBytes(),
+      await File(
+        '${inbox.path}${Platform.pathSeparator}repetido (2).bin',
+      ).readAsBytes(),
       b,
     );
   });
@@ -425,13 +426,12 @@ void main() {
     ]);
 
     final Completer<void> started = Completer<void>();
-    final Future<List<SessionEvent>> firstRun = first
-        .run()
-        .map((SessionEvent event) {
-          if (event is FileProgress && !started.isCompleted) started.complete();
-          return event;
-        })
-        .toList();
+    final Future<List<SessionEvent>> firstRun = first.run().map((
+      SessionEvent event,
+    ) {
+      if (event is FileProgress && !started.isCompleted) started.complete();
+      return event;
+    }).toList();
 
     await started.future;
 

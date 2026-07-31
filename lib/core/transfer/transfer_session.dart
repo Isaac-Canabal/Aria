@@ -22,34 +22,74 @@ import 'session_events.dart';
 /// El emisor. Se conecta, autoriza, acuerda el lote y lo manda.
 class SendSession {
   SendSession({
-    required this.host,
+    required this.addresses,
     required this.port,
     required this.identity,
     required this.channel,
     required this.files,
     this.connectTimeout = const Duration(seconds: 10),
+    this.attemptTimeout = const Duration(seconds: 3),
+    this.localAddresses,
   });
 
-  final String host;
+  /// Las direcciones candidatas del par, sin ordenar. Ver [orderCandidates].
+  final List<String> addresses;
+
   final int port;
   final DeviceIdentity identity;
   final ChannelInitiator channel;
   final List<OutgoingFile> files;
+
+  /// Lo que se espera cuando solo hay una candidata: no hay a que pasar.
   final Duration connectTimeout;
+
+  /// Lo que se espera por candidata cuando hay varias. Corto a proposito:
+  /// agotar el timeout largo en una direccion muerta deja la pantalla colgada
+  /// mucho mas tiempo del que cuesta probar la siguiente.
+  final Duration attemptTimeout;
+
+  /// Las direcciones de este equipo, para el orden. Inyectable para poder
+  /// probar el orden sin tocar las interfaces reales.
+  final Future<List<String>> Function()? localAddresses;
 
   ProtocolConnection? _connection;
   bool _cancelled = false;
   bool _cancelSent = false;
 
+  /// Prueba las direcciones candidatas en orden y se queda con la primera
+  /// que abre.
+  ///
+  /// **Secuencial, no en paralelo, a proposito**: el receptor acepta lo que
+  /// le llegue, asi que abrir varias a la vez le crearia varias sesiones para
+  /// un solo envio. Vale mas esperar un poco que ensuciar la otra punta.
+  Future<Socket> _connect() async {
+    final List<String> candidates = orderCandidates(
+      addresses,
+      await localAddresses?.call() ?? const <String>[],
+    );
+    if (candidates.isEmpty) {
+      throw const ConnectionFailed(ConnectionFault.unreachable);
+    }
+    // Con una sola candidata no hay a que pasar: se le da el tiempo entero.
+    final Duration each = candidates.length == 1
+        ? connectTimeout
+        : attemptTimeout;
+
+    SocketException? last;
+    for (final String candidate in candidates) {
+      try {
+        return await Socket.connect(candidate, port, timeout: each);
+      } on SocketException catch (e) {
+        last = e;
+      }
+    }
+    throw ConnectionFailed(_faultOf(last!), cause: last);
+  }
+
   /// Corre la sesion entera. Termina con [SessionFinished], o con un
   /// [TransferError] tipado.
   Stream<SessionEvent> run() async* {
-    final Socket socket;
-    try {
-      socket = await Socket.connect(host, port, timeout: connectTimeout);
-    } on SocketException catch (e) {
-      throw ConnectionFailed(_faultOf(e), cause: e);
-    }
+    final Socket socket = await _connect();
 
     final ProtocolConnection connection = ProtocolConnection(socket);
     _connection = connection;

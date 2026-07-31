@@ -175,6 +175,18 @@ aparezca algo nuevo la primera vez que esto corre en un dispositivo real.
 - El puerto de transferencia no es constante: se hace `bind` con puerto 0 y el
   puerto asignado se publica en el registro TXT del anuncio, junto al nombre y
   la plataforma. Nada en el codigo puede asumir un numero de puerto fijo.
+- **Un par tiene varias direcciones y la elección es de quien conecta.** Un
+  equipo con adaptadores virtuales (WSL2, VPN, Docker) resuelve a varias, y
+  desde fuera no hay forma de saber cuál es la alcanzable: quedarse con la
+  primera dejaba al par **visible y no conectable**, que es peor que no verlo.
+  `Peer.addresses` las guarda todas y `SendSession` las prueba **en serie**,
+  ordenadas por `orderCandidates` (misma /24 que una interfaz local primero),
+  con un timeout corto por candidata. En serie a propósito: en paralelo el
+  receptor aceptaría varias conexiones y abriría varias sesiones para un solo
+  envío. El orden es una preferencia, nunca un filtro — si la heurística del
+  /24 falla, la dirección buena se prueba igual, solo que después. Esto no
+  toca el formato de cable: las direcciones salen del `lookup` local, no del
+  protocolo.
 - Autorización: el código de 6 dígitos viaja en el header del handshake desde
   la Fase 2 y `TransferSession` rechaza la sesión si no coincide. Esto no se
   pospone ni se degrada a "confiar en la LAN".

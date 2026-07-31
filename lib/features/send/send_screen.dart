@@ -188,12 +188,12 @@ class _SendScreenState extends ConsumerState<SendScreen> {
     final ManualConnection? connection = await askForManualConnection(context);
     if (connection == null || !mounted) return;
 
-    final Peer peer = Peer(
+    final Peer peer = Peer.at(
+      host: connection.host,
       serviceName: 'manual:${connection.host}:${connection.port}',
       deviceId: '',
       name: connection.host,
       platform: DevicePlatform.unknown,
-      host: connection.host,
       port: connection.port,
     );
 
