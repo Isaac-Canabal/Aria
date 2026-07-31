@@ -1,0 +1,69 @@
+/// El armazon de la app movil: las cuatro secciones de la navegacion
+/// inferior, y el flujo de envio que se pone por encima cuando hay una
+/// transferencia en curso o recien terminada.
+library;
+
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../design/components.dart';
+import '../../design/nocturne.dart';
+import '../../state/state.dart';
+import '../history/history_screen.dart';
+import '../receive/receive_screen.dart';
+import '../send/send_screen.dart';
+import '../send/sending_screens.dart';
+import '../settings/profile_screen.dart';
+
+class AriaShell extends ConsumerStatefulWidget {
+  const AriaShell({super.key});
+
+  @override
+  ConsumerState<AriaShell> createState() => _AriaShellState();
+}
+
+class _AriaShellState extends ConsumerState<AriaShell> {
+  int _index = 0;
+
+  void _go(int index) => setState(() => _index = index);
+
+  @override
+  Widget build(BuildContext context) {
+    final SendState send = ref.watch(sendProvider);
+
+    // Enviando, Completado y Error toman la pantalla entera: en los mockups
+    // no llevan navegacion inferior.
+    final Widget? overlay = switch (send) {
+      SendInProgress() => SendingScreen(state: send),
+      SendCompleted() => SendCompletedScreen(state: send),
+      SendFailed() => SendFailedScreen(state: send),
+      SendIdle() => null,
+    };
+    if (overlay != null) return overlay;
+
+    return ColoredBox(
+      color: NocturneColors.bg,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Expanded(
+            child: IndexedStack(
+              index: _index,
+              children: <Widget>[
+                SendScreen(onOpenSettings: () => _go(3)),
+                const ReceiveScreen(),
+                HistoryScreen(onSend: () => _go(0)),
+                const ProfileScreen(),
+              ],
+            ),
+          ),
+          BottomNav(
+            items: BottomNav.ariaItems,
+            currentIndex: _index,
+            onSelected: _go,
+          ),
+        ],
+      ),
+    );
+  }
+}
