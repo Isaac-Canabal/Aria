@@ -12,7 +12,16 @@ import '../../state/state.dart';
 import '../shared/discovery_permission.dart';
 
 class ReceiveScreen extends ConsumerWidget {
-  const ReceiveScreen({super.key});
+  const ReceiveScreen({super.key, this.active = true});
+
+  /// Si esta es la pestana que se esta viendo.
+  ///
+  /// El shell usa un `IndexedStack`, que **construye las cuatro pestanas** aunque
+  /// solo pinte una: sin esto, `announcementProvider` queda observado siempre y
+  /// el dispositivo se anuncia de forma permanente, que es justo lo que el
+  /// invariante de ciclo de vida prohibe. Como es `autoDispose`, dejar de
+  /// observarlo es lo que apaga el anuncio.
+  final bool active;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => DiscoveryPermissionGate(
@@ -20,10 +29,12 @@ class ReceiveScreen extends ConsumerWidget {
   );
 
   Widget _build(BuildContext context, WidgetRef ref) {
-    // Mantiene vivos el servidor y el anuncio mientras la pantalla exista.
+    // El servidor no depende de la pestana: deja de aceptar en background sin
+    // cerrar el socket, para no matar una sesion en vuelo.
     ref.watch(receiveServerProvider);
-    ref.watch(announcementProvider);
     ref.watch(incomingProvider);
+    // El anuncio si: salir de Recibir lo apaga, igual que irse a background.
+    if (active) ref.watch(announcementProvider);
 
     final PairingService pairing = ref.watch(pairingServiceProvider);
     final PairingCode code =

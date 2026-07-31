@@ -380,6 +380,16 @@ archivo a medias en vez de un rechazo limpio. De ahí la regla:
 - **Salir de la pantalla Recibir apaga el anuncio** igual que irse a
   background: `announcementProvider` es `autoDispose`. "Esperando conexión…" es
   el estado de una pantalla abierta, no un servicio permanente.
+  **`autoDispose` por sí solo no basta, y esto se descubrió en dispositivo:**
+  el shell usa un `IndexedStack`, que **construye las cuatro pestañas** aunque
+  solo pinte una, así que `ReceiveScreen.build` corría siempre y el proveedor
+  nunca se quedaba sin observadores — el dispositivo se anunciaba de forma
+  permanente. Por eso `ReceiveScreen` recibe `active` y solo observa el
+  anuncio cuando es la pestaña visible. El `IndexedStack` se mantiene a
+  propósito: preserva el estado de las otras pestañas (los archivos ya
+  elegidos en Enviar, su cuenta atrás de `discoveryGracePeriod`), y cambiarlo
+  por un `switch` arreglaría el anuncio rompiendo eso. Hay test de regresión
+  (`test/features/shell/announcement_lifecycle_test.dart`).
 - **Al volver a primer plano se reanuncia y se vuelve a aceptar.** El código
   **no** rota por ciclo de vida: quien lo dicta en voz alta y mira otra app
   volvería a un código distinto sin que nada lo explique. Se renueva tras

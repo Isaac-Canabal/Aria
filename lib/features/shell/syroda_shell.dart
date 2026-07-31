@@ -51,7 +51,10 @@ class _SyrodaShellState extends ConsumerState<SyrodaShell> {
               index: _index,
               children: <Widget>[
                 SendScreen(onOpenSettings: () => _go(3)),
-                const ReceiveScreen(),
+                // `IndexedStack` construye las cuatro pestanas aunque solo
+                // pinte una, asi que Recibir tiene que saber si es la visible:
+                // si no, se anuncia siempre.
+                ReceiveScreen(active: _index == 1),
                 HistoryScreen(onSend: () => _go(0)),
                 const ProfileScreen(),
               ],
