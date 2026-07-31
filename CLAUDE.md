@@ -46,19 +46,10 @@ candidatas a estar mal:
   de clientes.
 - La regla de firewall de Windows y su diagnóstico de "0 pares".
 
-**Tres bloqueos de entorno**, que el usuario resuelve por su cuenta —no
-tocarlos—: Visual Studio 2022 Build Tools con la carga de C++ (sin ella
-`flutter build windows` falla), el SDK de Android fuera de una ruta con
-espacios (las herramientas del NDK no lo soportan), y Developer Mode de
-Windows activado (sin él falla el paso de symlinks de plugins, y con eso
-cualquier `flutter run`).
-
 **Orden de la sesión siguiente:**
 
-1. Confirmar que los tres bloqueos de entorno están resueltos. Sin ellos no se
-   puede ejecutar nada, y todo lo demás es a ciegas.
-2. Los dos pendientes de la Fase 4, en el orden de arriba.
-3. **Prueba real con dos dispositivos en la misma red, antes de abrir la Fase
+1. Los dos pendientes de la Fase 4, en el orden de arriba.
+2. **Prueba real con dos dispositivos en la misma red, antes de abrir la Fase
    5.** Es lo único que valida las cuatro decisiones sin validar. Abrir la UI
    de Windows sobre un transporte que nunca vio una red de verdad multiplica
    por dos el trabajo de cualquier corrección.

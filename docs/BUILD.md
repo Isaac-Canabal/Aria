@@ -7,9 +7,44 @@ que ya existen; los instaladores llegan en la Fase 6.
 
 | | |
 |---|---|
-| Flutter | 3.44.6 (canal stable) o superior, con Dart 3.12 |
-| Android | SDK con API 36; **la ruta del SDK no puede llevar espacios** — las herramientas del NDK fallan |
-| Windows | Visual Studio 2022 Build Tools con la carga "Desarrollo de escritorio con C++" |
+| Flutter | 3.44.6 (canal stable) o superior, con Dart 3.12 — verificar con `flutter doctor` |
+| Android | SDK con API 36; **la ruta del SDK no puede llevar espacios** — las herramientas del NDK fallan sin distinguir el motivo en el error |
+| Android | JDK 17 para Gradle (ver "JDK para Android" abajo) |
+| Windows (desarrollo) | Developer Mode activo — sin él falla el paso de symlinks de plugins, y con eso cualquier `flutter run` en Windows |
+| Windows (compilación) | Visual Studio 2022 Build Tools con la carga "Desarrollo de escritorio con C++" — sin ella `flutter build windows` falla |
+
+`flutter doctor` valida Flutter, Android SDK y Visual Studio. No valida el JDK
+de Gradle ni el Developer Mode: revisar esos dos a mano con los comandos de
+abajo.
+
+### JDK para Android: por qué 17, no el que detecte el sistema
+
+`android/build.gradle.kts` fuerza el plugin clásico de Kotlin sobre el
+subproyecto `file_picker` (ver el comentario ahí: `file_picker` se salta ese
+plugin en AGP 9+ asumiendo el soporte nativo de Kotlin de AGP, pero
+`android.builtInKotlin=false` en `android/gradle.properties` lo desactiva,
+porque `flutter_foreground_task` y `nsd_android` todavía aplican el plugin
+clásico sin condición). Ese Kotlin forzado no fija su propio `jvmTarget`, así
+que compila con el JDK que use Gradle. Si Gradle corre con JDK 21 (lo más
+común: `flutter` sigue `JAVA_HOME` o el JDK de Android Studio), ese Kotlin
+queda en target 21 mientras el resto del módulo sigue en `sourceCompatibility
+17`, y la build falla con "Inconsistent JVM Target Compatibility".
+
+La app necesita un JDK 17 instalado y apuntado explícitamente:
+
+    flutter config --jdk-dir="<ruta al JDK 17>"
+
+Por ejemplo, con Eclipse Temurin 17 en Windows:
+
+    flutter config --jdk-dir="C:\Program Files\Eclipse Adoptium\jdk-17.0.7.7-hotspot"
+
+Verificar qué JDKs hay instalados y cuál detecta el sistema:
+
+    cd android && ./gradlew -q javaToolchains
+
+Este ajuste es de máquina, no del repositorio: `flutter config` lo guarda
+fuera del proyecto (no en `android/gradle.properties`, que si llevara una ruta
+de JDK ahí rompería la build de cualquier otra máquina).
 
 ### Mínimo de Windows en tiempo de ejecución: build 18362
 
