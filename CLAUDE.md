@@ -60,11 +60,72 @@ candidatas a estar mal:
 
 1. **Prueba real con dos dispositivos en la misma red, antes de abrir la Fase
    5.** La Fase 4 ya está completa en código; esta prueba es lo único que
-   falta. Valida las cuatro decisiones sin validar, el camino de permisos
-   completo (incluida la denegación permanente) y los tres diálogos que
-   recién dejaron de estar rotos. Abrir la UI de Windows sobre un transporte
-   que nunca vio una red de verdad multiplica por dos el trabajo de
-   cualquier corrección.
+   falta. Abrir la UI de Windows sobre un transporte que nunca vio una red de
+   verdad multiplica por dos el trabajo de cualquier corrección. Checklist
+   abajo.
+
+### Checklist de validación en dispositivo
+
+Ninguna de estas líneas se ha visto correr fuera de esta máquina. Marcar cada
+una según se compruebe; una casilla sin marcar al terminar la sesión es una
+razón explícita para no abrir la Fase 5, no un detalle suelto.
+
+- [ ] **Descubrimiento mutuo** entre el teléfono y el PC: cada uno ve al otro
+      en su lista de Enviar. Cubre de una vez el `MulticastLock` sostenido
+      por el descubrimiento de adorno y el propio workaround del anuncio
+      (ver "Deuda con fase asignada") — si el anuncio no sostiene el lock
+      como se espera, esta es la línea que lo va a mostrar.
+- [ ] **Handshake**: código correcto autoriza; código incorrecto rechaza sin
+      matar la sesión de un intento; agotar los 3 intentos invalida el
+      código vigente y genera uno nuevo.
+- [ ] **Caducidad del código** a los 5 minutos sin usarse
+      (`pairingCodeLifetime`), y que un código ya caducado no gaste
+      intentos al fallar.
+- [ ] **Transferencia completa** de un archivo real, con verificación de
+      checksum al terminar (el `file_hash` del trailer — confirmar que un
+      archivo dañado a propósito se detecta y el `.part` se borra).
+- [ ] **Cancelación a mitad de transferencia, en ambos sentidos**: el emisor
+      cancela y el receptor cancela, y ninguno de los dos deja un `.part`
+      huérfano.
+- [ ] **Foreground service**: la notificación es visible durante la
+      transferencia (con `POST_NOTIFICATIONS` concedido), y la transferencia
+      sobrevive a cambiar de app y a bloquear la pantalla.
+- [ ] **Regla de ciclo de vida**: bajar la cortina de notificaciones **no**
+      apaga el anuncio (`inactive` no apaga nada); ir a background **sí** lo
+      apaga.
+- [ ] **Rechazo por espacio insuficiente**: en Android, con el `StatFs` real
+      (no `DefaultReceivePolicy.withoutSpaceCheck`). En Windows el proveedor
+      de espacio libre todavía no existe (Fase 5): ahí toca verificar que
+      aparece la advertencia de `withoutSpaceCheck`, no un rechazo real —
+      confundir una cosa con la otra invalidaría esta línea.
+- [ ] **Estado vacío tras el grace period** en Enviar
+      (`discoveryGracePeriod`), con "Conectar manualmente" funcionando de
+      punta a punta contra el `code-card` del receptor.
+- [ ] **Firewall de Windows** en el primer `bind`: confirmar si Windows pide
+      permiso o hace falta la regla manual, y que el diagnóstico de "0
+      pares" distinga este caso de los demás.
+
+### Capturar logs de Android durante la prueba
+
+`flutter run` mezcla el log de la app con el de logcat entero — cualquier
+otra app instalada también imprime ahí. Para aislar solo este proceso:
+
+    adb logcat -c
+    adb logcat --pid=$(adb shell pidof -s com.isaaccanabal.syroda)
+
+`adb logcat -c` vacía el buffer antes de arrancar, para no arrastrar ruido de
+antes de la prueba. El PID cambia en cada relanzamiento de la app (no en cada
+hot reload, que reusa el proceso) — si se mata y se vuelve a abrir la app,
+hay que volver a correr el segundo comando. Para guardar la sesión completa
+en un archivo a la vez que se ve en pantalla:
+
+    adb logcat --pid=$(adb shell pidof -s com.isaaccanabal.syroda) | tee syroda_device_test.log
+
+Esto captura tanto lo que imprime Dart (`developer.log`, tag `flutter`) como
+lo que loguean los plugins nativos (`nsd_android`, `flutter_foreground_task`,
+excepciones de `MainActivity`) bajo sus propios tags — filtrar solo por tag
+`flutter` se perdería justamente lo nativo, que es donde más probablemente
+aparezca algo nuevo la primera vez que esto corre en un dispositivo real.
 
 ## Producto
 
