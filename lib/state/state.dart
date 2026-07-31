@@ -6,5 +6,6 @@ export 'data_providers.dart';
 export 'history_controller.dart';
 export 'lifecycle.dart';
 export 'paired_devices_controller.dart';
+export 'permission_controller.dart';
 export 'settings_controller.dart';
 export 'transfer_controllers.dart';

@@ -13,24 +13,26 @@ Hecho en la Fase 4: las 8 pantallas y el shell con la navegación inferior
 (`lib/features/`), los controladores que conectan transporte y persistencia
 (`lib/state/transfer_controllers.dart`), el manifiesto con sus permisos, el
 servicio en primer plano atado a ambos sentidos, el proveedor de espacio libre
-por canal nativo, y la regla de disponibilidad por ciclo de vida.
+por canal nativo, la regla de disponibilidad por ciclo de vida, y
+`SystemPermissionService` conectado a Enviar y Recibir
+(`lib/features/shared/discovery_permission.dart`): `nearbyDevices` bloquea la
+pantalla completa mientras no esté concedido (`denied` pide de nuevo,
+`permanentlyDenied` manda a Ajustes sin reintentar el diálogo del sistema), y
+`notifications` se pide igual pero solo avisa sin bloquear — la transferencia
+funciona sin ese permiso, nada más pierde su indicador. Sin mockup propio: se
+compone con los mismos patrones que cualquier otro estado vacío, no con un
+componente nuevo del design system.
 
 **Pendiente para cerrarla, en orden:**
 
-1. **Conectar `SystemPermissionService` a las pantallas que lo necesitan.**
-   Está escrito (`lib/core/platform/permissions.dart`) y **no lo llama nadie**.
-   Es fácil no verlo: `flutter analyze` pasa y los tests pasan igual, porque
-   nada de eso se puede comprobar sin un dispositivo.
-   Incluye `POST_NOTIFICATIONS` explícito: en Android 13+ es permiso en tiempo
-   de ejecución, y sin él el servicio en primer plano arranca pero su
-   notificación no se muestra — la transferencia queda sin ningún indicador.
-   El camino de denegación permanente tiene que resolverse con un mensaje
-   accionable que lleve a los ajustes del sistema, no con un diálogo que
-   reaparece sin efecto.
-2. **Tests de pantalla.** Mínimo las dos piezas que no vienen de los mockups y
+1. **Tests de pantalla.** Mínimo las dos piezas que no vienen de los mockups y
    por tanto nadie más verifica: el estado vacío tras N segundos
    (`discoveryGracePeriod`) con su acción de emparejamiento manual, y la
-   pantalla de emparejamiento manual.
+   pantalla de emparejamiento manual. **Ojo:** `discoveryGracePeriod`
+   (`lib/state/transfer_controllers.dart`) está definida pero **nada la
+   consume todavía** — ninguna pantalla dispara el estado vacío tras N
+   segundos. Este pendiente puede ser más que escribir el test: puede hacer
+   falta construir el estado en `send_screen.dart` primero.
 
 **Nada se ha ejecutado en un dispositivo real.** Todo el transporte está
 verificado en loopback, que no tiene mDNS, ni firewall, ni Doze, ni cambios de
@@ -48,11 +50,12 @@ candidatas a estar mal:
 
 **Orden de la sesión siguiente:**
 
-1. Los dos pendientes de la Fase 4, en el orden de arriba.
+1. El pendiente de la Fase 4 de arriba (tests de pantalla).
 2. **Prueba real con dos dispositivos en la misma red, antes de abrir la Fase
-   5.** Es lo único que valida las cuatro decisiones sin validar. Abrir la UI
-   de Windows sobre un transporte que nunca vio una red de verdad multiplica
-   por dos el trabajo de cualquier corrección.
+   5.** Es lo único que valida las cuatro decisiones sin validar, y ahora
+   también el camino de permisos, que nunca corrió en un dispositivo real.
+   Abrir la UI de Windows sobre un transporte que nunca vio una red de verdad
+   multiplica por dos el trabajo de cualquier corrección.
 
 ## Producto
 

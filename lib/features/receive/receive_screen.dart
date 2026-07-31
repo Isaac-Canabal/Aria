@@ -9,12 +9,17 @@ import '../../core/transfer/transfer.dart';
 import '../../design/components.dart';
 import '../../design/nocturne.dart';
 import '../../state/state.dart';
+import '../shared/discovery_permission.dart';
 
 class ReceiveScreen extends ConsumerWidget {
   const ReceiveScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) => DiscoveryPermissionGate(
+    builder: (BuildContext context) => _build(context, ref),
+  );
+
+  Widget _build(BuildContext context, WidgetRef ref) {
     // Mantiene vivos el servidor y el anuncio mientras la pantalla exista.
     ref.watch(receiveServerProvider);
     ref.watch(announcementProvider);
@@ -30,6 +35,7 @@ class ReceiveScreen extends ConsumerWidget {
         gap: 20,
         padding: 28,
         children: <Widget>[
+          const NotificationsPermissionBanner(),
           if (pairing.isExpired)
             SyrodaButton(
               'Código caducado, generar uno nuevo',

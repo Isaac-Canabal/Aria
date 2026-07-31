@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/transfer/transfer.dart';
 import '../../design/components.dart';
 import '../../state/state.dart';
+import '../shared/discovery_permission.dart';
 import 'code_prompt.dart';
 
 class SendScreen extends ConsumerStatefulWidget {
@@ -25,7 +26,10 @@ class _SendScreenState extends ConsumerState<SendScreen> {
   List<OutgoingFile> _picked = const <OutgoingFile>[];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      DiscoveryPermissionGate(builder: _build);
+
+  Widget _build(BuildContext context) {
     final List<Peer> peers =
         ref.watch(peersProvider).valueOrNull ?? const <Peer>[];
 
@@ -40,6 +44,7 @@ class _SendScreenState extends ConsumerState<SendScreen> {
       ),
       body: ScreenBody(
         children: <Widget>[
+          const NotificationsPermissionBanner(),
           Dropzone(
             title: _picked.isEmpty
                 ? 'Toca para elegir un archivo'
