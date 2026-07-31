@@ -162,6 +162,16 @@ aparezca algo nuevo la primera vez que esto corre en un dispositivo real.
 - Los widget tests cargan Inter desde `assets/` con `test/fonts.dart`. Nunca
   la fuente de relleno: sus métricas producen desbordamientos falsos y ocultan
   los reales.
+- **Un `TextEditingController` de un diálogo pertenece al `State` del diálogo,
+  nunca a quien lo abre.** El future de `showDialog` completa cuando
+  **empieza** el pop, no cuando el subárbol se desmonta: destruirlo justo
+  después del `await` lo destruye mientras el `TextField` sigue montado
+  durante la animación de salida. Rompió el renombrado en Ajustes y solo se
+  vio en dispositivo. Los tres diálogos siguen ya este patrón
+  (`code_prompt.dart`, `manual_connect.dart`, `_NameField`).
+- **Los diálogos que llevan un `TextField` necesitan un ancestro `Material`**
+  (`Material(type: MaterialType.transparency)`): `showDialog` no pone uno, y
+  el `Scaffold` de la ruta que lo abre vive en otro `OverlayEntry`.
 
 ## Protocolo
 

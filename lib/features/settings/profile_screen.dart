@@ -104,19 +104,24 @@ class ProfileScreen extends ConsumerWidget {
     SettingsController controller,
     SyrodaSettings settings,
   ) async {
-    final TextEditingController field = TextEditingController(
-      text: settings.deviceName,
-    );
+    // El `TextEditingController` lo posee `_NameField`, no esta funcion.
+    //
+    // Tenerlo aqui lo destruia demasiado pronto: el future de `showDialog`
+    // completa cuando **empieza** el pop, no cuando el subarbol se desmonta,
+    // asi que el `TextField` seguia montado y suscrito a un controller ya
+    // destruido durante toda la animacion de salida. De ahi el
+    // "A TextEditingController was used after being disposed", y de ahi la
+    // cascada que acababa en `'_dependents.isEmpty': is not true`.
+    String edited = settings.deviceName;
     final String? name = await _sheet<String>(
       context,
       title: 'Nombre del dispositivo',
-      body: SyrodaField(
-        label: 'Nombre',
-        child: SyrodaInput(controller: field),
+      body: _NameField(
+        initial: settings.deviceName,
+        onChanged: (String value) => edited = value,
       ),
-      confirm: () => field.text,
+      confirm: () => edited,
     );
-    field.dispose();
     if (name != null) await controller.setDeviceName(name);
   }
 
@@ -146,6 +151,48 @@ class ProfileScreen extends ConsumerWidget {
     );
     if (chosen != null) await controller.setVisibility(chosen);
   }
+}
+
+/// El campo de nombre, dueno de su propio controller.
+///
+/// Existe para que el controller viva y muera con el widget que lo usa, como
+/// en `code_prompt.dart` y `manual_connect.dart`. Un controller de un dialogo
+/// no puede pertenecer a quien lo abre: el que abre vuelve antes.
+class _NameField extends StatefulWidget {
+  const _NameField({required this.initial, required this.onChanged});
+
+  final String initial;
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<_NameField> createState() => _NameFieldState();
+}
+
+class _NameFieldState extends State<_NameField> {
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initial,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_report);
+  }
+
+  void _report() => widget.onChanged(_controller.text);
+
+  @override
+  void dispose() {
+    _controller.removeListener(_report);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => SyrodaField(
+    label: 'Nombre',
+    child: SyrodaInput(controller: _controller),
+  );
 }
 
 /// Una hoja con los patrones existentes: tarjeta elevada y botones.

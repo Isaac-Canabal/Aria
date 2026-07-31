@@ -53,11 +53,21 @@ class _SyrodaInputState extends State<SyrodaInput> {
   @override
   void initState() {
     super.initState();
-    _focus.addListener(() => setState(() {}));
+    _focus.addListener(_onFocusChange);
+  }
+
+  /// `FocusNode.dispose()` desata el nodo y avisa a sus oyentes, y eso ocurre
+  /// mientras este `State` se esta desmontando: sin la guarda, el `setState`
+  /// llega tarde y rompe el desmontaje del subarbol entero. Solo se alcanza
+  /// en movil, donde tocar el campo abre el teclado y el foco es real; en
+  /// escritorio se puede confirmar con el raton sin haberlo enfocado nunca.
+  void _onFocusChange() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
+    _focus.removeListener(_onFocusChange);
     _focus.dispose();
     super.dispose();
   }
