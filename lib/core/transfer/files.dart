@@ -120,7 +120,7 @@ class DefaultReceivePolicy implements ReceivePolicy {
   }) : freeBytes = null {
     developer.log(
       'sin comprobacion de espacio libre: el lote se acepta sin saber si cabe',
-      name: 'aria.transfer',
+      name: 'syroda.transfer',
       level: 900, // WARNING
     );
   }

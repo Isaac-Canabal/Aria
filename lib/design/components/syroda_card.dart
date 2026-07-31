@@ -3,24 +3,24 @@ import 'package:flutter/widgets.dart';
 import '../nocturne.dart';
 
 /// `.elev-sm` / `.elev-md` / `.elev-lg`.
-enum AriaElevation { none, sm, md, lg }
+enum SyrodaElevation { none, sm, md, lg }
 
 /// `.card` — superficie con radio medio. El contenido lo compone quien la
 /// usa: los mockups la reutilizan en columna (tarjeta de codigo) y en fila
 /// (tarjeta de transferencia).
-class AriaCard extends StatelessWidget {
-  const AriaCard({
+class SyrodaCard extends StatelessWidget {
+  const SyrodaCard({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(NocturneSpace.s3),
-    this.elevation = AriaElevation.none,
+    this.elevation = SyrodaElevation.none,
     this.color = NocturneColors.surface,
     this.borderRadius = NocturneRadius.brMd,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
-  final AriaElevation elevation;
+  final SyrodaElevation elevation;
   final Color color;
   final BorderRadius borderRadius;
 
@@ -31,10 +31,10 @@ class AriaCard extends StatelessWidget {
       color: color,
       borderRadius: borderRadius,
       boxShadow: switch (elevation) {
-        AriaElevation.none => null,
-        AriaElevation.sm => NocturneShadow.sm,
-        AriaElevation.md => NocturneShadow.md,
-        AriaElevation.lg => NocturneShadow.lg,
+        SyrodaElevation.none => null,
+        SyrodaElevation.sm => NocturneShadow.sm,
+        SyrodaElevation.md => NocturneShadow.md,
+        SyrodaElevation.lg => NocturneShadow.lg,
       },
     ),
     child: child,

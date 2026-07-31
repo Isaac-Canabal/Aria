@@ -197,7 +197,7 @@ abstract final class NocturneType {
   );
 
   /// Un estilo derivado del cuerpo, para los tamanos sueltos que usan los
-  /// componentes de Aria (13.5px, 12.5px, 11.5px...).
+  /// componentes de Syroda (13.5px, 12.5px, 11.5px...).
   static TextStyle at(
     double size, {
     FontWeight weight = regular,
@@ -215,7 +215,7 @@ abstract final class NocturneType {
 }
 
 /// El `ThemeData` de la app. Los widgets de Material heredan de aqui; los
-/// componentes de Aria toman los tokens directamente.
+/// componentes de Syroda toman los tokens directamente.
 ThemeData nocturneTheme() {
   const ColorScheme scheme = ColorScheme(
     brightness: Brightness.dark,

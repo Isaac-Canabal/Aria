@@ -1,4 +1,4 @@
-import 'package:aria/core/platform/transfer_foreground_service.dart';
+import 'package:syroda/core/platform/transfer_foreground_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

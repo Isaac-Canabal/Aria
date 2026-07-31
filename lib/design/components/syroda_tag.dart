@@ -4,18 +4,18 @@ import '../nocturne.dart';
 
 /// `.tag` — la etiqueta de estado que los mockups repiten en filas, tablas y
 /// pantallas de resultado.
-enum AriaTagVariant { accent, accent2, neutral, outline }
+enum SyrodaTagVariant { accent, accent2, neutral, outline }
 
-class AriaTag extends StatelessWidget {
-  const AriaTag(
+class SyrodaTag extends StatelessWidget {
+  const SyrodaTag(
     this.label, {
     super.key,
-    this.variant = AriaTagVariant.neutral,
+    this.variant = SyrodaTagVariant.neutral,
     this.fontSize = 11,
   });
 
   final String label;
-  final AriaTagVariant variant;
+  final SyrodaTagVariant variant;
 
   /// La galeria baja este tamano a 9.5px en sus propias etiquetas; las de la
   /// app se quedan en 11.
@@ -24,22 +24,22 @@ class AriaTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (Color? background, Color foreground, Color? border) = switch (variant) {
-      AriaTagVariant.accent => (
+      SyrodaTagVariant.accent => (
         NocturneColors.accent800,
         NocturneColors.accent100,
         null,
       ),
-      AriaTagVariant.accent2 => (
+      SyrodaTagVariant.accent2 => (
         NocturneColors.accent2_800,
         NocturneColors.accent2_100,
         null,
       ),
-      AriaTagVariant.neutral => (
+      SyrodaTagVariant.neutral => (
         NocturneColors.neutral800,
         NocturneColors.neutral100,
         null,
       ),
-      AriaTagVariant.outline => (
+      SyrodaTagVariant.outline => (
         null,
         NocturneColors.accent,
         NocturneColors.accent,

@@ -10,8 +10,8 @@ import 'package:nsd/nsd.dart' as nsd;
 
 import 'peer.dart';
 
-/// El tipo de servicio de Aria.
-const String ariaServiceType = '_aria._tcp';
+/// El tipo de servicio de Syroda.
+const String syrodaServiceType = '_syroda._tcp';
 
 /// Claves del registro TXT.
 abstract final class TxtKeys {
@@ -55,7 +55,7 @@ class NsdDiscoveryService implements DiscoveryService {
   nsd.Discovery? _discovery;
 
   /// El nombre con el que quedo registrado este dispositivo. El sistema puede
-  /// cambiarlo si ya existe ("Aria" -> "Aria (2)"), y hay que conocerlo para
+  /// cambiarlo si ya existe ("Syroda" -> "Syroda (2)"), y hay que conocerlo para
   /// no listarse a si mismo.
   String? _ownServiceName;
 
@@ -71,7 +71,7 @@ class NsdDiscoveryService implements DiscoveryService {
     _registration = await nsd.register(
       nsd.Service(
         name: identity.name,
-        type: ariaServiceType,
+        type: syrodaServiceType,
         port: port,
         txt: <String, Uint8List?>{
           TxtKeys.name: _encode(identity.name),
@@ -97,7 +97,7 @@ class NsdDiscoveryService implements DiscoveryService {
   Future<void> startDiscovery() async {
     if (_discovery != null) return;
     final nsd.Discovery discovery = await nsd.startDiscovery(
-      ariaServiceType,
+      syrodaServiceType,
       ipLookupType: nsd.IpLookupType.any,
     );
     _discovery = discovery;

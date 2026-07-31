@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.aria" "\0"
-            VALUE "FileDescription", "aria" "\0"
+            VALUE "CompanyName", "com.isaaccanabal.syroda" "\0"
+            VALUE "FileDescription", "syroda" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "aria" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.aria. All rights reserved." "\0"
-            VALUE "OriginalFilename", "aria.exe" "\0"
-            VALUE "ProductName", "aria" "\0"
+            VALUE "InternalName", "syroda" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.isaaccanabal.syroda. All rights reserved." "\0"
+            VALUE "OriginalFilename", "syroda.exe" "\0"
+            VALUE "ProductName", "syroda" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

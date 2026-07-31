@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:aria/core/data/app_database.dart';
-import 'package:aria/core/data/history_repository.dart';
-import 'package:aria/core/data/paired_device.dart';
-import 'package:aria/core/data/paired_devices_repository.dart';
-import 'package:aria/core/data/transfer_record.dart';
-import 'package:aria/core/transfer/transfer.dart';
+import 'package:syroda/core/data/app_database.dart';
+import 'package:syroda/core/data/history_repository.dart';
+import 'package:syroda/core/data/paired_device.dart';
+import 'package:syroda/core/data/paired_devices_repository.dart';
+import 'package:syroda/core/data/transfer_record.dart';
+import 'package:syroda/core/transfer/transfer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -17,8 +17,8 @@ void main() {
   late String path;
 
   setUp(() async {
-    dir = await Directory.systemTemp.createTemp('aria_db');
-    path = p.join(dir.path, 'aria.db');
+    dir = await Directory.systemTemp.createTemp('syroda_db');
+    path = p.join(dir.path, 'syroda.db');
   });
 
   tearDown(() async {

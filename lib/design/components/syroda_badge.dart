@@ -1,32 +1,32 @@
 import 'package:flutter/widgets.dart';
 
-import '../icons/aria_icon.dart';
-import '../icons/aria_icons.dart';
+import '../icons/syroda_icon.dart';
+import '../icons/syroda_icons.dart';
 import '../nocturne.dart';
 
 /// `.badge`, `.badge-neutral`, `.badge-quiet`.
-enum AriaBadgeStyle { accent, neutral, quiet }
+enum SyrodaBadgeStyle { accent, neutral, quiet }
 
 /// Disco con un simbolo o unas iniciales dentro. El tamano y el tinte
 /// cambian por instancia: 52 en la zona de soltar, 64 en el estado vacio,
 /// 76 en las pantallas de resultado, 56 en el perfil.
-class AriaBadge extends StatelessWidget {
-  const AriaBadge({
+class SyrodaBadge extends StatelessWidget {
+  const SyrodaBadge({
     super.key,
     required this.child,
     this.size = 52,
-    this.style = AriaBadgeStyle.accent,
+    this.style = SyrodaBadgeStyle.accent,
   });
 
   /// Con un simbolo del sprite dentro.
-  AriaBadge.icon(
-    AriaIconData icon, {
+  SyrodaBadge.icon(
+    SyrodaIconData icon, {
     super.key,
     this.size = 52,
-    this.style = AriaBadgeStyle.accent,
+    this.style = SyrodaBadgeStyle.accent,
     double iconSize = 22,
     double strokeWidth = 1.6,
-  }) : child = AriaIcon(
+  }) : child = SyrodaIcon(
          icon,
          size: iconSize,
          strokeWidth: strokeWidth,
@@ -34,11 +34,11 @@ class AriaBadge extends StatelessWidget {
        );
 
   /// `.profile-avatar`: iniciales en lugar de simbolo.
-  AriaBadge.initials(
+  SyrodaBadge.initials(
     String initials, {
     super.key,
     this.size = 56,
-    this.style = AriaBadgeStyle.accent,
+    this.style = SyrodaBadgeStyle.accent,
   }) : child = Text(
          initials,
          style: NocturneType.at(
@@ -51,12 +51,12 @@ class AriaBadge extends StatelessWidget {
 
   final Widget child;
   final double size;
-  final AriaBadgeStyle style;
+  final SyrodaBadgeStyle style;
 
-  static Color _foregroundOf(AriaBadgeStyle style) => switch (style) {
-    AriaBadgeStyle.accent => NocturneColors.accent,
-    AriaBadgeStyle.neutral => NocturneColors.neutral300,
-    AriaBadgeStyle.quiet => NocturneColors.neutral400,
+  static Color _foregroundOf(SyrodaBadgeStyle style) => switch (style) {
+    SyrodaBadgeStyle.accent => NocturneColors.accent,
+    SyrodaBadgeStyle.neutral => NocturneColors.neutral300,
+    SyrodaBadgeStyle.quiet => NocturneColors.neutral400,
   };
 
   @override
@@ -67,9 +67,9 @@ class AriaBadge extends StatelessWidget {
     decoration: BoxDecoration(
       shape: BoxShape.circle,
       color: switch (style) {
-        AriaBadgeStyle.accent => NocturneColors.accent900,
-        AriaBadgeStyle.neutral => NocturneColors.neutral800,
-        AriaBadgeStyle.quiet => NocturneColors.surface,
+        SyrodaBadgeStyle.accent => NocturneColors.accent900,
+        SyrodaBadgeStyle.neutral => NocturneColors.neutral800,
+        SyrodaBadgeStyle.quiet => NocturneColors.surface,
       },
     ),
     child: child,

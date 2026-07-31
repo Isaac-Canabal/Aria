@@ -15,14 +15,14 @@ import '../send/send_screen.dart';
 import '../send/sending_screens.dart';
 import '../settings/profile_screen.dart';
 
-class AriaShell extends ConsumerStatefulWidget {
-  const AriaShell({super.key});
+class SyrodaShell extends ConsumerStatefulWidget {
+  const SyrodaShell({super.key});
 
   @override
-  ConsumerState<AriaShell> createState() => _AriaShellState();
+  ConsumerState<SyrodaShell> createState() => _SyrodaShellState();
 }
 
-class _AriaShellState extends ConsumerState<AriaShell> {
+class _SyrodaShellState extends ConsumerState<SyrodaShell> {
   int _index = 0;
 
   void _go(int index) => setState(() => _index = index);
@@ -58,7 +58,7 @@ class _AriaShellState extends ConsumerState<AriaShell> {
             ),
           ),
           BottomNav(
-            items: BottomNav.ariaItems,
+            items: BottomNav.syrodaItems,
             currentIndex: _index,
             onSelected: _go,
           ),

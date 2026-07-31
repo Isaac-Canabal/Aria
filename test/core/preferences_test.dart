@@ -1,4 +1,4 @@
-import 'package:aria/core/data/preferences.dart';
+import 'package:syroda/core/data/preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,7 +9,7 @@ void main() {
     SharedPreferences.setMockInitialValues(<String, Object>{});
     final SettingsStore store = await SettingsStore.open();
 
-    final AriaSettings settings = store.read();
+    final SyrodaSettings settings = store.read();
     expect(settings.deviceName, isNotEmpty);
     expect(settings.visibility, PeerVisibility.everyone);
     expect(settings.saveToGallery, isTrue);
@@ -22,7 +22,7 @@ void main() {
     SharedPreferences.setMockInitialValues(<String, Object>{});
     final SettingsStore store = await SettingsStore.open();
 
-    const AriaSettings changed = AriaSettings(
+    const SyrodaSettings changed = SyrodaSettings(
       deviceName: 'PC de mí',
       visibility: PeerVisibility.pairedOnly,
       saveToGallery: false,
@@ -49,7 +49,7 @@ void main() {
       SharedPreferences.setMockInitialValues(<String, Object>{});
       final SettingsStore store = await SettingsStore.open();
       await store.write(
-        AriaSettings(deviceName: 'x', visibility: visibility),
+        SyrodaSettings(deviceName: 'x', visibility: visibility),
       );
       expect(store.read().visibility, visibility);
     }

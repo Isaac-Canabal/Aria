@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:aria/core/data/app_database.dart';
-import 'package:aria/core/data/history_repository.dart';
-import 'package:aria/core/data/transfer_record.dart';
-import 'package:aria/core/transfer/transfer.dart';
+import 'package:syroda/core/data/app_database.dart';
+import 'package:syroda/core/data/history_repository.dart';
+import 'package:syroda/core/data/transfer_record.dart';
+import 'package:syroda/core/transfer/transfer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 

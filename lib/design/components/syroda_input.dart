@@ -5,8 +5,8 @@ import '../nocturne.dart';
 import 'pressable.dart';
 
 /// `.field` — etiqueta pequena sobre un control.
-class AriaField extends StatelessWidget {
-  const AriaField({super.key, required this.label, required this.child});
+class SyrodaField extends StatelessWidget {
+  const SyrodaField({super.key, required this.label, required this.child});
 
   final String label;
   final Widget child;
@@ -26,8 +26,8 @@ class AriaField extends StatelessWidget {
 }
 
 /// `.input`
-class AriaInput extends StatefulWidget {
-  const AriaInput({
+class SyrodaInput extends StatefulWidget {
+  const SyrodaInput({
     super.key,
     this.controller,
     this.onChanged,
@@ -43,10 +43,10 @@ class AriaInput extends StatefulWidget {
   final TextAlign textAlign;
 
   @override
-  State<AriaInput> createState() => _AriaInputState();
+  State<SyrodaInput> createState() => _SyrodaInputState();
 }
 
-class _AriaInputState extends State<AriaInput> {
+class _SyrodaInputState extends State<SyrodaInput> {
   final FocusNode _focus = FocusNode();
   bool _hovered = false;
 
@@ -99,8 +99,8 @@ class _AriaInputState extends State<AriaInput> {
 
 /// `.seg` — control segmentado. La opcion elegida toma el acento y un filo
 /// interior del mismo color.
-class AriaSegmented extends StatelessWidget {
-  const AriaSegmented({
+class SyrodaSegmented extends StatelessWidget {
+  const SyrodaSegmented({
     super.key,
     required this.options,
     required this.selected,

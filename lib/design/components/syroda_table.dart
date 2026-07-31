@@ -5,8 +5,8 @@ import 'pressable.dart';
 
 /// Una columna de `.table`: su encabezado y el peso con el que reparte el
 /// ancho.
-class AriaTableColumn {
-  const AriaTableColumn(this.label, {this.flex = 1});
+class SyrodaTableColumn {
+  const SyrodaTableColumn(this.label, {this.flex = 1});
 
   final String label;
   final int flex;
@@ -15,15 +15,15 @@ class AriaTableColumn {
 /// `.table` — la tabla del historial de escritorio. Las lineas de fila se
 /// desvanecen en los extremos: es una firma de Nocturne, y por eso son
 /// degradados y no bordes.
-class AriaTable extends StatelessWidget {
-  const AriaTable({
+class SyrodaTable extends StatelessWidget {
+  const SyrodaTable({
     super.key,
     required this.columns,
     required this.rows,
     this.onRowTap,
   });
 
-  final List<AriaTableColumn> columns;
+  final List<SyrodaTableColumn> columns;
   final List<List<Widget>> rows;
   final void Function(int index)? onRowTap;
 
@@ -37,7 +37,7 @@ class AriaTable extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: NocturneSpace.s2),
           child: Row(
             children: <Widget>[
-              for (final AriaTableColumn column in columns)
+              for (final SyrodaTableColumn column in columns)
                 Expanded(
                   flex: column.flex,
                   child: Padding(

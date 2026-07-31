@@ -8,9 +8,9 @@ import '../core/transfer/discovery_service.dart';
 import '../core/transfer/peer.dart';
 import 'data_providers.dart';
 
-class SettingsController extends AsyncNotifier<AriaSettings> {
+class SettingsController extends AsyncNotifier<SyrodaSettings> {
   @override
-  Future<AriaSettings> build() async =>
+  Future<SyrodaSettings> build() async =>
       (await ref.watch(settingsStoreProvider.future)).read();
 
   Future<void> setDeviceName(String name) {
@@ -32,15 +32,15 @@ class SettingsController extends AsyncNotifier<AriaSettings> {
   Future<void> setNotifications(bool value) =>
       _update(state.requireValue.copyWith(notifications: value));
 
-  Future<void> _update(AriaSettings next) async {
+  Future<void> _update(SyrodaSettings next) async {
     final SettingsStore store = await ref.read(settingsStoreProvider.future);
     await store.write(next);
-    state = AsyncData<AriaSettings>(next);
+    state = AsyncData<SyrodaSettings>(next);
   }
 }
 
-final AsyncNotifierProvider<SettingsController, AriaSettings> settingsProvider =
-    AsyncNotifierProvider<SettingsController, AriaSettings>(
+final AsyncNotifierProvider<SettingsController, SyrodaSettings> settingsProvider =
+    AsyncNotifierProvider<SettingsController, SyrodaSettings>(
       SettingsController.new,
     );
 
@@ -49,7 +49,7 @@ final AsyncNotifierProvider<SettingsController, AriaSettings> settingsProvider =
 /// sistema.
 final FutureProvider<DeviceIdentity> deviceIdentityProvider =
     FutureProvider<DeviceIdentity>((Ref ref) async {
-      final AriaSettings settings = await ref.watch(settingsProvider.future);
+      final SyrodaSettings settings = await ref.watch(settingsProvider.future);
       return DeviceIdentity(
         id: await ref.watch(installationIdProvider.future),
         name: settings.deviceName,
@@ -60,6 +60,6 @@ final FutureProvider<DeviceIdentity> deviceIdentityProvider =
 /// Si el dispositivo debe anunciarse en la red. "Nadie" no es un filtro de
 /// presentacion: se deja de publicar el servicio.
 final Provider<bool> announcingProvider = Provider<bool>((Ref ref) {
-  final AriaSettings? settings = ref.watch(settingsProvider).valueOrNull;
+  final SyrodaSettings? settings = ref.watch(settingsProvider).valueOrNull;
   return settings != null && settings.visibility != PeerVisibility.nobody;
 });

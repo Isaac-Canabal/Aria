@@ -16,10 +16,10 @@ class SendingScreen extends ConsumerWidget {
   final SendInProgress state;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => AriaScreen(
+  Widget build(BuildContext context, WidgetRef ref) => SyrodaScreen(
     topBar: ScreenTopBar.back(
       leading: RoundButton(
-        icon: AriaIcons.close,
+        icon: SyrodaIcons.close,
         iconSize: 15,
         strokeWidth: 1.8,
         semanticLabel: 'Cerrar',
@@ -61,7 +61,7 @@ class SendingScreen extends ConsumerWidget {
     ),
     actions: ScreenActions(
       children: <Widget>[
-        AriaButton(
+        SyrodaButton(
           'Cancelar envío',
           onPressed: () => ref.read(sendProvider.notifier).cancel(),
         ),
@@ -77,11 +77,11 @@ class SendCompletedScreen extends ConsumerWidget {
   final SendCompleted state;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => AriaScreen(
+  Widget build(BuildContext context, WidgetRef ref) => SyrodaScreen(
     body: ScreenCenter(
       children: <Widget>[
-        AriaBadge.icon(
-          AriaIcons.checkCircle,
+        SyrodaBadge.icon(
+          SyrodaIcons.checkCircle,
           size: 76,
           iconSize: 34,
           strokeWidth: 1.8,
@@ -100,22 +100,22 @@ class SendCompletedScreen extends ConsumerWidget {
             ),
           ],
         ),
-        AriaTag(
+        SyrodaTag(
           'Completado en ${state.elapsed.inSeconds}s',
-          variant: AriaTagVariant.accent,
+          variant: SyrodaTagVariant.accent,
         ),
       ],
     ),
     actions: ScreenActions(
       children: <Widget>[
-        AriaButton(
+        SyrodaButton(
           'Enviar otro archivo',
-          variant: AriaButtonVariant.primary,
+          variant: SyrodaButtonVariant.primary,
           onPressed: () => ref.read(sendProvider.notifier).reset(),
         ),
-        AriaButton(
+        SyrodaButton(
           'Volver al inicio',
-          variant: AriaButtonVariant.ghost,
+          variant: SyrodaButtonVariant.ghost,
           onPressed: () => ref.read(sendProvider.notifier).reset(),
         ),
       ],
@@ -130,15 +130,15 @@ class SendFailedScreen extends ConsumerWidget {
   final SendFailed state;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => AriaScreen(
+  Widget build(BuildContext context, WidgetRef ref) => SyrodaScreen(
     body: ScreenCenter(
       children: <Widget>[
-        AriaBadge.icon(
-          AriaIcons.xCircle,
+        SyrodaBadge.icon(
+          SyrodaIcons.xCircle,
           size: 76,
           iconSize: 34,
           strokeWidth: 1.8,
-          style: AriaBadgeStyle.neutral,
+          style: SyrodaBadgeStyle.neutral,
         ),
         Column(
           mainAxisSize: MainAxisSize.min,
@@ -152,19 +152,19 @@ class SendFailedScreen extends ConsumerWidget {
             ScreenLede(describeTransferError(state.error, state.peerName)),
           ],
         ),
-        const AriaTag('Fallido'),
+        const SyrodaTag('Fallido'),
       ],
     ),
     actions: ScreenActions(
       children: <Widget>[
-        AriaButton(
+        SyrodaButton(
           'Reintentar',
-          variant: AriaButtonVariant.primary,
+          variant: SyrodaButtonVariant.primary,
           onPressed: () => ref.read(sendProvider.notifier).reset(),
         ),
-        AriaButton(
+        SyrodaButton(
           'Cancelar',
-          variant: AriaButtonVariant.ghost,
+          variant: SyrodaButtonVariant.ghost,
           onPressed: () => ref.read(sendProvider.notifier).reset(),
         ),
       ],
@@ -187,7 +187,7 @@ String describeTransferError(TransferError error, String peerName) =>
         'No hubo respuesta de $peerName. Puede que la red no permita '
             'conexiones entre dispositivos.',
       ConnectionFailed(fault: ConnectionFault.refused) =>
-        '$peerName no está aceptando conexiones. Verifica que tenga Aria '
+        '$peerName no está aceptando conexiones. Verifica que tenga Syroda '
             'abierto en la pantalla Recibir.',
       ConnectionFailed() =>
         'Se perdió la conexión con $peerName. Verifica que ambos '
@@ -205,7 +205,7 @@ String describeTransferError(TransferError error, String peerName) =>
       TransferIoError() => 'No se pudo leer el archivo.',
       ProtocolError() =>
         '$peerName respondió algo inesperado. Puede que tenga otra versión '
-            'de Aria.',
+            'de Syroda.',
     };
 
 /// Tamaño legible, con la coma decimal del español.

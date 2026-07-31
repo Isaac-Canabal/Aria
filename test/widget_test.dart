@@ -1,5 +1,5 @@
-import 'package:aria/design/_gallery.dart';
-import 'package:aria/design/nocturne.dart';
+import 'package:syroda/design/_gallery.dart';
+import 'package:syroda/design/nocturne.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -24,6 +24,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Aria'), findsWidgets);
+    expect(find.text('Syroda'), findsWidgets);
   });
 }

@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// Nombre del archivo dentro del directorio de soporte de la app.
-const String databaseFileName = 'aria.db';
+const String databaseFileName = 'syroda.db';
 
 /// La escalera de migraciones, una por version.
 ///

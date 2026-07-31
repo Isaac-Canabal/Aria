@@ -31,8 +31,8 @@ enum PeerVisibility {
   }
 }
 
-class AriaSettings {
-  const AriaSettings({
+class SyrodaSettings {
+  const SyrodaSettings({
     required this.deviceName,
     this.visibility = PeerVisibility.everyone,
     this.saveToGallery = true,
@@ -53,13 +53,13 @@ class AriaSettings {
 
   final bool notifications;
 
-  AriaSettings copyWith({
+  SyrodaSettings copyWith({
     String? deviceName,
     PeerVisibility? visibility,
     bool? saveToGallery,
     bool? saveToDownloads,
     bool? notifications,
-  }) => AriaSettings(
+  }) => SyrodaSettings(
     deviceName: deviceName ?? this.deviceName,
     visibility: visibility ?? this.visibility,
     saveToGallery: saveToGallery ?? this.saveToGallery,
@@ -69,7 +69,7 @@ class AriaSettings {
 
   @override
   bool operator ==(Object other) =>
-      other is AriaSettings &&
+      other is SyrodaSettings &&
       other.deviceName == deviceName &&
       other.visibility == visibility &&
       other.saveToGallery == saveToGallery &&
@@ -86,7 +86,7 @@ class AriaSettings {
   );
 }
 
-/// Guarda y lee [AriaSettings]. Nada mas: la logica de cuando aplicarlas vive
+/// Guarda y lee [SyrodaSettings]. Nada mas: la logica de cuando aplicarlas vive
 /// en los controladores.
 class SettingsStore {
   const SettingsStore(this._prefs);
@@ -102,7 +102,7 @@ class SettingsStore {
   static Future<SettingsStore> open() async =>
       SettingsStore(await SharedPreferences.getInstance());
 
-  AriaSettings read() => AriaSettings(
+  SyrodaSettings read() => SyrodaSettings(
     // Sin nombre guardado, el del equipo: la persona lo cambia si quiere.
     deviceName: _prefs.getString(_keyDeviceName) ?? defaultDeviceName(),
     visibility: PeerVisibility.fromWire(_prefs.getString(_keyVisibility)),
@@ -111,7 +111,7 @@ class SettingsStore {
     notifications: _prefs.getBool(_keyNotifications) ?? false,
   );
 
-  Future<void> write(AriaSettings settings) async {
+  Future<void> write(SyrodaSettings settings) async {
     await _prefs.setString(_keyDeviceName, settings.deviceName);
     await _prefs.setString(_keyVisibility, settings.visibility.wire);
     await _prefs.setBool(_keySaveToGallery, settings.saveToGallery);

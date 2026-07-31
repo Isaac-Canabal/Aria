@@ -14,7 +14,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-const MethodChannel _channel = MethodChannel('aria/platform');
+const MethodChannel _channel = MethodChannel('syroda/platform');
 
 abstract interface class FreeSpaceProvider {
   /// Bytes disponibles en el volumen que contiene [path], o `null` si la

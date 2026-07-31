@@ -187,7 +187,7 @@ final StreamProvider<SessionEvent> incomingProvider =
               held = true;
               await service.begin(
                 title: 'Recibiendo de ${event.device}',
-                text: 'Aria está recibiendo archivos en la red local.',
+                text: 'Syroda está recibiendo archivos en la red local.',
               );
             case SessionFinished():
               await release();
@@ -315,7 +315,7 @@ class SendController extends Notifier<SendState> {
     _serviceHeld = true;
     await _service!.begin(
       title: 'Enviando a ${peer.name}',
-      text: 'Aria está enviando archivos en la red local.',
+      text: 'Syroda está enviando archivos en la red local.',
     );
 
     final String first = files.first.name;

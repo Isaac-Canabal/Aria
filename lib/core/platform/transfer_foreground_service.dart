@@ -42,7 +42,7 @@ class AndroidTransferForegroundService implements TransferForegroundService {
     if (!_initialized) {
       FlutterForegroundTask.init(
         androidNotificationOptions: AndroidNotificationOptions(
-          channelId: 'aria_transfer',
+          channelId: 'syroda_transfer',
           channelName: 'Transferencias',
           // Baja: es un aviso de que algo esta en curso, no una alerta.
           channelImportance: NotificationChannelImportance.LOW,

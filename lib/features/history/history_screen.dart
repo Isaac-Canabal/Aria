@@ -20,17 +20,17 @@ class HistoryScreen extends ConsumerWidget {
     final List<TransferRecord> entries =
         ref.watch(historyProvider).valueOrNull ?? const <TransferRecord>[];
 
-    return AriaScreen(
+    return SyrodaScreen(
       topBar: const ScreenTopBar(title: 'Historial'),
       body: entries.isEmpty
           ? ScreenCenter(
               gap: 14,
               children: <Widget>[
-                AriaBadge.icon(
-                  AriaIcons.clock,
+                SyrodaBadge.icon(
+                  SyrodaIcons.clock,
                   size: 64,
                   iconSize: 26,
-                  style: AriaBadgeStyle.quiet,
+                  style: SyrodaBadgeStyle.quiet,
                 ),
                 const EmptyMessage(
                   title: 'Aún no hay envíos',
@@ -38,9 +38,9 @@ class HistoryScreen extends ConsumerWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 6),
-                  child: AriaButton(
+                  child: SyrodaButton(
                     'Enviar un archivo',
-                    variant: AriaButtonVariant.primary,
+                    variant: SyrodaButtonVariant.primary,
                     onPressed: onSend,
                   ),
                 ),
@@ -50,19 +50,19 @@ class HistoryScreen extends ConsumerWidget {
               gap: 8,
               children: <Widget>[
                 for (final TransferRecord entry in entries)
-                  AriaRow(
+                  SyrodaRow(
                     title: entry.fileName,
                     subtitle: _subtitle(entry),
                     icon: _iconFor(entry.fileName),
                     iconStyle: _iconStyle(entry),
-                    density: AriaRowDensity.small,
+                    density: SyrodaRowDensity.small,
                     muted: entry.status == TransferStatus.failed,
                     trailing: entry.status == TransferStatus.completed
-                        ? const AriaTag(
+                        ? const SyrodaTag(
                             'Completado',
-                            variant: AriaTagVariant.accent,
+                            variant: SyrodaTagVariant.accent,
                           )
-                        : const AriaTag('Fallido'),
+                        : const SyrodaTag('Fallido'),
                   ),
               ],
             ),
@@ -77,17 +77,17 @@ class HistoryScreen extends ConsumerWidget {
         '${formatBytes(entry.sizeBytes)}';
   }
 
-  AriaRowIconStyle _iconStyle(TransferRecord entry) =>
+  SyrodaRowIconStyle _iconStyle(TransferRecord entry) =>
       switch (entry.status) {
-        TransferStatus.failed => AriaRowIconStyle.quiet,
+        TransferStatus.failed => SyrodaRowIconStyle.quiet,
         TransferStatus.completed =>
           _isImage(entry.fileName)
-              ? AriaRowIconStyle.accent
-              : AriaRowIconStyle.neutral,
+              ? SyrodaRowIconStyle.accent
+              : SyrodaRowIconStyle.neutral,
       };
 
-  AriaIconData _iconFor(String name) =>
-      _isImage(name) ? AriaIcons.image : AriaIcons.file;
+  SyrodaIconData _iconFor(String name) =>
+      _isImage(name) ? SyrodaIcons.image : SyrodaIcons.file;
 
   bool _isImage(String name) {
     final String lower = name.toLowerCase();

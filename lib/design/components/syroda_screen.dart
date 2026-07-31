@@ -1,14 +1,14 @@
 import 'package:flutter/widgets.dart';
 
-import '../icons/aria_icon.dart';
-import '../icons/aria_icons.dart';
+import '../icons/syroda_icon.dart';
+import '../icons/syroda_icons.dart';
 import '../nocturne.dart';
 import 'pressable.dart';
 
 /// `.screen` — el andamiaje que comparten todas las pantallas moviles:
 /// barra superior fija, cuerpo que crece, y navegacion o acciones abajo.
-class AriaScreen extends StatelessWidget {
-  const AriaScreen({
+class SyrodaScreen extends StatelessWidget {
+  const SyrodaScreen({
     super.key,
     this.topBar,
     required this.body,
@@ -221,7 +221,7 @@ class RoundButton extends StatelessWidget {
     this.semanticLabel,
   });
 
-  final AriaIconData icon;
+  final SyrodaIconData icon;
   final VoidCallback? onPressed;
   final double iconSize;
   final double strokeWidth;
@@ -251,7 +251,7 @@ class RoundButton extends StatelessWidget {
                 )
               : NocturneColors.surface,
         ),
-        child: AriaIcon(
+        child: SyrodaIcon(
           icon,
           size: iconSize,
           strokeWidth: strokeWidth,

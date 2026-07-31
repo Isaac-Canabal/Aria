@@ -1,4 +1,4 @@
-# Aria — Mockups
+# Syroda — Mockups
 
 Envía documentos, imágenes y archivos entre dispositivos cercanos, sin cables ni cuentas en la nube.
 
@@ -18,13 +18,13 @@ design system imports.
 ```
 index.html        the gallery: 8 Android screens + 4 Windows windows
 css/nocturne.css  the Nocturne design system, verbatim from the design project
-css/aria.css      gallery scaffolding, device chrome, and Aria's own patterns
+css/syroda.css    gallery scaffolding, device chrome, and Syroda's own patterns
 ```
 
 `css/nocturne.css` is a copy of the design system's source of truth
 (`_ds/nocturne-b255dd8f-91e4-4856-a9f5-6ab06f0ddc97/styles.css`). Keep it
 byte-identical so a re-sync from the design project stays a clean diff — put
-anything Aria-specific in `css/aria.css` instead.
+anything Syroda-specific in `css/syroda.css` instead.
 
 ## Notes on the port
 
@@ -44,7 +44,7 @@ mockups, so this port drops it:
 - **Icons** — the document repeats the same inline SVGs across screens; here they
   live in one sprite at the top of `index.html` and are referenced with `<use>`.
   Stroke weight varies per placement, so it rides a `--sw` custom property.
-- **Inline styles** — folded into named classes in `css/aria.css`. Values that
+- **Inline styles** — folded into named classes in `css/syroda.css`. Values that
   genuinely vary per instance (badge size, stack gap, progress width) stay inline
   as custom properties.
 

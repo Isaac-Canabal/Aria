@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:aria/design/_gallery.dart';
-import 'package:aria/design/nocturne.dart';
+import 'package:syroda/design/_gallery.dart';
+import 'package:syroda/design/nocturne.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart' show ByteData;
@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'fonts.dart';
 
 /// Renderiza la galeria completa a PNG. Es el mecanismo con el que se compara
-/// contra `index.html`: el destino sale de `ARIA_SNAPSHOT` o, si no esta,
+/// contra `index.html`: el destino sale de `SYRODA_SNAPSHOT` o, si no esta,
 /// queda en `build/gallery.png`.
 void main() {
   testWidgets('la galeria se puede capturar a PNG', (
@@ -44,7 +44,7 @@ void main() {
         format: ui.ImageByteFormat.png,
       );
       final String path =
-          Platform.environment['ARIA_SNAPSHOT'] ?? 'build/gallery.png';
+          Platform.environment['SYRODA_SNAPSHOT'] ?? 'build/gallery.png';
       File(path)
         ..createSync(recursive: true)
         ..writeAsBytesSync(png!.buffer.asUint8List());

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.isaaccanabal.aria"
+    namespace = "com.isaaccanabal.syroda"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         // Permanente tras la primera publicacion: no cambiarlo.
-        applicationId = "com.isaaccanabal.aria"
+        applicationId = "com.isaaccanabal.syroda"
         minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

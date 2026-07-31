@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:aria/core/transfer/transfer.dart';
+import 'package:syroda/core/transfer/transfer.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Codigos fijos, en orden, para no depender del azar. El segundo es el que
@@ -104,7 +104,7 @@ void main() {
   /// argumento se evaluaria antes de que exista la carpeta de este test, y
   /// apuntaria a la del anterior, que tearDown ya borro.
   Future<void> boot({ReceivePolicy Function(Directory inbox)? policy}) async {
-    inbox = await Directory.systemTemp.createTemp('aria_inbox');
+    inbox = await Directory.systemTemp.createTemp('syroda_inbox');
     pairing = PairingService(random: _ScriptedRandom());
     server = await ReceiveServer.bind(
       identity: desktop,

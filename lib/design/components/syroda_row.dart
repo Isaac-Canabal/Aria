@@ -1,37 +1,37 @@
 import 'package:flutter/widgets.dart';
 
-import '../icons/aria_icon.dart';
-import '../icons/aria_icons.dart';
+import '../icons/syroda_icon.dart';
+import '../icons/syroda_icons.dart';
 import '../nocturne.dart';
 import 'dashed_border.dart';
 import 'pressable.dart';
 
 /// `.row-icon` y sus tintes.
-enum AriaRowIconStyle { accent, neutral, quiet, empty }
+enum SyrodaRowIconStyle { accent, neutral, quiet, empty }
 
 /// Las tres medidas de fila que usan los mockups: la normal, la comprimida
 /// del historial movil (`.row-sm`) y la del carril de escritorio
 /// (`.desk-rail .row`).
-enum AriaRowDensity { normal, small, rail }
+enum SyrodaRowDensity { normal, small, rail }
 
 /// El cuadro con el simbolo que abre cada fila.
-class AriaRowIcon extends StatelessWidget {
-  const AriaRowIcon(
+class SyrodaRowIcon extends StatelessWidget {
+  const SyrodaRowIcon(
     this.icon, {
     super.key,
-    this.style = AriaRowIconStyle.accent,
+    this.style = SyrodaRowIconStyle.accent,
     this.size = 36,
     this.iconSize = 16,
   });
 
-  final AriaIconData? icon;
-  final AriaRowIconStyle style;
+  final SyrodaIconData? icon;
+  final SyrodaRowIconStyle style;
   final double size;
   final double iconSize;
 
   @override
   Widget build(BuildContext context) {
-    if (style == AriaRowIconStyle.empty) {
+    if (style == SyrodaRowIconStyle.empty) {
       return SizedBox.square(
         dimension: size,
         child: DashedBorder(
@@ -44,19 +44,19 @@ class AriaRowIcon extends StatelessWidget {
     }
 
     final (Color background, Color foreground) = switch (style) {
-      AriaRowIconStyle.accent => (
+      SyrodaRowIconStyle.accent => (
         NocturneColors.accent900,
         NocturneColors.accent200,
       ),
-      AriaRowIconStyle.neutral => (
+      SyrodaRowIconStyle.neutral => (
         NocturneColors.neutral800,
         NocturneColors.neutral300,
       ),
-      AriaRowIconStyle.quiet => (
+      SyrodaRowIconStyle.quiet => (
         NocturneColors.neutral800,
         NocturneColors.neutral400,
       ),
-      AriaRowIconStyle.empty => throw StateError('resuelto arriba'),
+      SyrodaRowIconStyle.empty => throw StateError('resuelto arriba'),
     };
 
     return Container(
@@ -69,34 +69,34 @@ class AriaRowIcon extends StatelessWidget {
       ),
       child: icon == null
           ? null
-          : AriaIcon(icon!, size: iconSize, color: foreground),
+          : SyrodaIcon(icon!, size: iconSize, color: foreground),
     );
   }
 }
 
 /// `.row` — un dispositivo, un archivo o una entrada de historial: simbolo,
 /// dos lineas de texto y una ranura al final.
-class AriaRow extends StatelessWidget {
-  const AriaRow({
+class SyrodaRow extends StatelessWidget {
+  const SyrodaRow({
     super.key,
     required this.title,
     this.subtitle,
     this.icon,
-    this.iconStyle = AriaRowIconStyle.accent,
+    this.iconStyle = SyrodaRowIconStyle.accent,
     this.trailing,
-    this.density = AriaRowDensity.normal,
+    this.density = SyrodaRowDensity.normal,
     this.muted = false,
     this.onTap,
   }) : scanning = false;
 
   /// `.row-plain` con `.row-scan`: la fila de "Buscando mas dispositivos".
-  const AriaRow.scanning(
+  const SyrodaRow.scanning(
     this.title, {
     super.key,
-    this.density = AriaRowDensity.normal,
+    this.density = SyrodaRowDensity.normal,
   }) : subtitle = null,
        icon = null,
-       iconStyle = AriaRowIconStyle.empty,
+       iconStyle = SyrodaRowIconStyle.empty,
        trailing = null,
        muted = false,
        onTap = null,
@@ -104,10 +104,10 @@ class AriaRow extends StatelessWidget {
 
   final String title;
   final String? subtitle;
-  final AriaIconData? icon;
-  final AriaRowIconStyle iconStyle;
+  final SyrodaIconData? icon;
+  final SyrodaRowIconStyle iconStyle;
   final Widget? trailing;
-  final AriaRowDensity density;
+  final SyrodaRowDensity density;
 
   /// `.row-muted`: la entrada de historial que fallo.
   final bool muted;
@@ -147,7 +147,7 @@ class AriaRow extends StatelessWidget {
           child: Row(
             spacing: m.gap,
             children: <Widget>[
-              AriaRowIcon(
+              SyrodaRowIcon(
                 icon,
                 style: iconStyle,
                 size: m.iconBox,
@@ -202,7 +202,7 @@ class AriaRow extends StatelessWidget {
   }
 }
 
-/// Las medidas de cada densidad, tomadas de `css/aria.css`.
+/// Las medidas de cada densidad, tomadas de `css/syroda.css`.
 class _RowMetrics {
   const _RowMetrics({
     required this.padding,
@@ -222,8 +222,8 @@ class _RowMetrics {
   final double subtitle;
   final double scan;
 
-  static _RowMetrics of(AriaRowDensity density) => switch (density) {
-    AriaRowDensity.normal => const _RowMetrics(
+  static _RowMetrics of(SyrodaRowDensity density) => switch (density) {
+    SyrodaRowDensity.normal => const _RowMetrics(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       gap: 12,
       iconBox: 36,
@@ -232,7 +232,7 @@ class _RowMetrics {
       subtitle: 12,
       scan: 13,
     ),
-    AriaRowDensity.small => const _RowMetrics(
+    SyrodaRowDensity.small => const _RowMetrics(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       gap: 12,
       iconBox: 34,
@@ -241,7 +241,7 @@ class _RowMetrics {
       subtitle: 11.5,
       scan: 13,
     ),
-    AriaRowDensity.rail => const _RowMetrics(
+    SyrodaRowDensity.rail => const _RowMetrics(
       padding: EdgeInsets.all(10),
       gap: 10,
       iconBox: 32,

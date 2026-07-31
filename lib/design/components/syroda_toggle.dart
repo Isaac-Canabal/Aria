@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import '../nocturne.dart';
 
 /// `.toggle` — 40x24 con un pomo de 18 a 3px de los bordes.
-class AriaToggle extends StatelessWidget {
-  const AriaToggle({super.key, required this.value, this.onChanged});
+class SyrodaToggle extends StatelessWidget {
+  const SyrodaToggle({super.key, required this.value, this.onChanged});
 
   final bool value;
   final ValueChanged<bool>? onChanged;

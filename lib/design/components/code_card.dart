@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../nocturne.dart';
-import 'aria_card.dart';
+import 'syroda_card.dart';
 
 /// `.code-card` — el codigo de 6 digitos que el receptor muestra para que el
 /// emisor lo teclee.
@@ -19,8 +19,8 @@ class CodeCard extends StatelessWidget {
   final String? hint;
 
   @override
-  Widget build(BuildContext context) => AriaCard(
-    elevation: AriaElevation.sm,
+  Widget build(BuildContext context) => SyrodaCard(
+    elevation: SyrodaElevation.sm,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
     child: Column(
       mainAxisSize: MainAxisSize.min,

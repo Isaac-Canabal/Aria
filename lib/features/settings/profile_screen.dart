@@ -24,9 +24,9 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AriaSettings? settings = ref.watch(settingsProvider).valueOrNull;
+    final SyrodaSettings? settings = ref.watch(settingsProvider).valueOrNull;
     if (settings == null) {
-      return const AriaScreen(
+      return const SyrodaScreen(
         topBar: ScreenTopBar(title: 'Perfil'),
         body: SizedBox.shrink(),
       );
@@ -34,7 +34,7 @@ class ProfileScreen extends ConsumerWidget {
 
     final SettingsController controller = ref.read(settingsProvider.notifier);
 
-    return AriaScreen(
+    return SyrodaScreen(
       topBar: const ScreenTopBar(title: 'Perfil'),
       body: ScreenBody(
         gap: 20,
@@ -54,34 +54,34 @@ class ProfileScreen extends ConsumerWidget {
               ),
               SettingTile(
                 label: 'Visibilidad',
-                trailing: AriaTag(
+                trailing: SyrodaTag(
                   visibilityLabel(settings.visibility),
-                  variant: AriaTagVariant.outline,
+                  variant: SyrodaTagVariant.outline,
                 ),
                 onTap: () => _editVisibility(context, controller, settings),
               ),
               SettingTile(
                 label: 'Guardar fotos en Galería',
-                trailing: AriaToggle(
+                trailing: SyrodaToggle(
                   value: settings.saveToGallery,
                   onChanged: controller.setSaveToGallery,
                 ),
               ),
               SettingTile(
                 label: 'Notificaciones',
-                trailing: AriaToggle(
+                trailing: SyrodaToggle(
                   value: settings.notifications,
                   onChanged: controller.setNotifications,
                 ),
               ),
-              const SettingTile(label: 'Acerca de Aria', showChevron: true),
+              const SettingTile(label: 'Acerca de Syroda', showChevron: true),
             ],
           ),
           Align(
             alignment: Alignment.centerLeft,
-            child: AriaButton(
+            child: SyrodaButton(
               'Olvidar dispositivos emparejados',
-              variant: AriaButtonVariant.ghost,
+              variant: SyrodaButtonVariant.ghost,
               onPressed: () =>
                   ref.read(pairedDevicesProvider.notifier).forgetAll(),
             ),
@@ -102,7 +102,7 @@ class ProfileScreen extends ConsumerWidget {
   Future<void> _editName(
     BuildContext context,
     SettingsController controller,
-    AriaSettings settings,
+    SyrodaSettings settings,
   ) async {
     final TextEditingController field = TextEditingController(
       text: settings.deviceName,
@@ -110,7 +110,7 @@ class ProfileScreen extends ConsumerWidget {
     final String? name = await _sheet<String>(
       context,
       title: 'Nombre del dispositivo',
-      body: AriaField(label: 'Nombre', child: AriaInput(controller: field)),
+      body: SyrodaField(label: 'Nombre', child: SyrodaInput(controller: field)),
       confirm: () => field.text,
     );
     field.dispose();
@@ -120,7 +120,7 @@ class ProfileScreen extends ConsumerWidget {
   Future<void> _editVisibility(
     BuildContext context,
     SettingsController controller,
-    AriaSettings settings,
+    SyrodaSettings settings,
   ) async {
     final PeerVisibility? chosen = await _sheet<PeerVisibility>(
       context,
@@ -130,12 +130,12 @@ class ProfileScreen extends ConsumerWidget {
         spacing: 8,
         children: <Widget>[
           for (final PeerVisibility option in PeerVisibility.values)
-            AriaRow(
+            SyrodaRow(
               title: visibilityLabel(option),
-              icon: AriaIcons.user,
+              icon: SyrodaIcons.user,
               iconStyle: option == settings.visibility
-                  ? AriaRowIconStyle.accent
-                  : AriaRowIconStyle.neutral,
+                  ? SyrodaRowIconStyle.accent
+                  : SyrodaRowIconStyle.neutral,
               onTap: () => pick(option),
             ),
         ],
@@ -160,8 +160,8 @@ Future<T?> _sheet<T>(
       padding: const EdgeInsets.all(NocturneSpace.s4),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360),
-        child: AriaCard(
-          elevation: AriaElevation.lg,
+        child: SyrodaCard(
+          elevation: SyrodaElevation.lg,
           borderRadius: NocturneRadius.brLg,
           padding: const EdgeInsets.all(NocturneSpace.s4),
           child: Column(
@@ -177,15 +177,15 @@ Future<T?> _sheet<T>(
                 mainAxisAlignment: MainAxisAlignment.end,
                 spacing: NocturneSpace.s2,
                 children: <Widget>[
-                  AriaButton(
+                  SyrodaButton(
                     'Cancelar',
-                    variant: AriaButtonVariant.ghost,
+                    variant: SyrodaButtonVariant.ghost,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   if (confirm != null)
-                    AriaButton(
+                    SyrodaButton(
                       'Guardar',
-                      variant: AriaButtonVariant.primary,
+                      variant: SyrodaButtonVariant.primary,
                       onPressed: () => Navigator.of(context).pop(confirm()),
                     ),
                 ],

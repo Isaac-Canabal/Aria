@@ -53,79 +53,79 @@ final class IconRect extends IconShape {
 /// Un simbolo del sprite: sus figuras y el `viewBox` en el que fueron
 /// dibujadas. [strokeWidth] solo lo traen los simbolos que en el sprite
 /// llevan su propio `stroke-width`.
-final class AriaIconData {
-  const AriaIconData(this.shapes, {this.viewBox = 24, this.strokeWidth});
+final class SyrodaIconData {
+  const SyrodaIconData(this.shapes, {this.viewBox = 24, this.strokeWidth});
 
   final List<IconShape> shapes;
   final double viewBox;
   final double? strokeWidth;
 }
 
-abstract final class AriaIcons {
-  static const AriaIconData send = AriaIconData(<IconShape>[
+abstract final class SyrodaIcons {
+  static const SyrodaIconData send = SyrodaIconData(<IconShape>[
     IconPath(_arrowUp),
     IconPath(_tray),
   ]);
 
-  static const AriaIconData receive = AriaIconData(<IconShape>[
+  static const SyrodaIconData receive = SyrodaIconData(<IconShape>[
     IconPath(_arrowDown),
     IconPath(_tray),
   ]);
 
-  static const AriaIconData arrowUp = AriaIconData(<IconShape>[
+  static const SyrodaIconData arrowUp = SyrodaIconData(<IconShape>[
     IconPath(_arrowUp),
   ]);
 
-  static const AriaIconData clock = AriaIconData(<IconShape>[
+  static const SyrodaIconData clock = SyrodaIconData(<IconShape>[
     IconCircle(12, 12, 9),
     IconPath(_clockHands),
   ]);
 
-  static const AriaIconData user = AriaIconData(<IconShape>[
+  static const SyrodaIconData user = SyrodaIconData(<IconShape>[
     IconCircle(12, 8, 4),
     IconPath(_shoulders),
   ]);
 
-  static const AriaIconData gear = AriaIconData(<IconShape>[
+  static const SyrodaIconData gear = SyrodaIconData(<IconShape>[
     IconCircle(12, 12, 3),
     IconPath(_gearSpokes),
   ]);
 
-  static const AriaIconData close = AriaIconData(<IconShape>[
+  static const SyrodaIconData close = SyrodaIconData(<IconShape>[
     IconPath(_cross),
   ]);
 
-  static const AriaIconData checkCircle = AriaIconData(<IconShape>[
+  static const SyrodaIconData checkCircle = SyrodaIconData(<IconShape>[
     IconCircle(12, 12, 9),
     IconPath(_check),
   ]);
 
-  static const AriaIconData xCircle = AriaIconData(<IconShape>[
+  static const SyrodaIconData xCircle = SyrodaIconData(<IconShape>[
     IconCircle(12, 12, 9),
     IconPath(_smallCross),
   ]);
 
-  static const AriaIconData phone = AriaIconData(<IconShape>[
+  static const SyrodaIconData phone = SyrodaIconData(<IconShape>[
     IconRect(7, 2, 10, 20, rx: 2),
     IconPath(_speaker),
   ]);
 
-  static const AriaIconData desktop = AriaIconData(<IconShape>[
+  static const SyrodaIconData desktop = SyrodaIconData(<IconShape>[
     IconRect(4, 4, 16, 16, rx: 2),
     IconPath(_pins),
   ]);
 
-  static const AriaIconData image = AriaIconData(<IconShape>[
+  static const SyrodaIconData image = SyrodaIconData(<IconShape>[
     IconRect(3, 4, 18, 16, rx: 2),
     IconCircle(8.5, 9.5, 1.5),
     IconPath(_mountain),
   ]);
 
-  static const AriaIconData file = AriaIconData(<IconShape>[
+  static const SyrodaIconData file = SyrodaIconData(<IconShape>[
     IconPath(_folder),
   ]);
 
-  static const AriaIconData qr = AriaIconData(<IconShape>[
+  static const SyrodaIconData qr = SyrodaIconData(<IconShape>[
     IconRect(3, 3, 6, 6),
     IconRect(15, 3, 6, 6),
     IconRect(3, 15, 6, 6),
@@ -133,15 +133,15 @@ abstract final class AriaIcons {
   ]);
 
   // Botones de la barra de titulo de Windows.
-  static const AriaIconData winMinimize = AriaIconData(<IconShape>[
+  static const SyrodaIconData winMinimize = SyrodaIconData(<IconShape>[
     IconRect(0, 4.5, 10, 1, filled: true),
   ], viewBox: 10);
 
-  static const AriaIconData winMaximize = AriaIconData(<IconShape>[
+  static const SyrodaIconData winMaximize = SyrodaIconData(<IconShape>[
     IconRect(0.5, 0.5, 9, 9),
   ], viewBox: 10, strokeWidth: 1);
 
-  static const AriaIconData winClose = AriaIconData(<IconShape>[
+  static const SyrodaIconData winClose = SyrodaIconData(<IconShape>[
     IconPath(_winCross),
   ], viewBox: 10, strokeWidth: 1);
 }

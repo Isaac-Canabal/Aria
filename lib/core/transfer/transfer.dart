@@ -1,4 +1,4 @@
-/// La capa de transporte de Aria: descubrimiento, emparejamiento y
+/// La capa de transporte de Syroda: descubrimiento, emparejamiento y
 /// transferencia. No depende de Flutter ni de la UI.
 library;
 

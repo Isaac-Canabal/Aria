@@ -1,4 +1,4 @@
-# Aria — invariantes
+# Syroda — invariantes
 
 Reglas que aplican a todo el código. No son historia del proyecto: si una de
 estas se rompe, el cambio está mal.
@@ -73,7 +73,7 @@ candidatas a estar mal:
 ## Tokens de diseño
 
 - `css/nocturne.css` es la fuente de verdad visual y no se modifica. Lo propio
-  de Aria vive en `css/aria.css`.
+  de Syroda vive en `css/syroda.css`.
 - `lib/design/nocturne.dart` es el único archivo del proyecto Dart donde puede
   aparecer un color literal. Fuera de ahí: solo referencias a tokens.
 - Espaciados, radios, sombras y tipografía salen de los tokens `--space-*`,
@@ -92,8 +92,13 @@ candidatas a estar mal:
 
 ## Protocolo
 
-- Descubrimiento: mDNS/DNS-SD, tipo de servicio `_aria._tcp`, con nombre de
-  dispositivo y plataforma en el TXT.
+- Descubrimiento: mDNS/DNS-SD, tipo de servicio `_syroda._tcp`, con nombre de
+  dispositivo y plataforma en el TXT. Era `_aria._tcp`: cambió con el rename
+  del producto a Syroda. Es un cambio al formato de cable congelado, pero con
+  la misma justificación que el `device_id`: no hay build publicado todavía,
+  y este es el último momento en que eso es cierto. Después de publicar, este
+  mismo cambio significaría romper la compatibilidad de cualquier instalación
+  existente — exactamente lo que esta sección existe para evitar.
 - El puerto de transferencia no es constante: se hace `bind` con puerto 0 y el
   puerto asignado se publica en el registro TXT del anuncio, junto al nombre y
   la plataforma. Nada en el codigo puede asumir un numero de puerto fijo.
@@ -318,7 +323,7 @@ archivo a medias en vez de un rechazo limpio. De ahí la regla:
 
 Para comparar la galeria contra los mockups sin abrir la app:
 `flutter test test/gallery_snapshot_test.dart` deja el PNG en
-`build/gallery.png` (o donde apunte `ARIA_SNAPSHOT`).
+`build/gallery.png` (o donde apunte `SYRODA_SNAPSHOT`).
 
 El instalador de Windows empaqueta la DLL de SQLite que `sqflite_common_ffi`
 carga en runtime: sin ella la app arranca y falla al abrir el historial, y

@@ -1,4 +1,4 @@
-package com.isaaccanabal.aria
+package com.isaaccanabal.syroda
 
 import android.os.StatFs
 import io.flutter.embedding.android.FlutterActivity
@@ -6,7 +6,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 /**
- * El lado nativo del canal `aria/platform`.
+ * El lado nativo del canal `syroda/platform`.
  *
  * Solo responde lo que Dart no puede averiguar por si mismo. Hoy es el
  * espacio libre: `dart:io` no lo expone y agregar un paquete por una llamada
@@ -18,7 +18,7 @@ class MainActivity : FlutterActivity() {
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
-            "aria/platform"
+            "syroda/platform"
         ).setMethodCallHandler { call, result ->
             when (call.method) {
                 "freeSpace" -> {

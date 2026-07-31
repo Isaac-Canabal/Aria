@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:aria/core/data/app_database.dart';
-import 'package:aria/core/data/installation_id.dart';
-import 'package:aria/core/data/paired_device.dart';
-import 'package:aria/core/data/paired_devices_repository.dart';
-import 'package:aria/core/transfer/transfer.dart';
+import 'package:syroda/core/data/app_database.dart';
+import 'package:syroda/core/data/installation_id.dart';
+import 'package:syroda/core/data/paired_device.dart';
+import 'package:syroda/core/data/paired_devices_repository.dart';
+import 'package:syroda/core/transfer/transfer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';

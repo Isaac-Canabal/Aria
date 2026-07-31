@@ -1,9 +1,9 @@
-import 'package:aria/core/data/app_database.dart';
-import 'package:aria/core/data/paired_device.dart';
-import 'package:aria/core/data/preferences.dart';
-import 'package:aria/core/data/transfer_record.dart';
-import 'package:aria/core/transfer/transfer.dart';
-import 'package:aria/state/state.dart';
+import 'package:syroda/core/data/app_database.dart';
+import 'package:syroda/core/data/paired_device.dart';
+import 'package:syroda/core/data/preferences.dart';
+import 'package:syroda/core/data/transfer_record.dart';
+import 'package:syroda/core/transfer/transfer.dart';
+import 'package:syroda/state/state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,7 +46,7 @@ void main() {
 
   group('ajustes', () {
     test('carga los valores por defecto', () async {
-      final AriaSettings settings = await container.read(
+      final SyrodaSettings settings = await container.read(
         settingsProvider.future,
       );
       expect(settings.visibility, PeerVisibility.everyone);
@@ -65,7 +65,7 @@ void main() {
     });
 
     test('un nombre en blanco no se acepta', () async {
-      final AriaSettings before = await container.read(settingsProvider.future);
+      final SyrodaSettings before = await container.read(settingsProvider.future);
       await container.read(settingsProvider.notifier).setDeviceName('   ');
       expect(
         container.read(settingsProvider).requireValue.deviceName,

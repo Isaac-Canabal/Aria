@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../icons/aria_icon.dart';
-import '../icons/aria_icons.dart';
+import '../icons/syroda_icon.dart';
+import '../icons/syroda_icons.dart';
 import '../nocturne.dart';
 import 'pressable.dart';
 
@@ -9,7 +9,7 @@ import 'pressable.dart';
 class BottomNavItem {
   const BottomNavItem({required this.icon, required this.label});
 
-  final AriaIconData icon;
+  final SyrodaIconData icon;
   final String label;
 }
 
@@ -24,11 +24,11 @@ class BottomNav extends StatelessWidget {
   });
 
   /// Las cuatro de los mockups: enviar, recibir, historial, perfil.
-  static const List<BottomNavItem> ariaItems = <BottomNavItem>[
-    BottomNavItem(icon: AriaIcons.send, label: 'Enviar'),
-    BottomNavItem(icon: AriaIcons.receive, label: 'Recibir'),
-    BottomNavItem(icon: AriaIcons.clock, label: 'Historial'),
-    BottomNavItem(icon: AriaIcons.user, label: 'Perfil'),
+  static const List<BottomNavItem> syrodaItems = <BottomNavItem>[
+    BottomNavItem(icon: SyrodaIcons.send, label: 'Enviar'),
+    BottomNavItem(icon: SyrodaIcons.receive, label: 'Recibir'),
+    BottomNavItem(icon: SyrodaIcons.clock, label: 'Historial'),
+    BottomNavItem(icon: SyrodaIcons.user, label: 'Perfil'),
   ];
 
   final List<BottomNavItem> items;
@@ -83,7 +83,7 @@ class _NavButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           spacing: 3,
           children: <Widget>[
-            AriaIcon(item.icon, size: 20, color: color),
+            SyrodaIcon(item.icon, size: 20, color: color),
             Text(
               item.label,
               style: NocturneType.at(10, color: color, height: 1.3),

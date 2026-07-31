@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 
-import '../icons/aria_icons.dart';
+import '../icons/syroda_icons.dart';
 import '../nocturne.dart';
-import 'aria_badge.dart';
+import 'syroda_badge.dart';
 import 'dashed_border.dart';
 import 'pressable.dart';
 
@@ -13,7 +13,7 @@ class Dropzone extends StatelessWidget {
     super.key,
     required this.title,
     required this.hint,
-    this.icon = AriaIcons.send,
+    this.icon = SyrodaIcons.send,
     this.onTap,
   }) : badgeSize = 52,
        iconSize = 22,
@@ -29,7 +29,7 @@ class Dropzone extends StatelessWidget {
     super.key,
     required this.title,
     required this.hint,
-    this.icon = AriaIcons.send,
+    this.icon = SyrodaIcons.send,
     this.action,
     this.onTap,
   }) : badgeSize = 60,
@@ -41,7 +41,7 @@ class Dropzone extends StatelessWidget {
 
   final String title;
   final String hint;
-  final AriaIconData icon;
+  final SyrodaIconData icon;
   final Widget? action;
   final VoidCallback? onTap;
   final double badgeSize;
@@ -95,7 +95,7 @@ class Dropzone extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: gap,
             children: <Widget>[
-              AriaBadge.icon(icon, size: badgeSize, iconSize: iconSize),
+              SyrodaBadge.icon(icon, size: badgeSize, iconSize: iconSize),
               if (stacked)
                 Column(
                   mainAxisSize: MainAxisSize.min,

@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-import '../icons/aria_icons.dart';
+import '../icons/syroda_icons.dart';
 import '../nocturne.dart';
-import 'aria_card.dart';
-import 'aria_row.dart';
+import 'syroda_card.dart';
+import 'syroda_row.dart';
 
 /// `.pbar` — la barra determinada de 5px. Cuando la transferencia falla, el
 /// relleno pierde el acento y se queda en gris.
@@ -129,8 +129,8 @@ class TransferCard extends StatelessWidget {
     required this.status,
     required this.value,
     required this.detail,
-    this.icon = AriaIcons.file,
-    this.iconStyle = AriaRowIconStyle.accent,
+    this.icon = SyrodaIcons.file,
+    this.iconStyle = SyrodaRowIconStyle.accent,
     this.failed = false,
     this.trailing,
   });
@@ -141,17 +141,17 @@ class TransferCard extends StatelessWidget {
   final String status;
   final double value;
   final String detail;
-  final AriaIconData icon;
-  final AriaRowIconStyle iconStyle;
+  final SyrodaIconData icon;
+  final SyrodaRowIconStyle iconStyle;
   final bool failed;
   final Widget? trailing;
 
   @override
-  Widget build(BuildContext context) => AriaCard(
+  Widget build(BuildContext context) => SyrodaCard(
     child: Row(
       spacing: 12,
       children: <Widget>[
-        AriaRowIcon(icon, style: iconStyle),
+        SyrodaRowIcon(icon, style: iconStyle),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

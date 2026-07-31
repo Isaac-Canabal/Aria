@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../icons/aria_icon.dart';
-import '../icons/aria_icons.dart';
+import '../icons/syroda_icon.dart';
+import '../icons/syroda_icons.dart';
 import '../nocturne.dart';
 import 'pressable.dart';
 
@@ -45,9 +45,9 @@ class WinTitleBar extends StatelessWidget {
             ),
           ),
         ),
-        _WinControl(icon: AriaIcons.winMinimize, onPressed: onMinimize),
-        _WinControl(icon: AriaIcons.winMaximize, onPressed: onMaximize),
-        _WinControl(icon: AriaIcons.winClose, onPressed: onClose),
+        _WinControl(icon: SyrodaIcons.winMinimize, onPressed: onMinimize),
+        _WinControl(icon: SyrodaIcons.winMaximize, onPressed: onMaximize),
+        _WinControl(icon: SyrodaIcons.winClose, onPressed: onClose),
       ],
     ),
   );
@@ -66,8 +66,8 @@ class _WinLogo extends StatelessWidget {
       color: NocturneColors.accent900,
       borderRadius: NocturneRadius.brSm,
     ),
-    child: const AriaIcon(
-      AriaIcons.arrowUp,
+    child: const SyrodaIcon(
+      SyrodaIcons.arrowUp,
       size: 9,
       strokeWidth: 2,
       color: NocturneColors.accent,
@@ -79,7 +79,7 @@ class _WinLogo extends StatelessWidget {
 class _WinControl extends StatelessWidget {
   const _WinControl({required this.icon, this.onPressed});
 
-  final AriaIconData icon;
+  final SyrodaIconData icon;
   final VoidCallback? onPressed;
 
   @override
@@ -94,7 +94,7 @@ class _WinControl extends StatelessWidget {
           : hovered
           ? NocturneColors.hoverNeutral
           : null,
-      child: AriaIcon(
+      child: SyrodaIcon(
         icon,
         size: 10,
         color: NocturneColors.onText(0.65),

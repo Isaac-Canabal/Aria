@@ -24,16 +24,16 @@ class ReceiveScreen extends ConsumerWidget {
     final PairingCode code =
         ref.watch(pairingCodeProvider).valueOrNull ?? pairing.current;
 
-    return AriaScreen(
-      topBar: const ScreenTopBar(title: 'Aria'),
+    return SyrodaScreen(
+      topBar: const ScreenTopBar(title: 'Syroda'),
       body: ScreenCenter(
         gap: 20,
         padding: 28,
         children: <Widget>[
           if (pairing.isExpired)
-            AriaButton(
+            SyrodaButton(
               'Código caducado, generar uno nuevo',
-              variant: AriaButtonVariant.primary,
+              variant: SyrodaButtonVariant.primary,
               onPressed: pairing.regenerate,
             )
           else
@@ -49,9 +49,9 @@ class ReceiveScreen extends ConsumerWidget {
               height: 1.4,
             ),
           ),
-          AriaButton(
+          SyrodaButton(
             'Conectar manualmente',
-            icon: AriaIcons.qr,
+            icon: SyrodaIcons.qr,
             onPressed: () => _showManualDetails(context, ref, code),
           ),
           const StatusLive('Esperando conexión…'),
@@ -79,8 +79,8 @@ class ReceiveScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(NocturneSpace.s4),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 340),
-            child: AriaCard(
-              elevation: AriaElevation.lg,
+            child: SyrodaCard(
+              elevation: SyrodaElevation.lg,
               borderRadius: NocturneRadius.brLg,
               padding: const EdgeInsets.all(NocturneSpace.s4),
               child: Column(
@@ -98,20 +98,20 @@ class ReceiveScreen extends ConsumerWidget {
                       height: 1.5,
                     ),
                   ),
-                  AriaRow(
+                  SyrodaRow(
                     title: address == null || server == null
                         ? 'Dirección no disponible'
                         : '$address:${server.port}',
                     subtitle: 'Dirección en esta red',
-                    icon: AriaIcons.desktop,
-                    iconStyle: AriaRowIconStyle.neutral,
+                    icon: SyrodaIcons.desktop,
+                    iconStyle: SyrodaRowIconStyle.neutral,
                   ),
                   CodeCard(code: code.display),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: AriaButton(
+                    child: SyrodaButton(
                       'Cerrar',
-                      variant: AriaButtonVariant.ghost,
+                      variant: SyrodaButtonVariant.ghost,
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),

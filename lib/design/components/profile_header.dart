@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../nocturne.dart';
-import 'aria_badge.dart';
+import 'syroda_badge.dart';
 
 /// `.profile` — las iniciales, el nombre con el que se anuncia el equipo y
 /// el modelo del aparato.
@@ -21,7 +21,7 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     spacing: 14,
     children: <Widget>[
-      AriaBadge.initials(initials),
+      SyrodaBadge.initials(initials),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

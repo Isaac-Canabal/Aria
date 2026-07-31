@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/data/app_database.dart';
 import 'design/nocturne.dart';
-import 'features/shell/aria_shell.dart';
+import 'features/shell/syroda_shell.dart';
 import 'state/lifecycle.dart';
 
 void main() {
@@ -11,19 +11,19 @@ void main() {
   // En escritorio sqflite corre sobre FFI, y hay que enchufarlo antes de que
   // nadie abra la base de datos.
   initDatabaseFactory();
-  runApp(const ProviderScope(child: AriaApp()));
+  runApp(const ProviderScope(child: SyrodaApp()));
 }
 
-class AriaApp extends StatelessWidget {
-  const AriaApp({super.key});
+class SyrodaApp extends StatelessWidget {
+  const SyrodaApp({super.key});
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: 'Aria',
+    title: 'Syroda',
     debugShowCheckedModeBanner: false,
     theme: nocturneTheme(),
     home: const LifecycleScope(
-      child: Scaffold(body: SafeArea(child: AriaShell())),
+      child: Scaffold(body: SafeArea(child: SyrodaShell())),
     ),
   );
 }

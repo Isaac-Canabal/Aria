@@ -1,4 +1,4 @@
-# Compilar Aria
+# Compilar Syroda
 
 Este documento crece con el proyecto. Hoy cubre los requisitos y los comandos
 que ya existen; los instaladores llegan en la Fase 6.
@@ -71,8 +71,28 @@ que distinguir este caso del firewall.
     flutter test test/gallery_snapshot_test.dart
 
 Deja un PNG de la galería completa en `build/gallery.png`, o donde apunte la
-variable de entorno `ARIA_SNAPSHOT`. Es el mecanismo con el que se compara la
+variable de entorno `SYRODA_SNAPSHOT`. Es el mecanismo con el que se compara la
 implementación contra `index.html`.
+
+## Rename Aria -> Syroda: pasos manuales pendientes
+
+El repositorio ya quedó renombrado (`applicationId`, namespace, paquete Dart,
+tipo de servicio mDNS, nombres de archivo, texto visible — ver `CLAUDE.md`).
+Dos cosas quedan fuera del repositorio y las hace quien tenga acceso a la
+máquina y a GitHub, no un cambio de código:
+
+- **Carpeta local `C:\Aria` → `C:\Syroda`** (o el nombre que prefieras): un
+  proceso no puede renombrar el directorio en el que está corriendo. Cerrar
+  cualquier editor/terminal abierto en la carpeta primero.
+- **Repositorio de GitHub**: Settings → General → Repository name. GitHub
+  redirige la URL vieja automáticamente durante un tiempo, pero conviene
+  actualizar el remoto local después:
+
+      git remote set-url origin <URL nueva del repositorio>
+      git remote -v
+
+Tras mover la carpeta, `flutter clean` antes del primer build ahí: las rutas
+absolutas dentro de `build/` y `.dart_tool/` quedan apuntando a `C:\Aria`.
 
 ## Firma y empaquetado
 

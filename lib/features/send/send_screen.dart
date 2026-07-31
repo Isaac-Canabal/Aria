@@ -29,11 +29,11 @@ class _SendScreenState extends ConsumerState<SendScreen> {
     final List<Peer> peers =
         ref.watch(peersProvider).valueOrNull ?? const <Peer>[];
 
-    return AriaScreen(
+    return SyrodaScreen(
       topBar: ScreenTopBar(
-        title: 'Aria',
+        title: 'Syroda',
         action: RoundButton(
-          icon: AriaIcons.gear,
+          icon: SyrodaIcons.gear,
           semanticLabel: 'Ajustes',
           onPressed: widget.onOpenSettings,
         ),
@@ -56,19 +56,19 @@ class _SendScreenState extends ConsumerState<SendScreen> {
                 spacing: 8,
                 children: <Widget>[
                   for (final Peer peer in peers)
-                    AriaRow(
+                    SyrodaRow(
                       title: peer.name,
                       subtitle: _subtitleFor(peer),
                       icon: peer.platform == DevicePlatform.android
-                          ? AriaIcons.phone
-                          : AriaIcons.desktop,
+                          ? SyrodaIcons.phone
+                          : SyrodaIcons.desktop,
                       iconStyle: peer.platform == DevicePlatform.android
-                          ? AriaRowIconStyle.accent
-                          : AriaRowIconStyle.neutral,
+                          ? SyrodaRowIconStyle.accent
+                          : SyrodaRowIconStyle.neutral,
                       trailing: _badgeFor(peer),
                       onTap: () => _sendTo(peer),
                     ),
-                  const AriaRow.scanning('Buscando más dispositivos…'),
+                  const SyrodaRow.scanning('Buscando más dispositivos…'),
                 ],
               ),
             ],
@@ -90,7 +90,7 @@ class _SendScreenState extends ConsumerState<SendScreen> {
     final Set<String> paired = ref.watch(pairedIdsProvider);
     // Sin candados ni "verificado": el filtro es conveniencia, no seguridad.
     if (!isPeerPaired(paired, peer)) return null;
-    return const AriaTag('Conocido', variant: AriaTagVariant.outline);
+    return const SyrodaTag('Conocido', variant: SyrodaTagVariant.outline);
   }
 
   Future<void> _pick() async {

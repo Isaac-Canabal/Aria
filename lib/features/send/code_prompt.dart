@@ -57,8 +57,8 @@ class _CodeDialogState extends State<_CodeDialog> {
       padding: const EdgeInsets.all(NocturneSpace.s4),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 340),
-        child: AriaCard(
-          elevation: AriaElevation.lg,
+        child: SyrodaCard(
+          elevation: SyrodaElevation.lg,
           borderRadius: NocturneRadius.brLg,
           padding: const EdgeInsets.all(NocturneSpace.s4),
           child: Column(
@@ -75,9 +75,9 @@ class _CodeDialogState extends State<_CodeDialog> {
                   height: 1.5,
                 ),
               ),
-              AriaField(
+              SyrodaField(
                 label: 'Código',
-                child: AriaInput(
+                child: SyrodaInput(
                   controller: _controller,
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
@@ -87,14 +87,14 @@ class _CodeDialogState extends State<_CodeDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 spacing: NocturneSpace.s2,
                 children: <Widget>[
-                  AriaButton(
+                  SyrodaButton(
                     'Cancelar',
-                    variant: AriaButtonVariant.ghost,
+                    variant: SyrodaButtonVariant.ghost,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
-                  AriaButton(
+                  SyrodaButton(
                     'Enviar',
-                    variant: AriaButtonVariant.primary,
+                    variant: SyrodaButtonVariant.primary,
                     enabled: _complete,
                     onPressed: () => Navigator.of(context).pop(_digits),
                   ),

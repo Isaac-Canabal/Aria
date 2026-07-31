@@ -1,4 +1,4 @@
-name: aria
+name: syroda
 description: "Transferencia de archivos entre dispositivos cercanos en la red local."
 publish_to: 'none'
 
@@ -26,6 +26,15 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/syroda.png"
+  windows:
+    generate: true
+    image_path: "assets/icon/syroda.png"
 
 flutter:
   uses-material-design: true

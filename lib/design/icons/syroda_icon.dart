@@ -1,12 +1,12 @@
 import 'package:flutter/widgets.dart';
 
-import 'aria_icons.dart';
+import 'syroda_icons.dart';
 
 /// Pinta un simbolo del sprite. Equivale a `<svg class="i">`: hereda el color
 /// del texto y el grosor de trazo rueda sobre `--sw`, cuyo valor por defecto
 /// es 1.6.
-class AriaIcon extends StatelessWidget {
-  const AriaIcon(
+class SyrodaIcon extends StatelessWidget {
+  const SyrodaIcon(
     this.icon, {
     super.key,
     required this.size,
@@ -14,7 +14,7 @@ class AriaIcon extends StatelessWidget {
     this.strokeWidth = 1.6,
   });
 
-  final AriaIconData icon;
+  final SyrodaIconData icon;
   final double size;
   final Color? color;
 
@@ -46,7 +46,7 @@ class _IconPainter extends CustomPainter {
     required this.strokeWidth,
   });
 
-  final AriaIconData icon;
+  final SyrodaIconData icon;
   final Color color;
   final double strokeWidth;
 

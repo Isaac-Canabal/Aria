@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:aria/core/transfer/transfer.dart';
+import 'package:syroda/core/transfer/transfer.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Devuelve los valores que se le pidan, en orden.

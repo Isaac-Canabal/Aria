@@ -54,13 +54,13 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   ),
                 ),
                 const SizedBox(height: NocturneSpace.s3),
-                Text('Aria', style: NocturneType.h1),
+                Text('Syroda', style: NocturneType.h1),
                 const SizedBox(height: NocturneSpace.s3),
                 SizedBox(
                   width: 640,
                   child: Text(
                     'Los patrones que repiten los mockups, a tamaño real. '
-                    'Cada bloque corresponde a una clase de css/aria.css o de '
+                    'Cada bloque corresponde a una clase de css/syroda.css o de '
                     'css/nocturne.css.',
                     style: NocturneType.body.copyWith(
                       color: NocturneColors.onText(0.75),
@@ -82,10 +82,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
       title: 'Iconos',
       subtitle: 'El sprite de index.html, trazo 1.6 sobre viewBox de 24',
       children: <Widget>[
-        for (final (String name, AriaIconData icon) in _icons)
+        for (final (String name, SyrodaIconData icon) in _icons)
           _Item(
             label: name,
-            child: AriaIcon(icon, size: 24, color: NocturneColors.text),
+            child: SyrodaIcon(icon, size: 24, color: NocturneColors.text),
           ),
       ],
     ),
@@ -95,50 +95,50 @@ class _GalleryScreenState extends State<GalleryScreen> {
       children: <Widget>[
         _Item(
           label: 'primary',
-          child: AriaButton(
+          child: SyrodaButton(
             'Reintentar',
-            variant: AriaButtonVariant.primary,
+            variant: SyrodaButtonVariant.primary,
             onPressed: () {},
           ),
         ),
         _Item(
           label: 'secondary',
-          child: AriaButton('Elegir archivos', onPressed: () {}),
+          child: SyrodaButton('Elegir archivos', onPressed: () {}),
         ),
         _Item(
           label: 'secondary + icono',
-          child: AriaButton(
+          child: SyrodaButton(
             'Escanear código QR',
-            icon: AriaIcons.qr,
+            icon: SyrodaIcons.qr,
             onPressed: () {},
           ),
         ),
         _Item(
           label: 'ghost',
-          child: AriaButton(
+          child: SyrodaButton(
             'Volver al inicio',
-            variant: AriaButtonVariant.ghost,
+            variant: SyrodaButtonVariant.ghost,
             onPressed: () {},
           ),
         ),
         _Item(
           label: 'sm',
-          child: AriaButton(
+          child: SyrodaButton(
             'Reintentar',
-            size: AriaButtonSize.small,
-            variant: AriaButtonVariant.ghost,
+            size: SyrodaButtonSize.small,
+            variant: SyrodaButtonVariant.ghost,
             onPressed: () {},
           ),
         ),
         _Item(
           label: 'icon',
-          child: AriaButton.icon(AriaIcons.close, onPressed: () {}),
+          child: SyrodaButton.icon(SyrodaIcons.close, onPressed: () {}),
         ),
         _Item(
           label: 'inhabilitado',
-          child: AriaButton(
+          child: SyrodaButton(
             'Enviar',
-            variant: AriaButtonVariant.primary,
+            variant: SyrodaButtonVariant.primary,
             enabled: false,
             onPressed: () {},
           ),
@@ -146,9 +146,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
         _Item(
           label: 'block',
           width: 260,
-          child: AriaButton(
+          child: SyrodaButton(
             'Enviar otro archivo',
-            variant: AriaButtonVariant.primary,
+            variant: SyrodaButtonVariant.primary,
             block: true,
             onPressed: () {},
           ),
@@ -161,19 +161,19 @@ class _GalleryScreenState extends State<GalleryScreen> {
       children: const <Widget>[
         _Item(
           label: 'accent',
-          child: AriaTag('Completado', variant: AriaTagVariant.accent),
+          child: SyrodaTag('Completado', variant: SyrodaTagVariant.accent),
         ),
         _Item(
           label: 'accent-2',
-          child: AriaTag('Recibido', variant: AriaTagVariant.accent2),
+          child: SyrodaTag('Recibido', variant: SyrodaTagVariant.accent2),
         ),
         _Item(
           label: 'neutral',
-          child: AriaTag('Fallido', variant: AriaTagVariant.neutral),
+          child: SyrodaTag('Fallido', variant: SyrodaTagVariant.neutral),
         ),
         _Item(
           label: 'outline',
-          child: AriaTag('Cerca', variant: AriaTagVariant.outline),
+          child: SyrodaTag('Cerca', variant: SyrodaTagVariant.outline),
         ),
       ],
     ),
@@ -183,12 +183,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
       children: <Widget>[
         _Item(
           label: 'accent 52',
-          child: AriaBadge.icon(AriaIcons.send),
+          child: SyrodaBadge.icon(SyrodaIcons.send),
         ),
         _Item(
           label: 'accent 76',
-          child: AriaBadge.icon(
-            AriaIcons.checkCircle,
+          child: SyrodaBadge.icon(
+            SyrodaIcons.checkCircle,
             size: 76,
             iconSize: 34,
             strokeWidth: 1.8,
@@ -196,24 +196,24 @@ class _GalleryScreenState extends State<GalleryScreen> {
         ),
         _Item(
           label: 'neutral 76',
-          child: AriaBadge.icon(
-            AriaIcons.xCircle,
+          child: SyrodaBadge.icon(
+            SyrodaIcons.xCircle,
             size: 76,
             iconSize: 34,
             strokeWidth: 1.8,
-            style: AriaBadgeStyle.neutral,
+            style: SyrodaBadgeStyle.neutral,
           ),
         ),
         _Item(
           label: 'quiet 64',
-          child: AriaBadge.icon(
-            AriaIcons.clock,
+          child: SyrodaBadge.icon(
+            SyrodaIcons.clock,
             size: 64,
             iconSize: 26,
-            style: AriaBadgeStyle.quiet,
+            style: SyrodaBadgeStyle.quiet,
           ),
         ),
-        _Item(label: 'iniciales', child: AriaBadge.initials('TU')),
+        _Item(label: 'iniciales', child: SyrodaBadge.initials('TU')),
       ],
     ),
     _Section(
@@ -223,61 +223,61 @@ class _GalleryScreenState extends State<GalleryScreen> {
         _Item(
           label: 'normal',
           width: _phoneWidth,
-          child: const AriaRow(
+          child: const SyrodaRow(
             title: 'Pixel de Ana',
             subtitle: 'A 2 metros',
-            icon: AriaIcons.phone,
-            trailing: AriaTag('Cerca', variant: AriaTagVariant.outline),
+            icon: SyrodaIcons.phone,
+            trailing: SyrodaTag('Cerca', variant: SyrodaTagVariant.outline),
           ),
         ),
         _Item(
           label: 'icono neutral',
           width: _phoneWidth,
-          child: const AriaRow(
+          child: const SyrodaRow(
             title: 'PC de Luis',
             subtitle: 'Misma red Wi-Fi',
-            icon: AriaIcons.desktop,
-            iconStyle: AriaRowIconStyle.neutral,
-            trailing: AriaTag('Cerca'),
+            icon: SyrodaIcons.desktop,
+            iconStyle: SyrodaRowIconStyle.neutral,
+            trailing: SyrodaTag('Cerca'),
           ),
         ),
         _Item(
           label: 'buscando',
           width: _phoneWidth,
-          child: const AriaRow.scanning('Buscando más dispositivos…'),
+          child: const SyrodaRow.scanning('Buscando más dispositivos…'),
         ),
         _Item(
           label: 'small',
           width: _phoneWidth,
-          child: const AriaRow(
+          child: const SyrodaRow(
             title: 'Foto_playa.jpg',
             subtitle: 'A Ana · hoy, 14:32',
-            icon: AriaIcons.image,
-            density: AriaRowDensity.small,
-            trailing: AriaTag('Completado', variant: AriaTagVariant.accent),
+            icon: SyrodaIcons.image,
+            density: SyrodaRowDensity.small,
+            trailing: SyrodaTag('Completado', variant: SyrodaTagVariant.accent),
           ),
         ),
         _Item(
           label: 'small + muted',
           width: _phoneWidth,
-          child: const AriaRow(
+          child: const SyrodaRow(
             title: 'Reporte_final.pdf',
             subtitle: 'A Ana · ayer, 19:10',
-            icon: AriaIcons.file,
-            iconStyle: AriaRowIconStyle.quiet,
-            density: AriaRowDensity.small,
+            icon: SyrodaIcons.file,
+            iconStyle: SyrodaRowIconStyle.quiet,
+            density: SyrodaRowDensity.small,
             muted: true,
-            trailing: AriaTag('Fallido'),
+            trailing: SyrodaTag('Fallido'),
           ),
         ),
         _Item(
           label: 'rail (escritorio)',
           width: 260,
-          child: const AriaRow(
+          child: const SyrodaRow(
             title: 'Pixel de Ana',
             subtitle: 'A 3 metros',
-            icon: AriaIcons.phone,
-            density: AriaRowDensity.rail,
+            icon: SyrodaIcons.phone,
+            density: SyrodaRowDensity.rail,
           ),
         ),
       ],
@@ -301,7 +301,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           child: Dropzone.desktop(
             title: 'Arrastra archivos aquí para enviarlos',
             hint: 'o elige un destino y selecciona un archivo desde tu PC',
-            action: AriaButton('Elegir archivos', onPressed: () {}),
+            action: SyrodaButton('Elegir archivos', onPressed: () {}),
           ),
         ),
       ],
@@ -332,7 +332,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
             status: '73%',
             value: 0.73,
             detail: 'A Pixel de Ana · 340 MB',
-            trailing: AriaButton.icon(AriaIcons.close, onPressed: () {}),
+            trailing: SyrodaButton.icon(SyrodaIcons.close, onPressed: () {}),
           ),
         ),
         const _Item(
@@ -343,8 +343,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
             status: '100%',
             value: 1,
             detail: 'A PC de Luis · 88 MB',
-            icon: AriaIcons.image,
-            trailing: AriaTag('Completado', variant: AriaTagVariant.accent),
+            icon: SyrodaIcons.image,
+            trailing: SyrodaTag('Completado', variant: SyrodaTagVariant.accent),
           ),
         ),
         _Item(
@@ -355,12 +355,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
             status: 'Fallido',
             value: 0.41,
             detail: 'A Pixel de Ana · conexión perdida',
-            iconStyle: AriaRowIconStyle.neutral,
+            iconStyle: SyrodaRowIconStyle.neutral,
             failed: true,
-            trailing: AriaButton(
+            trailing: SyrodaButton(
               'Reintentar',
-              size: AriaButtonSize.small,
-              variant: AriaButtonVariant.ghost,
+              size: SyrodaButtonSize.small,
+              variant: SyrodaButtonVariant.ghost,
               onPressed: () {},
             ),
           ),
@@ -391,11 +391,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
       children: <Widget>[
         _Item(
           label: 'activado',
-          child: AriaToggle(value: true, onChanged: (_) {}),
+          child: SyrodaToggle(value: true, onChanged: (_) {}),
         ),
         _Item(
           label: 'desactivado',
-          child: AriaToggle(value: false, onChanged: (_) {}),
+          child: SyrodaToggle(value: false, onChanged: (_) {}),
         ),
       ],
     ),
@@ -415,26 +415,26 @@ class _GalleryScreenState extends State<GalleryScreen> {
               ),
               const SettingTile(
                 label: 'Visibilidad',
-                trailing: AriaTag(
+                trailing: SyrodaTag(
                   'Solo dispositivos emparejados',
-                  variant: AriaTagVariant.outline,
+                  variant: SyrodaTagVariant.outline,
                 ),
               ),
               SettingTile(
                 label: 'Guardar fotos en Galería',
-                trailing: AriaToggle(
+                trailing: SyrodaToggle(
                   value: _saveToGallery,
                   onChanged: (bool v) => setState(() => _saveToGallery = v),
                 ),
               ),
               SettingTile(
                 label: 'Notificaciones',
-                trailing: AriaToggle(
+                trailing: SyrodaToggle(
                   value: _notifications,
                   onChanged: (bool v) => setState(() => _notifications = v),
                 ),
               ),
-              const SettingTile(label: 'Acerca de Aria', showChevron: true),
+              const SettingTile(label: 'Acerca de Syroda', showChevron: true),
             ],
           ),
         ),
@@ -447,7 +447,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 label: 'Guardar en Descargas',
                 hint: 'Los archivos recibidos se guardan aquí automáticamente',
                 wide: true,
-                trailing: AriaToggle(
+                trailing: SyrodaToggle(
                   value: _saveToGallery,
                   onChanged: (bool v) => setState(() => _saveToGallery = v),
                 ),
@@ -456,7 +456,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 label: 'Notificaciones de transferencia',
                 hint: 'Avisar al completar o fallar un envío',
                 wide: true,
-                trailing: AriaToggle(
+                trailing: SyrodaToggle(
                   value: _notifications,
                   onChanged: (bool v) => setState(() => _notifications = v),
                 ),
@@ -473,9 +473,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
         _Item(
           label: 'campo de texto',
           width: 320,
-          child: AriaField(
+          child: SyrodaField(
             label: 'Nombre del dispositivo',
-            child: AriaInput(controller: _deviceName),
+            child: SyrodaInput(controller: _deviceName),
           ),
         ),
         _Item(
@@ -483,9 +483,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
           // relleno de 24 a cada lado.
           label: 'segmentado',
           width: 472,
-          child: AriaField(
+          child: SyrodaField(
             label: 'Visibilidad',
-            child: AriaSegmented(
+            child: SyrodaSegmented(
               options: const <String>[
                 'Todos en la red local',
                 'Solo dispositivos emparejados',
@@ -505,35 +505,35 @@ class _GalleryScreenState extends State<GalleryScreen> {
         _Item(
           label: 'historial de escritorio',
           width: 868,
-          child: AriaTable(
-            columns: const <AriaTableColumn>[
-              AriaTableColumn('Archivo', flex: 3),
-              AriaTableColumn('Dirección', flex: 2),
-              AriaTableColumn('Dispositivo', flex: 3),
-              AriaTableColumn('Fecha', flex: 2),
-              AriaTableColumn('Estado', flex: 2),
+          child: SyrodaTable(
+            columns: const <SyrodaTableColumn>[
+              SyrodaTableColumn('Archivo', flex: 3),
+              SyrodaTableColumn('Dirección', flex: 2),
+              SyrodaTableColumn('Dispositivo', flex: 3),
+              SyrodaTableColumn('Fecha', flex: 2),
+              SyrodaTableColumn('Estado', flex: 2),
             ],
             rows: <List<Widget>>[
               <Widget>[
-                AriaTable.cell('Foto_playa.jpg'),
-                AriaTable.cell('Enviado'),
-                AriaTable.cell('Pixel de Ana'),
-                AriaTable.cell('Hoy, 14:32'),
-                const AriaTag('Completado', variant: AriaTagVariant.accent),
+                SyrodaTable.cell('Foto_playa.jpg'),
+                SyrodaTable.cell('Enviado'),
+                SyrodaTable.cell('Pixel de Ana'),
+                SyrodaTable.cell('Hoy, 14:32'),
+                const SyrodaTag('Completado', variant: SyrodaTagVariant.accent),
               ],
               <Widget>[
-                AriaTable.cell('Contrato_v2.docx'),
-                AriaTable.cell('Recibido'),
-                AriaTable.cell('PC de Luis'),
-                AriaTable.cell('Hoy, 11:05'),
-                const AriaTag('Completado', variant: AriaTagVariant.accent),
+                SyrodaTable.cell('Contrato_v2.docx'),
+                SyrodaTable.cell('Recibido'),
+                SyrodaTable.cell('PC de Luis'),
+                SyrodaTable.cell('Hoy, 11:05'),
+                const SyrodaTag('Completado', variant: SyrodaTagVariant.accent),
               ],
               <Widget>[
-                AriaTable.cell('Reporte_final.pdf'),
-                AriaTable.cell('Enviado'),
-                AriaTable.cell('Pixel de Ana'),
-                AriaTable.cell('Ayer, 19:10'),
-                const AriaTag('Fallido'),
+                SyrodaTable.cell('Reporte_final.pdf'),
+                SyrodaTable.cell('Enviado'),
+                SyrodaTable.cell('Pixel de Ana'),
+                SyrodaTable.cell('Ayer, 19:10'),
+                const SyrodaTag('Fallido'),
               ],
             ],
           ),
@@ -548,7 +548,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           label: 'cuatro secciones',
           width: _phoneWidth,
           child: BottomNav(
-            items: BottomNav.ariaItems,
+            items: BottomNav.syrodaItems,
             currentIndex: _navIndex,
             onSelected: (int i) => setState(() => _navIndex = i),
           ),
@@ -563,7 +563,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           label: 'ventana principal',
           width: 600,
           child: WinTitleBar(
-            title: 'Aria',
+            title: 'Syroda',
             onMinimize: () {},
             onMaximize: () {},
             onClose: () {},
@@ -609,7 +609,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         _Item(
           label: 'botón redondo',
           child: RoundButton(
-            icon: AriaIcons.gear,
+            icon: SyrodaIcons.gear,
             semanticLabel: 'Ajustes',
             onPressed: () {},
           ),
@@ -627,24 +627,24 @@ class _GalleryScreenState extends State<GalleryScreen> {
     ),
   ];
 
-  static const List<(String, AriaIconData)> _icons = <(String, AriaIconData)>[
-    ('send', AriaIcons.send),
-    ('receive', AriaIcons.receive),
-    ('arrow-up', AriaIcons.arrowUp),
-    ('clock', AriaIcons.clock),
-    ('user', AriaIcons.user),
-    ('gear', AriaIcons.gear),
-    ('close', AriaIcons.close),
-    ('check-circle', AriaIcons.checkCircle),
-    ('x-circle', AriaIcons.xCircle),
-    ('phone', AriaIcons.phone),
-    ('desktop', AriaIcons.desktop),
-    ('image', AriaIcons.image),
-    ('file', AriaIcons.file),
-    ('qr', AriaIcons.qr),
-    ('win-min', AriaIcons.winMinimize),
-    ('win-max', AriaIcons.winMaximize),
-    ('win-close', AriaIcons.winClose),
+  static const List<(String, SyrodaIconData)> _icons = <(String, SyrodaIconData)>[
+    ('send', SyrodaIcons.send),
+    ('receive', SyrodaIcons.receive),
+    ('arrow-up', SyrodaIcons.arrowUp),
+    ('clock', SyrodaIcons.clock),
+    ('user', SyrodaIcons.user),
+    ('gear', SyrodaIcons.gear),
+    ('close', SyrodaIcons.close),
+    ('check-circle', SyrodaIcons.checkCircle),
+    ('x-circle', SyrodaIcons.xCircle),
+    ('phone', SyrodaIcons.phone),
+    ('desktop', SyrodaIcons.desktop),
+    ('image', SyrodaIcons.image),
+    ('file', SyrodaIcons.file),
+    ('qr', SyrodaIcons.qr),
+    ('win-min', SyrodaIcons.winMinimize),
+    ('win-max', SyrodaIcons.winMaximize),
+    ('win-close', SyrodaIcons.winClose),
   ];
 }
 

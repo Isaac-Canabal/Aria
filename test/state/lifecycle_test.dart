@@ -1,4 +1,4 @@
-import 'package:aria/state/lifecycle.dart';
+import 'package:syroda/state/lifecycle.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
