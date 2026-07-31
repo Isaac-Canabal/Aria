@@ -35,6 +35,12 @@ final StreamProvider<List<Peer>> peersProvider = StreamProvider<List<Peer>>((
   Ref ref,
 ) async* {
   final DiscoveryService service = ref.watch(discoveryServiceProvider);
+  // Antes de descubrir: en la red puede quedar un registro zombi de un
+  // arranque anterior de esta instalacion, y sin esto se veria como un par.
+  final DeviceIdentity identity = await ref.watch(
+    deviceIdentityProvider.future,
+  );
+  service.excludeSelf(identity.id);
   // Se espera a proposito: si falta CHANGE_WIFI_MULTICAST_STATE, `nsd` lanza
   // aqui, y ese error tiene que llegar a la pantalla en vez de perderse.
   await service.startDiscovery();
@@ -116,8 +122,8 @@ final FutureProvider<ReceiveServer> receiveServerProvider =
 /// `autoDispose`: salir de la pantalla Recibir deja de anunciar, igual que
 /// irse a background. "Esperando conexion..." es el estado de una pantalla
 /// abierta, no un servicio permanente.
-final AutoDisposeFutureProvider<void> announcementProvider =
-    FutureProvider.autoDispose<void>((Ref ref) async {
+final AutoDisposeFutureProvider<void>
+announcementProvider = FutureProvider.autoDispose<void>((Ref ref) async {
   if (!ref.watch(announcingProvider)) return;
   // En background no se anuncia: el par no ve un dispositivo que no va a
   // aceptarle nada.
@@ -153,56 +159,50 @@ final AutoDisposeFutureProvider<void> announcementProvider =
 
 /// Los eventos de las sesiones entrantes, ya registrados en el historial y en
 /// los emparejados.
-final StreamProvider<SessionEvent> incomingProvider =
-    StreamProvider<SessionEvent>((Ref ref) async* {
-      final ReceiveServer server = await ref.watch(
-        receiveServerProvider.future,
-      );
-      final SessionHistoryRecorder recorder = SessionHistoryRecorder(
-        await ref.watch(historyRepositoryProvider.future),
-        direction: TransferDirection.received,
-      );
-      final TransferForegroundService service = ref.watch(
-        foregroundServiceProvider,
-      );
+final StreamProvider<SessionEvent>
+incomingProvider = StreamProvider<SessionEvent>((Ref ref) async* {
+  final ReceiveServer server = await ref.watch(receiveServerProvider.future);
+  final SessionHistoryRecorder recorder = SessionHistoryRecorder(
+    await ref.watch(historyRepositoryProvider.future),
+    direction: TransferDirection.received,
+  );
+  final TransferForegroundService service = ref.watch(
+    foregroundServiceProvider,
+  );
 
-      // Si la sesion muere, el servicio no puede quedar vivo: se suelta en el
-      // `finally`, valga como final limpio o como corte.
-      bool held = false;
-      Future<void> release() async {
-        if (!held) return;
-        held = false;
-        await service.end();
-      }
+  // Si la sesion muere, el servicio no puede quedar vivo: se suelta en el
+  // `finally`, valga como final limpio o como corte.
+  bool held = false;
+  Future<void> release() async {
+    if (!held) return;
+    held = false;
+    await service.end();
+  }
 
-      try {
-        await for (final SessionEvent event in recorder.observe(
-          server.events,
-        )) {
-          switch (event) {
-            case SessionAuthorized():
-              await ref.read(pairedDevicesProvider.notifier).rememberFrom(
-                event,
-              );
-              held = true;
-              await service.begin(
-                title: 'Recibiendo de ${event.device}',
-                text: 'Syroda está recibiendo archivos en la red local.',
-              );
-            case SessionFinished():
-              await release();
-            case SessionManifest():
-            case FileStarted():
-            case FileProgress():
-            case FileFinished():
-              break;
-          }
-          yield event;
-        }
-      } finally {
-        await release();
+  try {
+    await for (final SessionEvent event in recorder.observe(server.events)) {
+      switch (event) {
+        case SessionAuthorized():
+          await ref.read(pairedDevicesProvider.notifier).rememberFrom(event);
+          held = true;
+          await service.begin(
+            title: 'Recibiendo de ${event.device}',
+            text: 'Syroda está recibiendo archivos en la red local.',
+          );
+        case SessionFinished():
+          await release();
+        case SessionManifest():
+        case FileStarted():
+        case FileProgress():
+        case FileFinished():
+          break;
       }
-    });
+      yield event;
+    }
+  } finally {
+    await release();
+  }
+});
 
 // ── envio ─────────────────────────────────────────────────────────────────
 
@@ -341,9 +341,7 @@ class SendController extends Notifier<SendState> {
   void _onEvent(SessionEvent event, Peer peer) {
     switch (event) {
       case SessionAuthorized():
-        unawaited(
-          ref.read(pairedDevicesProvider.notifier).rememberFrom(event),
-        );
+        unawaited(ref.read(pairedDevicesProvider.notifier).rememberFrom(event));
       case FileProgress():
         state = SendInProgress(
           fileName: event.name,

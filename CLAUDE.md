@@ -284,6 +284,16 @@ hacia atrás.
 - Viaja en `auth_init.device_id` y `auth_response.device_id`, y en la clave
   `id` del TXT del anuncio. `Peer.serviceName` (mDNS, efímero) y
   `Peer.deviceId` (estable) son cosas distintas y no se mezclan.
+- **El descubrimiento agrupa y se excluye a sí mismo por `device_id`, nunca
+  por nombre de instancia** (`core/transfer/peer_table.dart`). El nombre lo
+  renombra el sistema por conflicto ("Nombre" → "Nombre (2)") cuando un
+  registro anterior sigue vivo, así que el mismo aparato puede estar en la red
+  bajo varios nombres a la vez: indexado por nombre salía repetido, y el
+  filtro de sí mismo —que comparaba nombres— no lo reconocía. El
+  identificador propio se declara con `excludeSelf` **antes** de anunciar y
+  también al empezar a descubrir sin anunciar, porque puede quedar un registro
+  zombi de un arranque anterior de esta misma instalación. Y expulsa lo ya
+  insertado: bloquear la inserción no basta.
 - Emparejar es completar el handshake: cuando una sesión queda autorizada, el
   par se guarda. Renombrarlo actualiza el nombre, no duplica la entrada.
 - Un par que no publica identificador **nunca** cuenta como emparejado.
@@ -328,6 +338,14 @@ De ahí, y bajo el veto de copy que ya existe:
   quien las muestra.
 - `PeerVisibility.nobody` no es un filtro de presentación: se deja de publicar
   el servicio mDNS (`announcingProvider`).
+- **`TransferRecord.localPath` no es siempre una ruta de sistema de archivos.**
+  En Android, con MediaStore como destino, es un `content://` URI. **Nada
+  puede asumir `File(localPath)`** — ni para abrirlo, ni para comprobar que
+  existe, ni para borrarlo. Es consecuencia directa de que el archivo tenga
+  que ser visible para la persona (ver "No hay forma de ver los archivos
+  recibidos" en la deuda con fase asignada), y se olvida fácil porque en
+  Windows sí es una ruta y ahí todo funciona. La UI de la Fase 5 abre por
+  plataforma, no por `dart:io`.
 
 ## Decisiones diferidas
 
@@ -380,6 +398,21 @@ archivo a medias en vez de un rechazo limpio. De ahí la regla:
   también exige recibir multicast. Cuesta radio por resultados que no se usan.
   **Sustituible en cuanto el plugin ate el lock también al registro**; vale la
   pena abrir el issue upstream con esas dos líneas.
+
+- **No hay forma de ver los archivos recibidos.** Encontrado en la primera
+  prueba en dispositivo. **No es un bug de transporte: los archivos llegan al
+  disco y el checksum cuadra.** Falta la superficie de UI para listarlos,
+  abrirlos o guardarlos, que es **Fase 5**. Lo que sí conviene saber ya, porque
+  cambia según la plataforma: en Windows `getDownloadsDirectory()` devuelve
+  `FOLDERID_Downloads`, la carpeta real del usuario. En Android **no** devuelve
+  Descargas público: `path_provider_android` lo resuelve como
+  `getExternalFilesDirs(DIRECTORY_DOWNLOADS)`, es decir
+  `Android/data/<paquete>/files/Download`, privado de la app e inaccesible
+  desde la app Archivos en Android 11+. O sea que en Android el archivo llega
+  a un sitio donde la persona no puede entrar, y eso no lo arregla la UI de
+  Fase 5 sola. **El destino está pendiente de decisión** (carpeta propia
+  `Syroda`); afecta al receptor en ambas plataformas y se decide antes de
+  escribir la UI que los muestra.
 
 - **Proveedor nativo de espacio libre.** `dart:io` no lo expone.
   `DefaultReceivePolicy` lo recibe inyectado; la única forma de construirla sin

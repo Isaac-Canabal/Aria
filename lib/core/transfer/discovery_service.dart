@@ -9,6 +9,7 @@ import 'dart:typed_data';
 import 'package:nsd/nsd.dart' as nsd;
 
 import 'peer.dart';
+import 'peer_table.dart';
 
 /// El tipo de servicio de Syroda.
 const String syrodaServiceType = '_syroda._tcp';
@@ -33,6 +34,14 @@ abstract interface class DiscoveryService {
 
   Future<void> stopAnnouncing();
 
+  /// El identificador de esta instalacion, para no listarse a si mismo.
+  ///
+  /// Se declara aparte de [announce] porque hace falta tambien cuando este
+  /// dispositivo no se esta anunciando: en la red puede quedar un registro
+  /// zombi de un arranque anterior de esta misma instalacion, y sin esto se
+  /// mostraria como si fuera otro par.
+  void excludeSelf(String deviceId);
+
   Future<void> startDiscovery();
 
   Future<void> stopDiscovery();
@@ -49,18 +58,18 @@ abstract interface class DiscoveryService {
 class NsdDiscoveryService implements DiscoveryService {
   final StreamController<List<Peer>> _peers =
       StreamController<List<Peer>>.broadcast();
-  final Map<String, Peer> _found = <String, Peer>{};
+  final PeerTable _table = PeerTable();
 
   nsd.Registration? _registration;
   nsd.Discovery? _discovery;
 
-  /// El nombre con el que quedo registrado este dispositivo. El sistema puede
-  /// cambiarlo si ya existe ("Syroda" -> "Syroda (2)"), y hay que conocerlo para
-  /// no listarse a si mismo.
-  String? _ownServiceName;
-
   @override
   Stream<List<Peer>> get peers => _peers.stream;
+
+  @override
+  void excludeSelf(String deviceId) {
+    if (_table.excludeSelf(deviceId)) _emit();
+  }
 
   @override
   Future<void> announce({
@@ -68,6 +77,10 @@ class NsdDiscoveryService implements DiscoveryService {
     required int port,
   }) async {
     await stopAnnouncing();
+    // Antes de registrar, no despues: el identificador ya se conoce y el
+    // anuncio propio puede volver del descubrimiento en cuanto salga a la
+    // red, sin esperar a que `register` termine.
+    excludeSelf(identity.id);
     _registration = await nsd.register(
       nsd.Service(
         name: identity.name,
@@ -81,7 +94,6 @@ class NsdDiscoveryService implements DiscoveryService {
         },
       ),
     );
-    _ownServiceName = _registration?.service.name;
   }
 
   @override
@@ -89,7 +101,8 @@ class NsdDiscoveryService implements DiscoveryService {
     final nsd.Registration? registration = _registration;
     if (registration == null) return;
     _registration = null;
-    _ownServiceName = null;
+    // El identificador propio no se olvida al dejar de anunciar: el registro
+    // puede tardar en caducar en la red y seguiria volviendo como par.
     await nsd.unregister(registration);
   }
 
@@ -105,17 +118,21 @@ class NsdDiscoveryService implements DiscoveryService {
   }
 
   void _onService(nsd.Service service, nsd.ServiceStatus status) {
-    final String? id = service.name;
-    if (id == null || id == _ownServiceName) return;
+    final String? serviceName = service.name;
+    if (serviceName == null) return;
 
-    switch (status) {
-      case nsd.ServiceStatus.found:
-        final Peer? peer = _toPeer(service);
-        if (peer != null) _found[id] = peer;
-      case nsd.ServiceStatus.lost:
-        _found.remove(id);
-    }
-    if (!_peers.isClosed) _peers.add(List<Peer>.unmodifiable(_found.values));
+    final bool changed = switch (status) {
+      nsd.ServiceStatus.found => switch (_toPeer(service)) {
+        final Peer peer => _table.upsert(peer),
+        null => false,
+      },
+      nsd.ServiceStatus.lost => _table.remove(serviceName),
+    };
+    if (changed) _emit();
+  }
+
+  void _emit() {
+    if (!_peers.isClosed) _peers.add(_table.peers);
   }
 
   Peer? _toPeer(nsd.Service service) {
@@ -146,7 +163,7 @@ class NsdDiscoveryService implements DiscoveryService {
     if (discovery == null) return;
     _discovery = null;
     discovery.removeServiceListener(_onService);
-    _found.clear();
+    _table.clear();
     await nsd.stopDiscovery(discovery);
   }
 

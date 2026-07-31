@@ -8,6 +8,7 @@ import 'package:syroda/state/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../fonts.dart';
 
@@ -18,6 +19,9 @@ class _EmptyDiscoveryService implements DiscoveryService {
 
   @override
   Stream<List<Peer>> get peers => _peers.stream;
+
+  @override
+  void excludeSelf(String deviceId) {}
 
   @override
   Future<void> announce({
@@ -52,9 +56,16 @@ class _GrantedPermissionService implements PermissionService {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late _EmptyDiscoveryService discovery;
 
-  setUp(() => discovery = _EmptyDiscoveryService());
+  setUp(() {
+    // `peersProvider` resuelve la identidad antes de descubrir, para poder
+    // excluirse a si mismo: sin esto no llega a arrancar el descubrimiento.
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    discovery = _EmptyDiscoveryService();
+  });
   tearDown(() => discovery.dispose());
 
   Future<void> pumpSendScreen(WidgetTester tester) async {
