@@ -7,37 +7,45 @@ estas se rompe, el cambio está mal.
 
 Fases 1, 2 y 3 cerradas, y **el formato de cable está congelado** (ver
 "Formato de cable — congelado"): cambiarlo rompe la compatibilidad con
-cualquier build publicado. **La Fase 4 (UI Android) está abierta.**
+cualquier build publicado. **La Fase 4 (UI Android) está cerrada, a la
+espera de validación en dispositivo** (ver "Orden de la sesión siguiente").
 
 Hecho en la Fase 4: las 8 pantallas y el shell con la navegación inferior
 (`lib/features/`), los controladores que conectan transporte y persistencia
 (`lib/state/transfer_controllers.dart`), el manifiesto con sus permisos, el
 servicio en primer plano atado a ambos sentidos, el proveedor de espacio libre
-por canal nativo, la regla de disponibilidad por ciclo de vida, y
+por canal nativo, la regla de disponibilidad por ciclo de vida,
 `SystemPermissionService` conectado a Enviar y Recibir
 (`lib/features/shared/discovery_permission.dart`): `nearbyDevices` bloquea la
 pantalla completa mientras no esté concedido (`denied` pide de nuevo,
 `permanentlyDenied` manda a Ajustes sin reintentar el diálogo del sistema), y
 `notifications` se pide igual pero solo avisa sin bloquear — la transferencia
-funciona sin ese permiso, nada más pierde su indicador. Sin mockup propio: se
-compone con los mismos patrones que cualquier otro estado vacío, no con un
-componente nuevo del design system.
+funciona sin ese permiso, nada más pierde su indicador; y el estado vacío de
+Enviar tras `discoveryGracePeriod` sin pares
+(`lib/features/send/send_screen.dart`), con su acción "Conectar manualmente"
+(`lib/features/send/manual_connect.dart`) y su explicación honesta: si la red
+tiene aislamiento de clientes, el manual tampoco va a funcionar, y el hotspot
+del teléfono queda como última salida. Ninguno de los tres es un componente
+nuevo del design system: se componen con los mismos patrones que cualquier
+otro estado vacío.
 
-**Pendiente para cerrarla, en orden:**
-
-1. **Tests de pantalla.** Mínimo las dos piezas que no vienen de los mockups y
-   por tanto nadie más verifica: el estado vacío tras N segundos
-   (`discoveryGracePeriod`) con su acción de emparejamiento manual, y la
-   pantalla de emparejamiento manual. **Ojo:** `discoveryGracePeriod`
-   (`lib/state/transfer_controllers.dart`) está definida pero **nada la
-   consume todavía** — ninguna pantalla dispara el estado vacío tras N
-   segundos. Este pendiente puede ser más que escribir el test: puede hacer
-   falta construir el estado en `send_screen.dart` primero.
+**Bug real encontrado y corregido al escribir el primer test que renderiza
+uno de estos diálogos:** `_CodeDialog` (`code_prompt.dart`), `_sheet`
+(`profile_screen.dart`, usado por "Nombre del dispositivo") y el nuevo
+`_ManualConnectDialog` construían su `showDialog` con un `TextField` (dentro
+de `SyrodaInput`) sin ningún ancestro `Material` — `showDialog` no pone uno
+solo, lo pone el `Scaffold` de la ruta que abre el diálogo, que vive en un
+`OverlayEntry` distinto. Los tres habrían caído con "No Material widget
+found" en cuanto alguien tocara esos campos en un dispositivo real. Arreglado
+envolviendo cada uno en `Material(type: MaterialType.transparency)`. Nadie lo
+había visto porque nada de esto se había renderizado nunca — ni en un
+dispositivo, ni en un test — hasta ahora.
 
 **Nada se ha ejecutado en un dispositivo real.** Todo el transporte está
 verificado en loopback, que no tiene mDNS, ni firewall, ni Doze, ni cambios de
-red. Las pantallas están verificadas por el analizador, no renderizadas. El
-Kotlin de `StatFs` y el servicio en primer plano no se han compilado nunca.
+red. Las pantallas están verificadas por tests de widget con Riverpod
+faseado, no en un dispositivo. El Kotlin de `StatFs` y el servicio en primer
+plano no se han compilado nunca fuera de esta máquina.
 
 Estas cuatro decisiones están **razonadas y sin validar**, y son las primeras
 candidatas a estar mal:
@@ -50,12 +58,13 @@ candidatas a estar mal:
 
 **Orden de la sesión siguiente:**
 
-1. El pendiente de la Fase 4 de arriba (tests de pantalla).
-2. **Prueba real con dos dispositivos en la misma red, antes de abrir la Fase
-   5.** Es lo único que valida las cuatro decisiones sin validar, y ahora
-   también el camino de permisos, que nunca corrió en un dispositivo real.
-   Abrir la UI de Windows sobre un transporte que nunca vio una red de verdad
-   multiplica por dos el trabajo de cualquier corrección.
+1. **Prueba real con dos dispositivos en la misma red, antes de abrir la Fase
+   5.** La Fase 4 ya está completa en código; esta prueba es lo único que
+   falta. Valida las cuatro decisiones sin validar, el camino de permisos
+   completo (incluida la denegación permanente) y los tres diálogos que
+   recién dejaron de estar rotos. Abrir la UI de Windows sobre un transporte
+   que nunca vio una red de verdad multiplica por dos el trabajo de
+   cualquier corrección.
 
 ## Producto
 

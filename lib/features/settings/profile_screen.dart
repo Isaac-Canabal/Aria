@@ -1,7 +1,7 @@
 /// "Perfil / Ajustes".
 library;
 
-import 'package:flutter/material.dart' show showDialog;
+import 'package:flutter/material.dart' show Material, MaterialType, showDialog;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -110,7 +110,10 @@ class ProfileScreen extends ConsumerWidget {
     final String? name = await _sheet<String>(
       context,
       title: 'Nombre del dispositivo',
-      body: SyrodaField(label: 'Nombre', child: SyrodaInput(controller: field)),
+      body: SyrodaField(
+        label: 'Nombre',
+        child: SyrodaInput(controller: field),
+      ),
       confirm: () => field.text,
     );
     field.dispose();
@@ -155,42 +158,50 @@ Future<T?> _sheet<T>(
 }) => showDialog<T>(
   context: context,
   barrierColor: NocturneColors.neutral900.withValues(alpha: 0.5),
-  builder: (BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(NocturneSpace.s4),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 360),
-        child: SyrodaCard(
-          elevation: SyrodaElevation.lg,
-          borderRadius: NocturneRadius.brLg,
-          padding: const EdgeInsets.all(NocturneSpace.s4),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: NocturneSpace.s3,
-            children: <Widget>[
-              Text(title, style: NocturneType.h4),
-              ?body,
-              if (bodyBuilder != null)
-                bodyBuilder((T value) => Navigator.of(context).pop(value)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                spacing: NocturneSpace.s2,
-                children: <Widget>[
-                  SyrodaButton(
-                    'Cancelar',
-                    variant: SyrodaButtonVariant.ghost,
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  if (confirm != null)
+  // `Material.transparency`: `_editName` mete un `SyrodaInput` aqui, y el
+  // `TextField` que lleva dentro exige un ancestro `Material` para pintar
+  // cursor y seleccion. `showDialog` no pone uno solo — lo pone el
+  // `Scaffold` de la ruta que abre el dialogo, que es un `OverlayEntry`
+  // distinto del de este dialogo.
+  builder: (BuildContext context) => Material(
+    type: MaterialType.transparency,
+    child: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(NocturneSpace.s4),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: SyrodaCard(
+            elevation: SyrodaElevation.lg,
+            borderRadius: NocturneRadius.brLg,
+            padding: const EdgeInsets.all(NocturneSpace.s4),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: NocturneSpace.s3,
+              children: <Widget>[
+                Text(title, style: NocturneType.h4),
+                ?body,
+                if (bodyBuilder != null)
+                  bodyBuilder((T value) => Navigator.of(context).pop(value)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  spacing: NocturneSpace.s2,
+                  children: <Widget>[
                     SyrodaButton(
-                      'Guardar',
-                      variant: SyrodaButtonVariant.primary,
-                      onPressed: () => Navigator.of(context).pop(confirm()),
+                      'Cancelar',
+                      variant: SyrodaButtonVariant.ghost,
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
-                ],
-              ),
-            ],
+                    if (confirm != null)
+                      SyrodaButton(
+                        'Guardar',
+                        variant: SyrodaButtonVariant.primary,
+                        onPressed: () => Navigator.of(context).pop(confirm()),
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

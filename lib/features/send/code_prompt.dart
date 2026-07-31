@@ -6,7 +6,7 @@
 /// componentes nuevos.
 library;
 
-import 'package:flutter/material.dart' show showDialog;
+import 'package:flutter/material.dart' show Material, MaterialType, showDialog;
 import 'package:flutter/widgets.dart';
 
 import '../../design/components.dart';
@@ -52,55 +52,62 @@ class _CodeDialogState extends State<_CodeDialog> {
   }
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(NocturneSpace.s4),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 340),
-        child: SyrodaCard(
-          elevation: SyrodaElevation.lg,
-          borderRadius: NocturneRadius.brLg,
-          padding: const EdgeInsets.all(NocturneSpace.s4),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: NocturneSpace.s3,
-            children: <Widget>[
-              Text('Código de ${widget.peerName}', style: NocturneType.h4),
-              Text(
-                'Pídele el código de 6 dígitos que muestra su pantalla.',
-                style: NocturneType.at(
-                  13.5,
-                  color: NocturneColors.onText(0.65),
-                  height: 1.5,
-                ),
-              ),
-              SyrodaField(
-                label: 'Código',
-                child: SyrodaInput(
-                  controller: _controller,
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                spacing: NocturneSpace.s2,
-                children: <Widget>[
-                  SyrodaButton(
-                    'Cancelar',
-                    variant: SyrodaButtonVariant.ghost,
-                    onPressed: () => Navigator.of(context).pop(),
+  // `Material.transparency`: el campo de codigo es un `TextField` (dentro de
+  // `SyrodaInput`), que exige un ancestro `Material` para pintar cursor y
+  // selección. `showDialog` no pone uno solo — lo pone el `Scaffold` de la
+  // ruta que lo abre, que es un `OverlayEntry` distinto del de este dialogo.
+  Widget build(BuildContext context) => Material(
+    type: MaterialType.transparency,
+    child: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(NocturneSpace.s4),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 340),
+          child: SyrodaCard(
+            elevation: SyrodaElevation.lg,
+            borderRadius: NocturneRadius.brLg,
+            padding: const EdgeInsets.all(NocturneSpace.s4),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: NocturneSpace.s3,
+              children: <Widget>[
+                Text('Código de ${widget.peerName}', style: NocturneType.h4),
+                Text(
+                  'Pídele el código de 6 dígitos que muestra su pantalla.',
+                  style: NocturneType.at(
+                    13.5,
+                    color: NocturneColors.onText(0.65),
+                    height: 1.5,
                   ),
-                  SyrodaButton(
-                    'Enviar',
-                    variant: SyrodaButtonVariant.primary,
-                    enabled: _complete,
-                    onPressed: () => Navigator.of(context).pop(_digits),
+                ),
+                SyrodaField(
+                  label: 'Código',
+                  child: SyrodaInput(
+                    controller: _controller,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
                   ),
-                ],
-              ),
-            ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  spacing: NocturneSpace.s2,
+                  children: <Widget>[
+                    SyrodaButton(
+                      'Cancelar',
+                      variant: SyrodaButtonVariant.ghost,
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    SyrodaButton(
+                      'Enviar',
+                      variant: SyrodaButtonVariant.primary,
+                      enabled: _complete,
+                      onPressed: () => Navigator.of(context).pop(_digits),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
