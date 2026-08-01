@@ -23,7 +23,6 @@ class GalleryScreen extends StatefulWidget {
 class _GalleryScreenState extends State<GalleryScreen> {
   int _navIndex = 0;
   int _visibility = 1;
-  bool _saveToGallery = true;
   bool _notifications = false;
   final TextEditingController _deviceName = TextEditingController(
     text: 'PC de mí',
@@ -409,12 +408,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   variant: SyrodaTagVariant.outline,
                 ),
               ),
-              SettingTile(
-                label: 'Guardar fotos en Galería',
-                trailing: SyrodaToggle(
-                  value: _saveToGallery,
-                  onChanged: (bool v) => setState(() => _saveToGallery = v),
-                ),
+              const SettingTile(
+                label: 'Carpeta de recibidos',
+                value: 'Descargas/Syroda',
+                showChevron: true,
               ),
               SettingTile(
                 label: 'Notificaciones',
@@ -432,14 +429,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
           width: 472,
           child: SettingList(
             children: <Widget>[
-              SettingTile(
-                label: 'Guardar en Descargas',
-                hint: 'Los archivos recibidos se guardan aquí automáticamente',
+              const SettingTile(
+                label: 'Carpeta de recibidos',
+                hint: 'Dónde se guarda lo que llega de otros dispositivos',
                 wide: true,
-                trailing: SyrodaToggle(
-                  value: _saveToGallery,
-                  onChanged: (bool v) => setState(() => _saveToGallery = v),
-                ),
+                value: r'C:\Users\yo\Downloads\Syroda',
+                showChevron: true,
               ),
               SettingTile(
                 label: 'Notificaciones de transferencia',

@@ -1,6 +1,9 @@
 /// "Perfil / Ajustes".
 library;
 
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart' show Material, MaterialType, showDialog;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,11 +64,10 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () => _editVisibility(context, controller, settings),
               ),
               SettingTile(
-                label: 'Guardar fotos en Galería',
-                trailing: SyrodaToggle(
-                  value: settings.saveToGallery,
-                  onChanged: controller.setSaveToGallery,
-                ),
+                label: 'Carpeta de recibidos',
+                value: ref.watch(destinationLabelProvider).valueOrNull,
+                showChevron: true,
+                onTap: () => _editDestination(context, ref, controller, settings),
               ),
               SettingTile(
                 label: 'Notificaciones',
@@ -129,6 +131,41 @@ class ProfileScreen extends ConsumerWidget {
     if (name != null) await controller.setDeviceName(name);
   }
 
+  /// Elegir donde se guarda lo recibido.
+  ///
+  /// Las dos plataformas no pueden ofrecer lo mismo, y fingir que si seria
+  /// peor. En escritorio se elige una carpeta cualquiera con el dialogo del
+  /// sistema. En Android el almacenamiento por ambitos no deja escribir en
+  /// una ruta arbitraria: se elige la coleccion y el nombre, y MediaStore
+  /// resuelve la ruta.
+  Future<void> _editDestination(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsController controller,
+    SyrodaSettings settings,
+  ) async {
+    if (!Platform.isAndroid) {
+      final String? chosen = await FilePicker.getDirectoryPath(
+        dialogTitle: 'Carpeta de recibidos',
+        initialDirectory: settings.destinationPath,
+      );
+      if (chosen != null) await controller.setDestinationPath(chosen);
+      return;
+    }
+
+    final _AndroidDestination? picked = await _sheet<_AndroidDestination>(
+      context,
+      title: 'Carpeta de recibidos',
+      bodyBuilder: (void Function(_AndroidDestination) pick) =>
+          _AndroidDestinationForm(settings: settings, onPick: pick),
+    );
+    if (picked == null) return;
+    await controller.setDestinationFolder(
+      collection: picked.collection,
+      folder: picked.folder,
+    );
+  }
+
   /// Que es Syroda, en lo que de verdad hace.
   ///
   /// Sin la palabra "cifrado", sin candados y sin "conexion segura": el canal
@@ -169,6 +206,72 @@ class ProfileScreen extends ConsumerWidget {
     );
     if (chosen != null) await controller.setVisibility(chosen);
   }
+}
+
+/// Lo que la persona elige en Android: coleccion y nombre de carpeta.
+typedef _AndroidDestination = ({DestinationCollection collection, String folder});
+
+/// El formulario de Android, con los patrones que ya existen: segmentado para
+/// la coleccion y campo de texto para el nombre. Sin componentes nuevos.
+class _AndroidDestinationForm extends StatefulWidget {
+  const _AndroidDestinationForm({required this.settings, required this.onPick});
+
+  final SyrodaSettings settings;
+  final void Function(_AndroidDestination) onPick;
+
+  @override
+  State<_AndroidDestinationForm> createState() =>
+      _AndroidDestinationFormState();
+}
+
+class _AndroidDestinationFormState extends State<_AndroidDestinationForm> {
+  late DestinationCollection _collection = widget.settings.destinationCollection;
+
+  // Dueno de su propio controller: el dialogo vuelve antes de desmontarse.
+  late final TextEditingController _folder = TextEditingController(
+    text: widget.settings.destinationFolder,
+  );
+
+  @override
+  void dispose() {
+    _folder.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    spacing: NocturneSpace.s3,
+    children: <Widget>[
+      SyrodaField(
+        label: 'Dónde',
+        child: SyrodaSegmented(
+          options: const <String>['Descargas', 'Documentos'],
+          selected: _collection == DestinationCollection.documents ? 1 : 0,
+          onChanged: (int index) => setState(
+            () => _collection = index == 1
+                ? DestinationCollection.documents
+                : DestinationCollection.downloads,
+          ),
+        ),
+      ),
+      SyrodaField(
+        label: 'Carpeta',
+        child: SyrodaInput(controller: _folder),
+      ),
+      Align(
+        alignment: Alignment.centerRight,
+        child: SyrodaButton(
+          'Guardar',
+          variant: SyrodaButtonVariant.primary,
+          onPressed: () => widget.onPick((
+            collection: _collection,
+            folder: _folder.text,
+          )),
+        ),
+      ),
+    ],
+  );
 }
 
 /// El texto de "Acerca de Syroda".

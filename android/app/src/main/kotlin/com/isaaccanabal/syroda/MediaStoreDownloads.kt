@@ -44,11 +44,11 @@ class MediaStoreDownloads(private val context: Context) {
      * Comprueba que hay donde escribir antes de aceptar un lote. Se responde
      * al validar el manifiesto, nunca a mitad del archivo 3 de 5.
      */
-    fun ready(): Boolean = try {
+    fun ready(collection: String, folder: String): Boolean = try {
         if (scoped) {
             Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
         } else {
-            legacyFolder().let { it.exists() || it.mkdirs() }
+            legacyFolder(collection, folder).let { it.exists() || it.mkdirs() }
         }
     } catch (e: Exception) {
         false
@@ -70,22 +70,22 @@ class MediaStoreDownloads(private val context: Context) {
      * MediaStore resuelve las colisiones por su cuenta y puede no ser el que
      * se pidio, asi que la sesion reporta el que vuelve de aqui.
      */
-    fun create(name: String): Map<String, String> {
-        if (!scoped) return createLegacy(name)
+    fun create(name: String, collection: String, folder: String): Map<String, String> {
+        if (!scoped) return createLegacy(name, collection, folder)
 
         val values = ContentValues().apply {
-            put(MediaStore.Downloads.DISPLAY_NAME, name)
-            put(MediaStore.Downloads.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/$FOLDER")
-            put(MediaStore.Downloads.IS_PENDING, 1)
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(
+                MediaStore.MediaColumns.RELATIVE_PATH,
+                "${directoryOf(collection)}/$folder"
+            )
+            put(MediaStore.MediaColumns.IS_PENDING, 1)
         }
         // `VOLUME_EXTERNAL_PRIMARY`, no `EXTERNAL_CONTENT_URI`: esa constante
         // apunta a `VOLUME_EXTERNAL`, que es una vista sintetica que fusiona
         // todos los volumenes y **no admite inserciones**. Insertar ahi lanza
         // IllegalArgumentException en tiempo de ejecucion.
-        val collection = MediaStore.Downloads.getContentUri(
-            MediaStore.VOLUME_EXTERNAL_PRIMARY
-        )
-        val uri = resolver.insert(collection, values)
+        val uri = resolver.insert(collectionUri(collection), values)
             ?: throw IllegalStateException("MediaStore no acepto la fila para $name")
 
         open[uri.toString()] = resolver.openOutputStream(uri, "w")
@@ -113,7 +113,7 @@ class MediaStoreDownloads(private val context: Context) {
             }
             return
         }
-        val values = ContentValues().apply { put(MediaStore.Downloads.IS_PENDING, 0) }
+        val values = ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }
         resolver.update(Uri.parse(uri), values, null, null)
     }
 
@@ -143,20 +143,45 @@ class MediaStoreDownloads(private val context: Context) {
     }
 
     private fun displayNameOf(uri: Uri, fallback: String): String {
-        resolver.query(uri, arrayOf(MediaStore.Downloads.DISPLAY_NAME), null, null, null)
+        resolver.query(uri, arrayOf(MediaStore.MediaColumns.DISPLAY_NAME), null, null, null)
             ?.use { cursor ->
                 if (cursor.moveToFirst() && !cursor.isNull(0)) return cursor.getString(0)
             }
         return fallback
     }
 
+    /**
+     * La coleccion de MediaStore que corresponde. `Downloads` solo admite
+     * rutas bajo `Download/`; cualquier otra va por `Files`.
+     */
+    private fun collectionUri(collection: String): Uri =
+        if (collection == DOCUMENTS) {
+            MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        } else {
+            MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        }
+
+    private fun directoryOf(collection: String): String =
+        if (collection == DOCUMENTS) {
+            Environment.DIRECTORY_DOCUMENTS
+        } else {
+            Environment.DIRECTORY_DOWNLOADS
+        }
+
     // ── Android 9 y anteriores ────────────────────────────────────────────
 
-    private fun legacyFolder(): File =
-        File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), FOLDER)
+    private fun legacyFolder(collection: String, folder: String): File =
+        File(
+            Environment.getExternalStoragePublicDirectory(directoryOf(collection)),
+            folder
+        )
 
-    private fun createLegacy(name: String): Map<String, String> {
-        val folder = legacyFolder()
+    private fun createLegacy(
+        name: String,
+        collection: String,
+        folderName: String
+    ): Map<String, String> {
+        val folder = legacyFolder(collection, folderName)
         if (!folder.exists() && !folder.mkdirs()) {
             throw IllegalStateException("no se pudo crear $folder")
         }
@@ -178,7 +203,8 @@ class MediaStoreDownloads(private val context: Context) {
     }
 
     private companion object {
-        const val FOLDER = "Syroda"
+        /// El mismo valor que `DestinationCollection.documents.wire` en Dart.
+        const val DOCUMENTS = "documents"
         const val PART = ".part"
     }
 }

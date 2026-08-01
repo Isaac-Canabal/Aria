@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../core/data/preferences.dart';
 import '../core/data/session_history_recorder.dart';
 import '../core/data/transfer_record.dart';
 import '../core/platform/free_space.dart';
@@ -94,12 +95,26 @@ final Provider<Future<ReceiveDestination?> Function()>
 destinationOpenerProvider = Provider<Future<ReceiveDestination?> Function()>((
   Ref ref,
 ) {
-  if (Platform.isAndroid) return MediaStoreDestination.open;
+  final SyrodaSettings? settings = ref.watch(settingsProvider).valueOrNull;
+
+  if (Platform.isAndroid) {
+    final DestinationCollection collection =
+        settings?.destinationCollection ?? DestinationCollection.downloads;
+    final String folder =
+        settings?.destinationFolder ?? defaultDestinationFolder;
+    return () =>
+        MediaStoreDestination.open(collection: collection, folder: folder);
+  }
+
+  final String? chosen = settings?.destinationPath;
   return () async {
+    if (chosen != null) return FileSystemDestination.open(Directory(chosen));
     final Directory? downloads = await getDownloadsDirectory();
     if (downloads == null) return null;
     return FileSystemDestination.open(
-      Directory('${downloads.path}${Platform.pathSeparator}$destinationFolder'),
+      Directory(
+        '${downloads.path}${Platform.pathSeparator}$defaultDestinationFolder',
+      ),
     );
   };
 });
@@ -113,10 +128,22 @@ final Provider<ReceivedFileOpener> fileOpenerProvider =
 final FutureProvider<String> destinationLabelProvider = FutureProvider<String>((
   Ref ref,
 ) async {
-  if (Platform.isAndroid) return 'Descargas/$destinationFolder';
+  final SyrodaSettings? settings = ref.watch(settingsProvider).valueOrNull;
+
+  if (Platform.isAndroid) {
+    final String collection = collectionLabel(
+      (settings?.destinationCollection ?? DestinationCollection.downloads).wire,
+    );
+    final String folder =
+        settings?.destinationFolder ?? defaultDestinationFolder;
+    return '$collection/$folder';
+  }
+
+  final String? chosen = settings?.destinationPath;
+  if (chosen != null) return chosen;
   final Directory? downloads = await getDownloadsDirectory();
-  if (downloads == null) return destinationFolder;
-  return '${downloads.path}${Platform.pathSeparator}$destinationFolder';
+  if (downloads == null) return defaultDestinationFolder;
+  return '${downloads.path}${Platform.pathSeparator}$defaultDestinationFolder';
 });
 
 /// El servidor de recepcion, ligado al puerto efimero que despues se anuncia.

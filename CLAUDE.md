@@ -108,6 +108,10 @@ razón explícita para no abrir la Fase 5, no un detalle suelto.
 - [ ] **Rechazo por destino inválido** (`destinationUnavailable`): llega
       **antes** de empezar el primer archivo, con el lote entero, y el emisor
       muestra ese motivo y no otro.
+- [ ] **Elegir la carpeta de recibidos** en Ajustes: que cambiar la colección
+      o el nombre en Android manda los archivos siguientes a la carpeta nueva
+      —y que la nueva se crea sola—, y que en Windows el diálogo del sistema
+      devuelve una ruta en la que de verdad se puede escribir.
 - [ ] **Estado vacío tras el grace period** en Enviar
       (`discoveryGracePeriod`), con "Conectar manualmente" funcionando de
       punta a punta contra el `code-card` del receptor.
@@ -364,8 +368,29 @@ De ahí, y bajo el veto de copy que ya existe:
 
 ## Destino de lo recibido
 
-- **`Descargas/Syroda` en las dos plataformas**, para que la explicación en
-  pantalla sea una sola.
+- **La carpeta la elige la persona en Ajustes**, y por defecto es
+  `Descargas/Syroda` en las dos plataformas.
+- **Lo que se puede elegir no es lo mismo en cada plataforma, y fingir que sí
+  lo sería peor.** En escritorio se elige una carpeta cualquiera con el
+  diálogo del sistema (`FilePicker.getDirectoryPath`) y se guarda la ruta. En
+  Android el almacenamiento por ámbitos **no deja escribir en una ruta
+  arbitraria**: se elige la colección (`Descargas` o `Documentos`) y el nombre
+  de la carpeta, y MediaStore resuelve el `RELATIVE_PATH`.
+- **`file_picker` no sirve para elegir carpeta en Android**, aunque lo
+  parezca: lanza `ACTION_OPEN_DOCUMENT_TREE` pero convierte el árbol a una
+  ruta de texto (`FileUtils.kt`, `getFullPathFromTreeUri`) y **nunca llama a
+  `takePersistableUriPermission`**. Devuelve una ruta que no se puede escribir
+  con `dart:io` y un permiso que muere con el proceso. Elegir una carpeta
+  arbitraria en Android exigiría SAF propio en Kotlin — no una dependencia
+  nueva, porque el canal `syroda/platform` ya existe, pero sí una tercera
+  implementación de `ReceiveDestination` que escriba por `DocumentsContract`.
+  Está descartado por coste, no por imposibilidad.
+- **Se fueron dos interruptores que no hacían nada**: "Guardar fotos en
+  Galería" y "Guardar en Descargas" se persistían y se podían cambiar, pero
+  **nadie los leía** en el camino de transferencia. Eran una promesa falsa en
+  la interfaz; los reemplaza la carpeta, que sí decide algo. Vivían en
+  `shared_preferences`, no en SQLite, así que no hubo migración: las claves
+  huérfanas se quedan sin molestar.
 - **El receptor no escribe contra `dart:io`, escribe contra
   `ReceiveDestination` / `IncomingFileSink`** (`core/transfer/destination.dart`),
   inyectado desde la capa de plataforma igual que `freeBytes`. `core/transfer/`

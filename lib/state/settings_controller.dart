@@ -23,11 +23,26 @@ class SettingsController extends AsyncNotifier<SyrodaSettings> {
   Future<void> setVisibility(PeerVisibility visibility) =>
       _update(state.requireValue.copyWith(visibility: visibility));
 
-  Future<void> setSaveToGallery(bool value) =>
-      _update(state.requireValue.copyWith(saveToGallery: value));
+  /// Android: la coleccion y el nombre de la carpeta de recibidos.
+  Future<void> setDestinationFolder({
+    required DestinationCollection collection,
+    required String folder,
+  }) {
+    // Un nombre vacio dejaria los archivos sueltos en la raiz de la
+    // coleccion, que no es lo que nadie pide al elegir una carpeta.
+    final String trimmed = folder.trim();
+    if (trimmed.isEmpty) return Future<void>.value();
+    return _update(
+      state.requireValue.copyWith(
+        destinationCollection: collection,
+        destinationFolder: trimmed,
+      ),
+    );
+  }
 
-  Future<void> setSaveToDownloads(bool value) =>
-      _update(state.requireValue.copyWith(saveToDownloads: value));
+  /// Escritorio: la carpeta elegida.
+  Future<void> setDestinationPath(String path) =>
+      _update(state.requireValue.copyWith(destinationPath: path));
 
   Future<void> setNotifications(bool value) =>
       _update(state.requireValue.copyWith(notifications: value));

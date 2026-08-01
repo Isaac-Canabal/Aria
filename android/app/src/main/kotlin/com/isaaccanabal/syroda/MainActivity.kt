@@ -39,7 +39,9 @@ class MainActivity : FlutterActivity() {
                     }
                 }
 
-                "destinationReady" -> result.success(downloads.ready())
+                "destinationReady" -> result.success(
+                    downloads.ready(collectionOf(call), folderOf(call))
+                )
 
                 "destinationFreeBytes" -> withDownloads(result) {
                     downloads.freeBytes()
@@ -48,7 +50,7 @@ class MainActivity : FlutterActivity() {
                 "createDownload" -> withDownloads(result) {
                     val name = call.argument<String>("name")
                         ?: throw IllegalArgumentException("falta el argumento name")
-                    downloads.create(name)
+                    downloads.create(name, collectionOf(call), folderOf(call))
                 }
 
                 "writeDownload" -> withDownloads(result) {
@@ -95,6 +97,15 @@ class MainActivity : FlutterActivity() {
 
     private fun requireUri(uri: String?): String =
         uri ?: throw IllegalArgumentException("falta el argumento uri")
+
+    /// La carpeta de recibidos que la persona eligio en Ajustes. Los valores
+    /// por defecto son los mismos que en Dart, para que las dos puntas
+    /// coincidan si alguna llamada llega sin ellos.
+    private fun collectionOf(call: io.flutter.plugin.common.MethodCall): String =
+        call.argument<String>("collection") ?: "downloads"
+
+    private fun folderOf(call: io.flutter.plugin.common.MethodCall): String =
+        call.argument<String>("folder") ?: "Syroda"
 
     /**
      * Traduce cualquier fallo a un error del canal. Dart lo convierte en

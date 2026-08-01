@@ -18,23 +18,43 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
+import '../data/preferences.dart';
 import '../transfer/destination.dart';
 
 const MethodChannel _channel = MethodChannel('syroda/platform');
 
-/// La subcarpeta bajo Descargas. Es tambien la de Windows: el mismo nombre en
-/// las dos plataformas, para que la explicacion en pantalla sea una sola.
-const String destinationFolder = 'Syroda';
+/// Como se llama cada coleccion en pantalla. El nombre que ve la persona es
+/// el de la app Archivos, no el de la constante de Android.
+String collectionLabel(String wire) =>
+    wire == DestinationCollection.documents.wire ? 'Documentos' : 'Descargas';
 
 class MediaStoreDestination implements ReceiveDestination {
-  const MediaStoreDestination();
+  const MediaStoreDestination({
+    required this.collection,
+    required this.folder,
+  });
+
+  /// La coleccion bajo la que cuelga la carpeta, en el valor que entiende el
+  /// lado nativo.
+  final String collection;
+
+  /// El nombre de la carpeta dentro de la coleccion.
+  final String folder;
 
   /// Comprueba que se puede escribir antes de aceptar un lote. `null` deja
   /// que la politica lo rechace entero con `destinationUnavailable`.
-  static Future<MediaStoreDestination?> open() async {
+  static Future<MediaStoreDestination?> open({
+    required DestinationCollection collection,
+    required String folder,
+  }) async {
     try {
-      final bool? ok = await _channel.invokeMethod<bool>('destinationReady');
-      return ok ?? false ? const MediaStoreDestination() : null;
+      final bool? ok = await _channel.invokeMethod<bool>(
+        'destinationReady',
+        <String, Object?>{'collection': collection.wire, 'folder': folder},
+      );
+      return ok ?? false
+          ? MediaStoreDestination(collection: collection.wire, folder: folder)
+          : null;
     } on PlatformException {
       return null;
     } on MissingPluginException {
@@ -58,14 +78,19 @@ class MediaStoreDestination implements ReceiveDestination {
   }
 
   @override
-  String get label => 'Descargas/$destinationFolder';
+  String get label => '${collectionLabel(collection)}/$folder';
 
   @override
   Future<IncomingFileSink> create(String name, {required int size}) async {
     final Map<Object?, Object?>? created = await _channel
         .invokeMethod<Map<Object?, Object?>>(
           'createDownload',
-          <String, Object?>{'name': name, 'size': size},
+          <String, Object?>{
+            'name': name,
+            'size': size,
+            'collection': collection,
+            'folder': folder,
+          },
         );
     // `FileSystemException` a proposito: es lo que la sesion ya traduce a
     // `FileFailure.ioError` sin matar el lote.
