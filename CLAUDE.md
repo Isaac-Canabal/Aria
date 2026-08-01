@@ -5,64 +5,71 @@ estas se rompe, el cambio está mal.
 
 ## Dónde está el proyecto
 
-Fases 1, 2 y 3 cerradas, y **el formato de cable está congelado** (ver
-"Formato de cable — congelado"): cambiarlo rompe la compatibilidad con
-cualquier build publicado. **La Fase 4 (UI Android) está cerrada, a la
-espera de validación en dispositivo** (ver "Orden de la sesión siguiente").
+Para arrancar en frío: esto es lo que hay, en este orden.
 
-Hecho en la Fase 4: las 8 pantallas y el shell con la navegación inferior
-(`lib/features/`), los controladores que conectan transporte y persistencia
-(`lib/state/transfer_controllers.dart`), el manifiesto con sus permisos, el
-servicio en primer plano atado a ambos sentidos, el proveedor de espacio libre
-por canal nativo, la regla de disponibilidad por ciclo de vida,
-`SystemPermissionService` conectado a Enviar y Recibir
-(`lib/features/shared/discovery_permission.dart`): `nearbyDevices` bloquea la
-pantalla completa mientras no esté concedido (`denied` pide de nuevo,
-`permanentlyDenied` manda a Ajustes sin reintentar el diálogo del sistema), y
-`notifications` se pide igual pero solo avisa sin bloquear — la transferencia
-funciona sin ese permiso, nada más pierde su indicador; y el estado vacío de
-Enviar tras `discoveryGracePeriod` sin pares
-(`lib/features/send/send_screen.dart`), con su acción "Conectar manualmente"
-(`lib/features/send/manual_connect.dart`) y su explicación honesta: si la red
-tiene aislamiento de clientes, el manual tampoco va a funcionar, y el hotspot
-del teléfono queda como última salida. Ninguno de los tres es un componente
-nuevo del design system: se componen con los mismos patrones que cualquier
-otro estado vacío.
+### Cerrado
 
-**Bug real encontrado y corregido al escribir el primer test que renderiza
-uno de estos diálogos:** `_CodeDialog` (`code_prompt.dart`), `_sheet`
-(`profile_screen.dart`, usado por "Nombre del dispositivo") y el nuevo
-`_ManualConnectDialog` construían su `showDialog` con un `TextField` (dentro
-de `SyrodaInput`) sin ningún ancestro `Material` — `showDialog` no pone uno
-solo, lo pone el `Scaffold` de la ruta que abre el diálogo, que vive en un
-`OverlayEntry` distinto. Los tres habrían caído con "No Material widget
-found" en cuanto alguien tocara esos campos en un dispositivo real. Arreglado
-envolviendo cada uno en `Material(type: MaterialType.transparency)`. Nadie lo
-había visto porque nada de esto se había renderizado nunca — ni en un
-dispositivo, ni en un test — hasta ahora.
+- **Fases 1 a 4.** Transporte (descubrimiento mDNS, emparejamiento por código,
+  transferencia con verificación sha256), persistencia, y la UI de Android
+  completa: las 8 pantallas, el shell con navegación inferior, los permisos
+  conectados, el servicio en primer plano y la regla de disponibilidad por
+  ciclo de vida.
+- **El formato de cable está congelado.** Ver "Formato de cable — congelado".
+  Cambiarlo rompe la compatibilidad con cualquier build publicado.
+- **Destino de archivos.** `Descargas/Syroda` por defecto, configurable en
+  Ajustes; MediaStore en Android y ruta normal en escritorio, detrás de la
+  abstracción `ReceiveDestination`. Ver "Destino de lo recibido".
+- **Abrir lo recibido**, y ver dónde queda, por el canal nativo y sin
+  dependencia nueva.
+- **Proveedor de espacio libre en las dos plataformas.** `StatFs` en Android y
+  `GetDiskFreeSpaceExW` en Windows.
 
-**Nada se ha ejecutado en un dispositivo real.** Todo el transporte está
-verificado en loopback, que no tiene mDNS, ni firewall, ni Doze, ni cambios de
-red. Las pantallas están verificadas por tests de widget con Riverpod
-faseado, no en un dispositivo. El Kotlin de `StatFs` y el servicio en primer
-plano no se han compilado nunca fuera de esta máquina.
+**El flujo completo se validó el 31 de julio de 2026** entre un teléfono
+Android y un PC en la misma red: descubrimiento mutuo, handshake, caducidad
+del código, transferencia con checksum, cancelación en ambos sentidos,
+servicio en primer plano, regla de ciclo de vida, emparejamiento manual y el
+diálogo de firewall de Windows. Ver la checklist más abajo, que distingue
+línea por línea lo comprobado de lo que no.
 
-Estas cuatro decisiones están **razonadas y sin validar**, y son las primeras
-candidatas a estar mal:
+### Abierto, en orden
 
-- El `MulticastLock` sostenido con un descubrimiento de adorno.
-- La regla de disponibilidad por ciclo de vida (qué emite Android y cuándo).
-- El fallback de emparejamiento manual, incluido el diagnóstico de aislamiento
-  de clientes.
-- La regla de firewall de Windows y su diagnóstico de "0 pares".
+1. **Validar MediaStore y la carpeta configurable en el teléfono.** Es lo
+   único que bloquea la Fase 5, porque el destino lo comparten las dos
+   plataformas y no conviene depurar dos capas a la vez. **El APK de release
+   de las 21:20 del 31 de julio ya incluye ese código** — se terminó después
+   de la sesión de validación, por eso quedó sin comprobar. Mínimo a
+   verificar: que el archivo aparece en la app Archivos; que dos envíos con el
+   mismo nombre **no se sobrescriben**; y que abrir desde el historial
+   funciona **tras cerrar y reabrir la app**, que es cuando el `content://`
+   guardado tiene que seguir sirviendo.
+2. **Validar el rechazo por espacio en Windows.** El proveedor existe y
+   compila, pero nunca se ejecutó: falta ver un rechazo real, y que la cifra
+   sea la del volumen de la carpeta elegida **cuando esa carpeta está en otra
+   unidad**.
+3. **Fase 5 (UI de Windows).** Empieza por `WinShell` y la ventana sin barra
+   nativa con `window_manager`; después la ventana principal, el drag & drop
+   con `desktop_drop`, y la cola, el historial y los ajustes. Las cuatro
+   ventanas están en `index.html`. **Las dos dependencias ya están aprobadas y
+   agregadas.**
+4. **Resolver la decisión diferida de `announcementProvider` en Windows**, al
+   implementar la ventana principal. Explícitamente, no por omisión: ver
+   "Decisiones diferidas".
+5. **Fase 6.** Instalador con Inno Setup, `PrivilegesRequired=admin`, y la
+   regla de firewall **por programa**. El `.exe` va sin firmar en v1:
+   SmartScreen mostrará "editor desconocido".
 
-**Orden de la sesión siguiente:**
+### Lo que sigue sin validarse
 
-1. **Prueba real con dos dispositivos en la misma red, antes de abrir la Fase
-   5.** La Fase 4 ya está completa en código; esta prueba es lo único que
-   falta. Abrir la UI de Windows sobre un transporte que nunca vio una red de
-   verdad multiplica por dos el trabajo de cualquier corrección. Checklist
-   abajo.
+Las pantallas de Windows no existen todavía, así que nada de la Fase 5 se ha
+ejecutado. Y de lo que sí existe, queda sin comprobar en un dispositivo lo de
+los puntos 1 y 2 de arriba.
+
+De las cuatro decisiones que estaban "razonadas y sin validar", tres se
+comprobaron el 31 de julio: el `MulticastLock` sostenido por el descubrimiento
+de adorno, la regla de ciclo de vida y el fallback de emparejamiento manual.
+La cuarta —la regla de firewall de Windows y su diagnóstico de "0 pares"— se
+vio funcionar en el primer `bind`, pero el diagnóstico de "0 pares" como tal
+no se ha probado contra un firewall que de verdad bloquee.
 
 ### Checklist de validación en dispositivo
 
@@ -602,6 +609,11 @@ archivo a medias en vez de un rechazo limpio. De ahí la regla:
     flutter build apk --release --split-per-abi
     flutter build windows --release
 
+**`flutter build apk --release` tarda ~820 s en esta máquina. No está
+colgado.** Se anota porque entre sesiones se olvida y da la impresión de que
+algo se rompió. `flutter analyze` también llega a los 100 s con el proyecto
+frío; en caliente baja a menos de 10.
+
 Para comparar la galeria contra los mockups sin abrir la app:
 `flutter test test/gallery_snapshot_test.dart` deja el PNG en
 `build/gallery.png` (o donde apunte `SYRODA_SNAPSHOT`).
@@ -610,8 +622,11 @@ El instalador de Windows empaqueta la DLL de SQLite que `sqflite_common_ffi`
 carga en runtime: sin ella la app arranca y falla al abrir el historial, y
 solo se nota en una maquina limpia.
 
-El instalador de Windows es Inno Setup con `PrivilegesRequired=admin` (crea la
-regla de firewall). El `.exe` va sin firmar en v1: SmartScreen mostrará
-"editor desconocido"; es deuda conocida documentada en `docs/BUILD.md`.
+El instalador de Windows es Inno Setup con `PrivilegesRequired=admin`, que es
+lo que le permite crear la **regla de firewall por programa** — por el
+ejecutable, no por puerto: el puerto sale de un `bind(0)` y cambia en cada
+arranque, así que una regla por puerto no serviría de nada. El `.exe` va sin
+firmar en v1: SmartScreen mostrará "editor desconocido"; es deuda conocida
+documentada en `docs/BUILD.md`.
 El `key.properties` de Android está en `.gitignore` y su procedimiento se
 documenta, nunca se generan claves reales en el repo.
