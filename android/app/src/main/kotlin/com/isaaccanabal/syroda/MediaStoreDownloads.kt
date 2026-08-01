@@ -6,6 +6,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.StatFs
 import android.provider.MediaStore
 import java.io.File
 import java.io.OutputStream
@@ -45,7 +46,6 @@ class MediaStoreDownloads(private val context: Context) {
      */
     fun ready(): Boolean = try {
         if (scoped) {
-            resolver.getType(MediaStore.Downloads.EXTERNAL_CONTENT_URI)
             Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
         } else {
             legacyFolder().let { it.exists() || it.mkdirs() }
@@ -53,6 +53,17 @@ class MediaStoreDownloads(private val context: Context) {
     } catch (e: Exception) {
         false
     }
+
+    /**
+     * El espacio libre del volumen al que se escribe de verdad.
+     *
+     * `VOLUME_EXTERNAL_PRIMARY` **es** `Environment.getExternalStorageDirectory()`,
+     * asi que este es el volumen del destino y no una aproximacion: medir sobre
+     * el almacenamiento interno de la app seria otra cosa cuando no coinciden.
+     */
+    fun freeBytes(): Long = StatFs(
+        Environment.getExternalStorageDirectory().absolutePath
+    ).availableBytes
 
     /**
      * Reserva la fila y abre el flujo. Devuelve el uri y el nombre que quedo:
@@ -67,7 +78,14 @@ class MediaStoreDownloads(private val context: Context) {
             put(MediaStore.Downloads.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/$FOLDER")
             put(MediaStore.Downloads.IS_PENDING, 1)
         }
-        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+        // `VOLUME_EXTERNAL_PRIMARY`, no `EXTERNAL_CONTENT_URI`: esa constante
+        // apunta a `VOLUME_EXTERNAL`, que es una vista sintetica que fusiona
+        // todos los volumenes y **no admite inserciones**. Insertar ahi lanza
+        // IllegalArgumentException en tiempo de ejecucion.
+        val collection = MediaStore.Downloads.getContentUri(
+            MediaStore.VOLUME_EXTERNAL_PRIMARY
+        )
+        val uri = resolver.insert(collection, values)
             ?: throw IllegalStateException("MediaStore no acepto la fila para $name")
 
         open[uri.toString()] = resolver.openOutputStream(uri, "w")

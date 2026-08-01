@@ -42,6 +42,21 @@ class MediaStoreDestination implements ReceiveDestination {
     }
   }
 
+  /// El espacio libre del volumen al que MediaStore escribe.
+  ///
+  /// `VOLUME_EXTERNAL_PRIMARY` es `Environment.getExternalStorageDirectory()`,
+  /// asi que esto mide el volumen del destino. Medirlo sobre el
+  /// almacenamiento interno de la app seria otra cosa cuando no coinciden.
+  static Future<int?> freeBytes() async {
+    try {
+      return await _channel.invokeMethod<int>('destinationFreeBytes');
+    } on PlatformException {
+      return null;
+    } on MissingPluginException {
+      return null;
+    }
+  }
+
   @override
   String get label => 'Descargas/$destinationFolder';
 

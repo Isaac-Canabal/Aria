@@ -124,17 +124,23 @@ final FutureProvider<ReceiveServer> receiveServerProvider =
         destinationOpenerProvider,
       );
       final FreeSpaceProvider space = ref.watch(freeSpaceProvider);
-      final Directory probe = await getApplicationDocumentsDirectory();
+      // El volumen del destino, no el de la app. En Android MediaStore no
+      // expone ruta, asi que el lado nativo mide sobre
+      // `VOLUME_EXTERNAL_PRIMARY`, que es exactamente donde escribe.
+      final Future<int?> Function() freeBytes;
+      if (Platform.isAndroid) {
+        freeBytes = MediaStoreDestination.freeBytes;
+      } else {
+        final Directory? downloads = await getDownloadsDirectory();
+        final String probe =
+            downloads?.path ?? (await getApplicationDocumentsDirectory()).path;
+        freeBytes = () => space.bytesAvailable(probe);
+      }
 
       final ReceiveServer server = await ReceiveServer.bind(
         identity: identity,
         responder: PlainChannelResponder(ref.watch(pairingServiceProvider)),
-        policy: DefaultReceivePolicy(
-          open: open,
-          // El espacio se mide sobre el almacenamiento de la app: MediaStore
-          // no expone una ruta, y en la practica es el mismo volumen.
-          freeBytes: () => space.bytesAvailable(probe.path),
-        ),
+        policy: DefaultReceivePolicy(open: open, freeBytes: freeBytes),
       );
       // Se deja de aceptar al pasar a background y se vuelve a aceptar al
       // volver. El socket de escucha no se cierra: una sesion en vuelo sigue.

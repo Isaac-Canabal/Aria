@@ -40,6 +40,10 @@ class MainActivity : FlutterActivity() {
 
                 "destinationReady" -> result.success(downloads.ready())
 
+                "destinationFreeBytes" -> withDownloads(result) {
+                    downloads.freeBytes()
+                }
+
                 "createDownload" -> withDownloads(result) {
                     val name = call.argument<String>("name")
                         ?: throw IllegalArgumentException("falta el argumento name")

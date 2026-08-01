@@ -98,6 +98,16 @@ razón explícita para no abrir la Fase 5, no un detalle suelto.
       de espacio libre todavía no existe (Fase 5): ahí toca verificar que
       aparece la advertencia de `withoutSpaceCheck`, no un rechazo real —
       confundir una cosa con la otra invalidaría esta línea.
+- [ ] **Destino en Android, que nunca ha corrido**: que el archivo aparece en
+      `Descargas/Syroda` desde la app Archivos; que `IS_PENDING` hace su
+      trabajo (un archivo a medias **no** se ve como terminado, y un checksum
+      que no cuadra no deja nada); que la resolución de colisiones del sistema
+      devuelve el nombre real y es el que se muestra; y que el `content://`
+      que queda en `localPath` del historial es utilizable —abrirlo— y no una
+      ruta que nadie puede usar.
+- [ ] **Rechazo por destino inválido** (`destinationUnavailable`): llega
+      **antes** de empezar el primer archivo, con el lote entero, y el emisor
+      muestra ese motivo y no otro.
 - [ ] **Estado vacío tras el grace period** en Enviar
       (`discoveryGracePeriod`), con "Conectar manualmente" funcionando de
       punta a punta contra el `code-card` del receptor.
@@ -372,6 +382,21 @@ De ahí, y bajo el veto de copy que ya existe:
   equivalente exacto del `.part`**: la fila existe pero no se ve como archivo
   terminado hasta que se baja el flag. Por debajo de Android 10 no hay
   almacenamiento por ámbitos y se escribe con `File`, con la misma disciplina.
+- **Se escribe a `VOLUME_EXTERNAL_PRIMARY`, nunca a `EXTERNAL_CONTENT_URI`.**
+  Esa constante apunta a `VOLUME_EXTERNAL`, que es una **vista sintética** que
+  fusiona todos los volúmenes y **no admite inserciones**: insertar ahí lanza
+  `IllegalArgumentException` en tiempo de ejecución. De paso, esto responde a
+  qué volumen se escribe: `VOLUME_EXTERNAL_PRIMARY` **es**
+  `Environment.getExternalStorageDirectory()`, así que el destino es siempre
+  el almacenamiento primario. Una SD portátil es un volumen secundario al que
+  no se escribe nunca; una SD adoptada **pasa a ser** el primario, y los datos
+  de la app se mudan con ella. En los dos casos destino y app comparten
+  volumen.
+- **El espacio libre se mide sobre el volumen del destino**, no sobre el
+  almacenamiento interno de la app. En Android MediaStore no expone una ruta,
+  así que lo mide el lado nativo con `StatFs` sobre
+  `Environment.getExternalStorageDirectory()`, que es exactamente donde
+  escribe. Medirlo sobre la carpeta de la app era una aproximación que sobra.
 - **`IncomingFileSink.add` es asíncrono a propósito.** Esperarlo es lo único
   que impide que el receptor lea de la red más rápido de lo que el destino
   traga y acumule sin techo — con `IOSink.add`, que es síncrono, el buffer
