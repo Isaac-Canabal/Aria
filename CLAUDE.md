@@ -397,6 +397,19 @@ De ahí, y bajo el veto de copy que ya existe:
   así que lo mide el lado nativo con `StatFs` sobre
   `Environment.getExternalStorageDirectory()`, que es exactamente donde
   escribe. Medirlo sobre la carpeta de la app era una aproximación que sobra.
+- **Abrir lo recibido va por el canal nativo, sin dependencia nueva.** En
+  Windows `ShellExecuteW` y `SHOpenFolderAndSelectItems` (que abre el
+  Explorador con el archivo ya seleccionado); en Android un `ACTION_VIEW`
+  sobre el `content://` con `FLAG_GRANT_READ_URI_PERMISSION` — como el URI
+  viene de MediaStore **no hace falta un FileProvider**. Se descartó
+  `url_launcher` (no maneja bien `content://` con concesión de permisos) y
+  `open_filex` (una dependencia por ~25 líneas de código nativo).
+- **Fallar al abrir no es un fallo de transferencia y no se presenta como
+  tal**: aviso corto, la fila se queda donde está. Y **`missing` y
+  `noHandler` se distinguen**, porque son problemas distintos y lo que puede
+  hacer la persona también: el historial guarda la ruta o el URI, **no el
+  archivo**, así que borrarlo desde Archivos o el Explorador es alcanzable y
+  no es lo mismo que no tener con qué abrirlo.
 - **`IncomingFileSink.add` es asíncrono a propósito.** Esperarlo es lo único
   que impide que el receptor lea de la red más rápido de lo que el destino
   traga y acumule sin techo — con `IOSink.add`, que es síncrono, el buffer

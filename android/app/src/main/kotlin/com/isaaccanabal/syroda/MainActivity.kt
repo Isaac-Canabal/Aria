@@ -15,6 +15,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
 
     private val downloads by lazy { MediaStoreDownloads(applicationContext) }
+    private val opener by lazy { OpenReceived(this) }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -73,6 +74,19 @@ class MainActivity : FlutterActivity() {
                     downloads.discard(requireUri(call.argument<String>("uri")))
                     null
                 }
+
+                "openFile", "revealFile" -> {
+                    val target = call.argument<String>("target")
+                    if (target == null) {
+                        result.error("no_target", "falta el argumento target", null)
+                    } else {
+                        // No hay "mostrar en la carpeta" en Android: abrir el
+                        // archivo es lo unico que se puede ofrecer.
+                        result.success(opener.open(target))
+                    }
+                }
+
+                "openDestinationFolder" -> result.success(opener.openFolder())
 
                 else -> result.notImplemented()
             }

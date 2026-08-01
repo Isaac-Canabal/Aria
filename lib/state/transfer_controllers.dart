@@ -14,6 +14,7 @@ import '../core/data/session_history_recorder.dart';
 import '../core/data/transfer_record.dart';
 import '../core/platform/free_space.dart';
 import '../core/platform/media_store_destination.dart';
+import '../core/platform/open_received.dart';
 import '../core/platform/transfer_foreground_service.dart';
 import '../core/transfer/transfer.dart';
 import 'data_providers.dart';
@@ -102,6 +103,10 @@ destinationOpenerProvider = Provider<Future<ReceiveDestination?> Function()>((
     );
   };
 });
+
+/// Abre lo recibido con la aplicacion que le corresponda.
+final Provider<ReceivedFileOpener> fileOpenerProvider =
+    Provider<ReceivedFileOpener>((Ref ref) => const SystemFileOpener());
 
 /// Lo que se le ensena a la persona como destino. Una ruta en escritorio, una
 /// etiqueta en Android: ahi no hay ruta que ensenar.
