@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 
+import 'destination.dart';
 import 'errors.dart';
 import 'protocol/file_name.dart';
 import 'protocol/limits.dart';
@@ -82,14 +83,34 @@ class _DigestSink implements Sink<Digest> {
   void close() {}
 }
 
+/// El resultado de revisar un manifiesto.
+///
+/// Sellado y con el destino dentro del caso que acepta: asi **no existe la
+/// forma de aceptar un lote sin tener donde escribirlo**. Antes el destino se
+/// resolvia despues de mandar `manifest_result.ok`, y una carpeta invalida se
+/// descubria al primer archivo, que es justo lo que el invariante prohibe.
+sealed class ManifestDecision {
+  const ManifestDecision();
+}
+
+final class AcceptManifest extends ManifestDecision {
+  const AcceptManifest(this.destination);
+
+  final ReceiveDestination destination;
+}
+
+final class RejectManifest extends ManifestDecision {
+  const RejectManifest(this.reason);
+
+  final RejectionReason reason;
+}
+
 /// Las decisiones del receptor. La sesion no sabe de espacio libre ni de
 /// carpetas: pregunta aqui.
 abstract interface class ReceivePolicy {
-  /// Donde se escriben los archivos aceptados.
-  Future<Directory> destination();
-
-  /// Se consulta al llegar el manifiesto. `null` acepta la sesion.
-  Future<RejectionReason?> reviewManifest(Manifest manifest);
+  /// Se consulta al llegar el manifiesto. Devuelve el destino ya abierto o el
+  /// motivo del rechazo.
+  Future<ManifestDecision> reviewManifest(Manifest manifest);
 
   /// Se consulta por archivo. `null` lo acepta; rechazarlo lo salta sin
   /// matar la sesion.
@@ -105,7 +126,7 @@ abstract interface class ReceivePolicy {
 /// deja rastro en el log.
 class DefaultReceivePolicy implements ReceivePolicy {
   const DefaultReceivePolicy({
-    required this.directory,
+    required this.open,
     required Future<int?> Function() this.freeBytes,
     this.confirm,
   });
@@ -114,10 +135,8 @@ class DefaultReceivePolicy implements ReceivePolicy {
   /// cabe termina en un disco lleno y un archivo a medias, asi que esto es
   /// para pruebas y para arrancar una plataforma cuyo proveedor todavia no
   /// existe, no para produccion.
-  DefaultReceivePolicy.withoutSpaceCheck({
-    required this.directory,
-    this.confirm,
-  }) : freeBytes = null {
+  DefaultReceivePolicy.withoutSpaceCheck({required this.open, this.confirm})
+    : freeBytes = null {
     developer.log(
       'sin comprobacion de espacio libre: el lote se acepta sin saber si cabe',
       name: 'syroda.transfer',
@@ -125,28 +144,35 @@ class DefaultReceivePolicy implements ReceivePolicy {
     );
   }
 
-  final Directory directory;
+  /// Como se abre el destino. Devuelve `null` si no hay donde escribir.
+  final Future<ReceiveDestination?> Function() open;
+
   final Future<int?> Function()? freeBytes;
 
   /// La decision de la persona, cuando la UI la pide. `null` acepta.
   final Future<RejectionReason?> Function(Manifest manifest)? confirm;
 
   @override
-  Future<Directory> destination() async => directory;
-
-  @override
-  Future<RejectionReason?> reviewManifest(Manifest manifest) async {
+  Future<ManifestDecision> reviewManifest(Manifest manifest) async {
     if (manifest.files.length > maxManifestEntries) {
-      return RejectionReason.unacceptableFile;
+      return const RejectManifest(RejectionReason.unacceptableFile);
     }
 
     final int? free = await freeBytes?.call();
     // Un margen: llenar el disco hasta el ultimo byte rompe otras cosas.
     if (free != null && manifest.totalBytes > free - _spaceMargin) {
-      return RejectionReason.insufficientSpace;
+      return const RejectManifest(RejectionReason.insufficientSpace);
     }
 
-    return confirm == null ? null : await confirm!(manifest);
+    final RejectionReason? declined = await confirm?.call(manifest);
+    if (declined != null) return RejectManifest(declined);
+
+    // Lo ultimo, y dentro de la decision: aceptar sin tener donde escribir
+    // dejaria el fallo para el primer archivo, con el lote ya aceptado.
+    final ReceiveDestination? destination = await open();
+    return destination == null
+        ? const RejectManifest(RejectionReason.destinationUnavailable)
+        : AcceptManifest(destination);
   }
 
   @override

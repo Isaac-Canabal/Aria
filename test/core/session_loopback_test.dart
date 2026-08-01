@@ -82,10 +82,8 @@ class _PickyPolicy implements ReceivePolicy {
   final Set<String> blocked;
 
   @override
-  Future<Directory> destination() async => directory;
-
-  @override
-  Future<RejectionReason?> reviewManifest(Manifest manifest) async => null;
+  Future<ManifestDecision> reviewManifest(Manifest manifest) async =>
+      AcceptManifest(FileSystemDestination(directory));
 
   @override
   Future<RejectionReason?> reviewFile(FileHeader header) async =>
@@ -111,7 +109,9 @@ void main() {
       responder: PlainChannelResponder(pairing),
       policy:
           policy?.call(inbox) ??
-          DefaultReceivePolicy.withoutSpaceCheck(directory: inbox),
+          DefaultReceivePolicy.withoutSpaceCheck(
+            open: () async => FileSystemDestination.open(inbox),
+          ),
       address: InternetAddress.loopbackIPv4,
     );
     received = <SessionEvent>[];
@@ -315,8 +315,10 @@ void main() {
 
   test('el lote se rechaza entero si no cabe', () async {
     await boot(
-      policy: (Directory dir) =>
-          DefaultReceivePolicy(directory: dir, freeBytes: () async => 1000),
+      policy: (Directory dir) => DefaultReceivePolicy(
+        open: () async => FileSystemDestination.open(dir),
+        freeBytes: () async => 1000,
+      ),
     );
 
     await expectLater(

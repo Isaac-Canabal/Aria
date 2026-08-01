@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'destination.dart';
 import 'errors.dart';
 import 'files.dart';
 import 'peer.dart';
@@ -360,18 +361,25 @@ class ReceiveServer {
     );
 
     final Manifest manifest = await connection.expect<Manifest>();
-    final RejectionReason? rejection = busy
-        ? RejectionReason.busy
+    final ManifestDecision decision = busy
+        ? const RejectManifest(RejectionReason.busy)
         : await _policy.reviewManifest(manifest);
-    if (rejection != null) {
-      connection.send(ManifestResult.rejected(rejection));
-      await connection.flush();
-      throw RejectedByPeer(rejection, scope: RejectionScope.session);
+
+    // El destino sale de la decision, no de una llamada aparte posterior: no
+    // hay forma de aceptar un lote sin tener donde escribirlo.
+    final ReceiveDestination destination;
+    switch (decision) {
+      case RejectManifest(:final RejectionReason reason):
+        connection.send(ManifestResult.rejected(reason));
+        await connection.flush();
+        throw RejectedByPeer(reason, scope: RejectionScope.session);
+      case AcceptManifest(destination: final ReceiveDestination open):
+        destination = open;
     }
+
     connection.send(const ManifestResult.accepted());
     yield SessionManifest(manifest.files, totalBytes: manifest.totalBytes);
 
-    final Directory destination = await _policy.destination();
     final _Tally tally = _Tally();
     int index = 0;
 
@@ -414,35 +422,47 @@ class ReceiveServer {
     }
   }
 
-  /// Escribe en `<nombre>.part` y solo renombra tras verificar el sha256. Un
-  /// checksum que no cuadra borra el parcial: nunca queda un archivo con el
-  /// nombre definitivo y el contenido a medias.
+  /// Escribe contra el sink del destino y solo lo publica tras verificar el
+  /// sha256. Un checksum que no cuadra lo descarta: nunca queda un archivo
+  /// con el nombre definitivo y el contenido a medias.
+  ///
+  /// Que eso sea un `.part` y un rename, o una fila de MediaStore con
+  /// `IS_PENDING`, es cosa del destino. Aqui no se sabe.
   Stream<SessionEvent> _receiveFile(
     ProtocolConnection connection,
     FileHeader header, {
-    required Directory destination,
+    required ReceiveDestination destination,
     required int index,
     required int sessionTotal,
     required _Tally tally,
   }) async* {
-    // Saneado otra vez de este lado: el nombre viene de un par no confiable.
-    final String safe = uniqueFileName(
-      sanitizeFileName(header.name),
-      (String candidate) => File(
-        '${destination.path}${Platform.pathSeparator}$candidate',
-      ).existsSync(),
-    );
-    final String finalPath =
-        '${destination.path}${Platform.pathSeparator}$safe';
-    final File partial = File('$finalPath.part');
-
     final IncrementalSha256 digest = IncrementalSha256();
-    IOSink? out;
     int received = 0;
     FileFailure? failure;
+    String? path;
+
+    // Saneado otra vez de este lado: el nombre viene de un par no confiable.
+    // El destino resuelve las colisiones y devuelve el nombre que quedo.
+    final IncomingFileSink sink;
+    try {
+      sink = await destination.create(
+        sanitizeFileName(header.name),
+        size: header.size,
+      );
+    } on FileSystemException {
+      connection.send(
+        FileDone(name: header.name, ok: false, failure: FileFailure.ioError),
+      );
+      yield FileFinished(
+        name: header.name,
+        index: index,
+        failure: FileFailure.ioError,
+      );
+      return;
+    }
+    final String safe = sink.name;
 
     try {
-      out = partial.openWrite();
       while (received < header.size) {
         final Frame frame = await connection.nextFrame();
         if (frame.type != FrameType.chunk) {
@@ -459,7 +479,9 @@ class ReceiveServer {
         }
 
         digest.add(plain);
-        out.add(plain);
+        // Esperado: es lo que impide leer de la red mas rapido de lo que el
+        // destino traga y acumular sin techo.
+        await sink.add(plain);
         tally.sessionBytes += plain.length;
         yield FileProgress(
           name: safe,
@@ -471,26 +493,22 @@ class ReceiveServer {
         );
       }
 
-      await out.flush();
-      await out.close();
-      out = null;
+      await sink.flush();
 
-      // El trailer cierra el archivo: hasta compararlo, lo que hay en disco
-      // es un `.part` y nada mas.
+      // El trailer cierra el archivo: hasta compararlo, lo que hay escrito no
+      // es un archivo terminado para nadie.
       final FileHash trailer = await connection.expect<FileHash>();
       if (digest.finish() != trailer.sha256) {
-        await _deleteQuietly(partial);
+        await sink.discard();
         failure = FileFailure.checksumMismatch;
       } else {
-        await partial.rename(finalPath);
+        path = await sink.commit();
       }
     } on TransferError {
-      await out?.close();
-      await _deleteQuietly(partial);
+      await sink.discard();
       rethrow;
     } on FileSystemException {
-      await out?.close();
-      await _deleteQuietly(partial);
+      await sink.discard();
       failure = FileFailure.ioError;
     }
 
@@ -502,16 +520,8 @@ class ReceiveServer {
       name: safe,
       index: index,
       failure: failure,
-      path: failure == null ? finalPath : null,
+      path: failure == null ? path : null,
     );
-  }
-
-  static Future<void> _deleteQuietly(File file) async {
-    try {
-      if (file.existsSync()) await file.delete();
-    } on FileSystemException {
-      // Un parcial que no se pudo borrar no cambia el resultado.
-    }
   }
 
   /// Corta la sesion en curso, si la hay.

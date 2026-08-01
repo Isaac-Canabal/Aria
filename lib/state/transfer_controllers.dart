@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import '../core/data/session_history_recorder.dart';
 import '../core/data/transfer_record.dart';
 import '../core/platform/free_space.dart';
+import '../core/platform/media_store_destination.dart';
 import '../core/platform/transfer_foreground_service.dart';
 import '../core/transfer/transfer.dart';
 import 'data_providers.dart';
@@ -80,14 +81,38 @@ final Provider<TransferForegroundService> foregroundServiceProvider =
           : NoTransferForegroundService(),
     );
 
-/// Donde se guarda lo recibido.
-final FutureProvider<Directory> downloadsDirectoryProvider =
-    FutureProvider<Directory>((Ref ref) async {
-      final Directory? downloads = await getDownloadsDirectory();
-      if (downloads != null) return downloads;
-      // Android no siempre expone Descargas: se cae al directorio de la app.
-      return getApplicationDocumentsDirectory();
-    });
+/// Como se abre el destino de lo recibido, por plataforma.
+///
+/// En Android, MediaStore: `path_provider` no da Descargas publico, resuelve
+/// una carpeta privada de la app que la persona no puede abrir. En escritorio,
+/// `Descargas/Syroda`, que si es una ruta normal.
+///
+/// Devuelve `null` cuando no hay donde escribir, y la politica lo convierte en
+/// `destinationUnavailable` para el lote entero.
+final Provider<Future<ReceiveDestination?> Function()>
+destinationOpenerProvider = Provider<Future<ReceiveDestination?> Function()>((
+  Ref ref,
+) {
+  if (Platform.isAndroid) return MediaStoreDestination.open;
+  return () async {
+    final Directory? downloads = await getDownloadsDirectory();
+    if (downloads == null) return null;
+    return FileSystemDestination.open(
+      Directory('${downloads.path}${Platform.pathSeparator}$destinationFolder'),
+    );
+  };
+});
+
+/// Lo que se le ensena a la persona como destino. Una ruta en escritorio, una
+/// etiqueta en Android: ahi no hay ruta que ensenar.
+final FutureProvider<String> destinationLabelProvider = FutureProvider<String>((
+  Ref ref,
+) async {
+  if (Platform.isAndroid) return 'Descargas/$destinationFolder';
+  final Directory? downloads = await getDownloadsDirectory();
+  if (downloads == null) return destinationFolder;
+  return '${downloads.path}${Platform.pathSeparator}$destinationFolder';
+});
 
 /// El servidor de recepcion, ligado al puerto efimero que despues se anuncia.
 final FutureProvider<ReceiveServer> receiveServerProvider =
@@ -95,17 +120,20 @@ final FutureProvider<ReceiveServer> receiveServerProvider =
       final DeviceIdentity identity = await ref.watch(
         deviceIdentityProvider.future,
       );
-      final Directory destination = await ref.watch(
-        downloadsDirectoryProvider.future,
+      final Future<ReceiveDestination?> Function() open = ref.watch(
+        destinationOpenerProvider,
       );
       final FreeSpaceProvider space = ref.watch(freeSpaceProvider);
+      final Directory probe = await getApplicationDocumentsDirectory();
 
       final ReceiveServer server = await ReceiveServer.bind(
         identity: identity,
         responder: PlainChannelResponder(ref.watch(pairingServiceProvider)),
         policy: DefaultReceivePolicy(
-          directory: destination,
-          freeBytes: () => space.bytesAvailable(destination.path),
+          open: open,
+          // El espacio se mide sobre el almacenamiento de la app: MediaStore
+          // no expone una ruta, y en la practica es el mismo volumen.
+          freeBytes: () => space.bytesAvailable(probe.path),
         ),
       );
       // Se deja de aceptar al pasar a background y se vuelve a aceptar al

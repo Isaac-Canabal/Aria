@@ -247,7 +247,19 @@ hacia atrás.
   secuencia.
 - `ready` puede rechazar un archivo sin matar la sesión; el siguiente sigue.
   `manifest_result` rechaza el lote completo, que es donde se valida el espacio
-  libre: nunca se falla en el archivo 3 de 5.
+  libre **y el destino**: nunca se falla en el archivo 3 de 5. Que eso se
+  cumpla no es disciplina, es la forma del tipo: `reviewManifest` devuelve un
+  `ManifestDecision` sellado y el destino ya abierto viene **dentro** de
+  `AcceptManifest`, así que no existe la forma de aceptar un lote sin tener
+  dónde escribirlo.
+- **`RejectionReason.destinationUnavailable` se añadió al cable** cuando el
+  destino pasó a ser una carpeta propia. Es un cambio al formato congelado,
+  con la misma justificación que `device_id` y `_syroda._tcp`: no hay build
+  publicado y este era el último momento en que salía gratis. No se degradó a
+  reutilizar `insufficientSpace` ni `unacceptableFile` porque eso haría que el
+  emisor mostrara un motivo falso, y el proyecto veta el copy que afirma lo
+  que no es cierto. **Ojo:** `requiredEnum` cierra la sesión ante un valor que
+  no conoce, así que añadir motivos después de publicar rompe compatibilidad.
 - `cancel` va en cualquier dirección y en cualquier momento tras el handshake,
   incluso entre chunks.
 - El sha256 es por archivo y va **en el trailer** (`file_hash`), no en el
@@ -340,6 +352,33 @@ De ahí, y bajo el veto de copy que ya existe:
   rama que consulte los emparejados para saltarse el código rompe esta
   invariante.
 
+## Destino de lo recibido
+
+- **`Descargas/Syroda` en las dos plataformas**, para que la explicación en
+  pantalla sea una sola.
+- **El receptor no escribe contra `dart:io`, escribe contra
+  `ReceiveDestination` / `IncomingFileSink`** (`core/transfer/destination.dart`),
+  inyectado desde la capa de plataforma igual que `freeBytes`. `core/transfer/`
+  sigue siendo Dart puro sin Flutter, que es lo que permite correr sus tests
+  sin binding. La lógica de `.part` y checksum se expresa sobre esa
+  abstracción: **hasta `commit()` lo escrito no es un archivo terminado para
+  nadie**, y `commit()` solo se llama tras comparar el trailer.
+- **Android escribe por MediaStore**, no por ruta. `path_provider` no da
+  Descargas público: resuelve `getExternalFilesDirs(DIRECTORY_DOWNLOADS)`, que
+  es privado de la app e inaccesible desde Archivos en Android 11+ — el
+  archivo llegaba donde la persona no podía entrar. MediaStore no necesita
+  permiso en tiempo de ejecución en Android 10+ ni dependencia nueva: el lado
+  nativo va en el canal `syroda/platform` que ya existía. **`IS_PENDING` es el
+  equivalente exacto del `.part`**: la fila existe pero no se ve como archivo
+  terminado hasta que se baja el flag. Por debajo de Android 10 no hay
+  almacenamiento por ámbitos y se escribe con `File`, con la misma disciplina.
+- **`IncomingFileSink.add` es asíncrono a propósito.** Esperarlo es lo único
+  que impide que el receptor lea de la red más rápido de lo que el destino
+  traga y acumule sin techo — con `IOSink.add`, que es síncrono, el buffer
+  crecía sin límite. Esperándolo, lo que puede estar en vuelo es un chunk, que
+  ya tiene límite validado (`maxChunkFrameBytes`). Importa de verdad en
+  Android, donde MediaStore escribe por FUSE y es más lento que la red.
+
 ## Estado y persistencia
 
 - Riverpod. La UI no habla con `core/` directamente: consume los proveedores de
@@ -431,20 +470,10 @@ archivo a medias en vez de un rechazo limpio. De ahí la regla:
   **Sustituible en cuanto el plugin ate el lock también al registro**; vale la
   pena abrir el issue upstream con esas dos líneas.
 
-- **No hay forma de ver los archivos recibidos.** Encontrado en la primera
-  prueba en dispositivo. **No es un bug de transporte: los archivos llegan al
-  disco y el checksum cuadra.** Falta la superficie de UI para listarlos,
-  abrirlos o guardarlos, que es **Fase 5**. Lo que sí conviene saber ya, porque
-  cambia según la plataforma: en Windows `getDownloadsDirectory()` devuelve
-  `FOLDERID_Downloads`, la carpeta real del usuario. En Android **no** devuelve
-  Descargas público: `path_provider_android` lo resuelve como
-  `getExternalFilesDirs(DIRECTORY_DOWNLOADS)`, es decir
-  `Android/data/<paquete>/files/Download`, privado de la app e inaccesible
-  desde la app Archivos en Android 11+. O sea que en Android el archivo llega
-  a un sitio donde la persona no puede entrar, y eso no lo arregla la UI de
-  Fase 5 sola. **El destino está pendiente de decisión** (carpeta propia
-  `Syroda`); afecta al receptor en ambas plataformas y se decide antes de
-  escribir la UI que los muestra.
+- **No hay forma de ver los archivos recibidos.** Falta la superficie de UI
+  para listarlos y abrirlos, que es **Fase 5**. El destino ya está resuelto
+  (ver "Destino de lo recibido"): los archivos llegan a `Descargas/Syroda` en
+  las dos plataformas y el checksum cuadra.
 
 - **Proveedor nativo de espacio libre.** `dart:io` no lo expone.
   `DefaultReceivePolicy` lo recibe inyectado; la única forma de construirla sin

@@ -2,8 +2,10 @@
 /// transferencia. No depende de Flutter ni de la UI.
 library;
 
+export 'destination.dart';
 export 'discovery_service.dart';
 export 'errors.dart';
+export 'file_system_destination.dart';
 export 'files.dart';
 export 'pairing_service.dart';
 export 'peer.dart';

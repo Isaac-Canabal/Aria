@@ -100,18 +100,28 @@ enum RejectionReason {
 
   /// El nombre no sobrevivio al saneado, o el archivo no es aceptable.
   unacceptableFile,
+
+  /// No hay donde escribir: la carpeta no existe, se borro, o el permiso
+  /// sobre ella se revoco. Se decide **al validar el manifiesto**, con el
+  /// lote entero, nunca a mitad del archivo 3 de 5.
+  destinationUnavailable,
 }
 
 /// El sha256 recibido no coincide con el anunciado en el `file_header`.
 final class IntegrityError extends TransferError {
-  const IntegrityError({required this.expected, required this.actual, this.name});
+  const IntegrityError({
+    required this.expected,
+    required this.actual,
+    this.name,
+  });
 
   final String expected;
   final String actual;
   final String? name;
 
   @override
-  String get debugMessage => 'sha256 $name: esperado $expected, recibido $actual';
+  String get debugMessage =>
+      'sha256 $name: esperado $expected, recibido $actual';
 }
 
 /// Fallo del disco: abrir, escribir, renombrar el `.part`.
@@ -146,7 +156,8 @@ final class ConnectionFailed extends TransferError {
   final Object? cause;
 
   @override
-  String get debugMessage => cause == null ? fault.name : '${fault.name}: $cause';
+  String get debugMessage =>
+      cause == null ? fault.name : '${fault.name}: $cause';
 }
 
 enum ConnectionFault {
