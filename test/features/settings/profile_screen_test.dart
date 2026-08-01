@@ -83,6 +83,48 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('"Acerca de Syroda" explica lo que la app hace', (
+    WidgetTester tester,
+  ) async {
+    await pumpProfile(tester);
+
+    await tester.tap(find.text('Acerca de Syroda'));
+    await tester.pumpAndSettle();
+
+    // Frases propias del texto: "red local" tambien esta detras, en la
+    // etiqueta de visibilidad.
+    expect(find.textContaining('ningún servidor'), findsOneWidget);
+    expect(find.textContaining('no hacen falta'), findsOneWidget);
+    expect(find.textContaining('código de 6 dígitos'), findsOneWidget);
+    expect(find.text('Cerrar'), findsOneWidget);
+  });
+
+  testWidgets('el texto no afirma cifrado ni promete lo que no existe', (
+    WidgetTester tester,
+  ) async {
+    await pumpProfile(tester);
+    await tester.tap(find.text('Acerca de Syroda'));
+    await tester.pumpAndSettle();
+
+    // El invariante de copy: `SecureChannel` es pass-through en v1, asi que
+    // ninguna superficie puede afirmar cifrado. Y nada de lo diferido -- el
+    // QR, el modo claro -- se menciona como si existiera.
+    for (final String forbidden in <String>[
+      'cifrad',
+      'segur',
+      'encriptad',
+      'protegid',
+      'QR',
+      'modo claro',
+    ]) {
+      expect(
+        find.textContaining(RegExp(forbidden, caseSensitive: false)),
+        findsNothing,
+        reason: 'el copy de "Acerca de" no puede decir "$forbidden"',
+      );
+    }
+  });
+
   testWidgets('cancelar no cambia el nombre', (WidgetTester tester) async {
     final ProviderContainer container = await pumpProfile(tester);
     final SyrodaSettings before = container.read(settingsProvider).requireValue;

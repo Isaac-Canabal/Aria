@@ -1,52 +1,91 @@
-# Syroda — Mockups
+# Syroda
 
-Envía documentos, imágenes y archivos entre dispositivos cercanos, sin cables ni cuentas en la nube.
+Envía documentos, imágenes y archivos entre dispositivos cercanos, sin cables
+ni cuentas en la nube.
 
-Static implementation of the `Aria - Mockups.dc.html` design document from
-[Claude Design](https://claude.ai/design/p/8fbc370f-fe55-459c-853d-1266699e6ea0).
-The gallery covers the main flow (send, receive, tracking, history, settings) on
-both platforms, including success, error and empty states.
+Los archivos van directos de un dispositivo al otro por la red local. No pasan
+por ningún servidor, no se suben a ninguna nube y no hace falta registrarse:
+no hay cuentas. Cada transferencia la autoriza un código de 6 dígitos que
+muestra quien recibe, y al terminar se comprueba con sha256 que el archivo
+llegó completo; si la comprobación falla, no se guarda a medias.
 
-## Viewing
+Android y Windows. Interfaz en español (es-CO).
 
-Open `index.html` in a browser. No build step, no dependencies, no JavaScript —
-plain HTML and CSS. The only network request is the Inter webfont that the
-design system imports.
+## Estado
 
-## Layout
+**El flujo completo —descubrirse, emparejar y transferir con verificación— se
+probó entre un teléfono Android y un PC en la misma red, y funcionó.** No está
+terminada, y hay trabajo posterior a esa prueba que todavía no se ha ejecutado
+en un dispositivo (ver la checklist de validación en `CLAUDE.md`):
+
+| | |
+|---|---|
+| Transporte (Fases 1–3) | Cerrado. Descubrimiento mDNS, emparejamiento por código, transferencia con verificación |
+| UI de Android (Fase 4) | Cerrada |
+| UI de Windows (Fase 5) | **Pendiente.** El transporte corre en Windows; falta la interfaz propia del escritorio |
+| Instalador y firma (Fase 6) | Pendiente |
+
+**No hay cifrado en v1.** El canal (`SecureChannel`) es deliberadamente
+pass-through: la arquitectura del handshake está hecha para que introducir
+SPAKE2 sea sustituir la implementación del canal sin cambiar el formato de
+cable, pero eso todavía no está. Por eso ninguna superficie de la app dice
+"cifrado", "seguro" ni dibuja un candado — sería afirmar algo que hoy no es
+cierto. Lo que sí es cierto y es lo que se dice: la transferencia ocurre en la
+red local y no pasa por servidores.
+
+Consecuencia práctica: el identificador de dispositivo que se usa para
+reconocer pares ya emparejados es una afirmación **sin verificar** mientras el
+canal sea plano. El filtro de "solo dispositivos emparejados" es comodidad —
+menos ruido en la lista —, no un control de seguridad. **El código de 6 dígitos
+es lo único que autoriza una sesión**, también entre dispositivos ya
+emparejados.
+
+Tampoco existen todavía: escanear código QR (el botón de la pantalla Recibir
+abre "Conectar manualmente", que cubre el mismo caso) ni modo claro. Las dos
+son decisiones diferidas, documentadas en `CLAUDE.md` con su razón.
+
+## Compilar
+
+Requisitos completos y sus porqués en [`docs/BUILD.md`](docs/BUILD.md) — hay
+dos que no detecta `flutter doctor` y que rompen la compilación de forma poco
+evidente: **JDK 17** para Gradle y **Developer Mode** de Windows.
 
 ```
-index.html        the gallery: 8 Android screens + 4 Windows windows
-css/nocturne.css  the Nocturne design system, verbatim from the design project
-css/syroda.css    gallery scaffolding, device chrome, and Syroda's own patterns
+flutter pub get
+flutter analyze
+flutter test
+
+flutter build apk --release --split-per-abi
+flutter build windows --release
 ```
 
-`css/nocturne.css` is a copy of the design system's source of truth
-(`_ds/nocturne-b255dd8f-91e4-4856-a9f5-6ab06f0ddc97/styles.css`). Keep it
-byte-identical so a re-sync from the design project stays a clean diff — put
-anything Syroda-specific in `css/syroda.css` instead.
+## Cómo está organizado
 
-## Notes on the port
+```
+lib/core/transfer/   el protocolo y el transporte. Dart puro, sin Flutter:
+                     sus tests corren sin binding
+lib/core/data/       SQLite (historial, emparejados) y preferencias
+lib/core/platform/   lo que necesita código nativo: espacio libre, MediaStore,
+                     abrir archivos, servicio en primer plano
+lib/state/           los proveedores de Riverpod. La UI no habla con core/
+lib/features/        las pantallas
+lib/design/          el design system: tokens y componentes
 
-The source document is a Claude Design canvas file: it relies on `<x-dc>`,
-`<helmet>` and `<x-import>` custom elements provided by the canvas runtime
-(`support.js`), and mounts each phone screen inside the `AndroidDevice` React
-component from `android-frame.jsx`. None of that runtime is needed to render the
-mockups, so this port drops it:
+index.html           los mockups. Son la fuente de verdad de la interfaz
+css/nocturne.css     el design system Nocturne, verbatim del proyecto de
+                     diseño. No se modifica aquí
+css/syroda.css       lo propio de Syroda: andamiaje de la galería, marcos de
+                     dispositivo y los patrones que las pantallas repiten
+```
 
-- **Android frame** — `android-frame.jsx`'s bezel, Material 3 status bar and
-  gesture nav are reimplemented as the `.android` CSS component. The status-bar
-  clock, camera punch-hole and nav pill are drawn with pseudo-elements, so each
-  screen only carries its own content. The frame is used with `dark`, no app bar
-  and no keyboard, so those parts of the component weren't needed.
-- **Design system bundle** — `_ds_bundle.js` exports no components; only
-  `styles.css` carries anything.
-- **Icons** — the document repeats the same inline SVGs across screens; here they
-  live in one sprite at the top of `index.html` and are referenced with `<use>`.
-  Stroke weight varies per placement, so it rides a `--sw` custom property.
-- **Inline styles** — folded into named classes in `css/syroda.css`. Values that
-  genuinely vary per instance (badge size, stack gap, progress width) stay inline
-  as custom properties.
+`index.html` no es documentación de apoyo: es la referencia contra la que se
+verifica la interfaz. `flutter test test/gallery_snapshot_test.dart` deja en
+`build/gallery.png` una captura de todos los componentes a tamaño real para
+compararla contra los mockups sin abrir la app.
 
-One deliberate addition: the "Esperando conexión…" dot on the Recibir screen
-pulses, which a static mockup couldn't show.
+## Antes de tocar nada
+
+[`CLAUDE.md`](CLAUDE.md) recoge las invariantes del proyecto: el formato de
+cable congelado, el veto de copy sobre el cifrado, la regla de disponibilidad
+por ciclo de vida, y las decisiones que ya se tomaron con su razón. No es
+historia del proyecto — si una de esas reglas se rompe, el cambio está mal.

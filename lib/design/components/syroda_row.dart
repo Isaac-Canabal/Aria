@@ -45,7 +45,7 @@ class SyrodaRowIcon extends StatelessWidget {
 
     final (Color background, Color foreground) = switch (style) {
       SyrodaRowIconStyle.accent => (
-        NocturneColors.accent900,
+        NocturneColors.accent800,
         NocturneColors.accent200,
       ),
       SyrodaRowIconStyle.neutral => (

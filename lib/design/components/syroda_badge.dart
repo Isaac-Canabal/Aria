@@ -67,7 +67,7 @@ class SyrodaBadge extends StatelessWidget {
     decoration: BoxDecoration(
       shape: BoxShape.circle,
       color: switch (style) {
-        SyrodaBadgeStyle.accent => NocturneColors.accent900,
+        SyrodaBadgeStyle.accent => NocturneColors.accent800,
         SyrodaBadgeStyle.neutral => NocturneColors.neutral800,
         SyrodaBadgeStyle.quiet => NocturneColors.surface,
       },

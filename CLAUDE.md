@@ -448,6 +448,14 @@ De ahí, y bajo el veto de copy que ya existe:
 
 ## Decisiones diferidas
 
+- **`.btn-primary` con relleno sólido.** El botón primario es contorno y
+  texto; el acento solo rellena en hover/active, al 12% y 22%. Un relleno
+  sólido sería el siguiente escalón real de presencia visual, después de haber
+  subido `.row-icon` y `.badge` a `accent-800`. **No se hace aquí por la misma
+  razón que el modo claro:** `.btn-primary` está en `css/nocturne.css`, que es
+  fuente de verdad y no se modifica en este repositorio. Tendría que salir del
+  proyecto de diseño y re-sincronizarse. Lo que sí es nuestro —y donde sí se
+  actuó— es `css/syroda.css`.
 - **Modo claro. Decidido que no, y no por pereza.** Nocturne no es "un tema
   con colores oscuros": está construido **sobre** la oscuridad. Los tokens
   base son cinco, pero casi todo lo demás se deriva de `text` por

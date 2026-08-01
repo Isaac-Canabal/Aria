@@ -49,9 +49,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
               children: <Widget>[
                 Text(
                   'COMPONENTES · NOCTURNE',
-                  style: NocturneType.h6.copyWith(
-                    color: NocturneColors.accent,
-                  ),
+                  style: NocturneType.h6.copyWith(color: NocturneColors.accent),
                 ),
                 const SizedBox(height: NocturneSpace.s3),
                 Text('Syroda', style: NocturneType.h1),
@@ -181,10 +179,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       title: 'Insignias',
       subtitle: '.badge — el tamaño y el tinte cambian por instancia',
       children: <Widget>[
-        _Item(
-          label: 'accent 52',
-          child: SyrodaBadge.icon(SyrodaIcons.send),
-        ),
+        _Item(label: 'accent 52', child: SyrodaBadge.icon(SyrodaIcons.send)),
         _Item(
           label: 'accent 76',
           child: SyrodaBadge.icon(
@@ -320,10 +315,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           width: 260,
           child: TransferProgress(value: 0.41, failed: true),
         ),
-        const _Item(
-          label: 'anillo 64%',
-          child: TransferRing(value: 0.64),
-        ),
+        const _Item(label: 'anillo 64%', child: TransferRing(value: 0.64)),
         _Item(
           label: 'tarjeta en curso',
           width: 520,
@@ -379,10 +371,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
             hint: 'Compártelo para que te envíen un archivo',
           ),
         ),
-        _Item(
-          label: 'indicador',
-          child: StatusLive('Esperando conexión…'),
-        ),
+        _Item(label: 'indicador', child: StatusLive('Esperando conexión…')),
       ],
     ),
     _Section(
@@ -587,9 +576,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 style: NocturneType.h3,
               ),
               const SizedBox(height: NocturneSpace.s2),
-              const ScreenLede(
-                'Presentación_Q3.pdf se envió a Pixel de Ana',
-              ),
+              const ScreenLede('Presentación_Q3.pdf se envió a Pixel de Ana'),
             ],
           ),
         ),
@@ -608,9 +595,13 @@ class _GalleryScreenState extends State<GalleryScreen> {
         ),
         _Item(
           label: 'botón redondo',
+          // Con el icono que lo usa de verdad: el cierre de "Enviando", que
+          // es el unico `.round-btn` que queda en los mockups.
           child: RoundButton(
-            icon: SyrodaIcons.gear,
-            semanticLabel: 'Ajustes',
+            icon: SyrodaIcons.close,
+            iconSize: 15,
+            strokeWidth: 1.8,
+            semanticLabel: 'Cerrar',
             onPressed: () {},
           ),
         ),
@@ -627,25 +618,25 @@ class _GalleryScreenState extends State<GalleryScreen> {
     ),
   ];
 
-  static const List<(String, SyrodaIconData)> _icons = <(String, SyrodaIconData)>[
-    ('send', SyrodaIcons.send),
-    ('receive', SyrodaIcons.receive),
-    ('arrow-up', SyrodaIcons.arrowUp),
-    ('clock', SyrodaIcons.clock),
-    ('user', SyrodaIcons.user),
-    ('gear', SyrodaIcons.gear),
-    ('close', SyrodaIcons.close),
-    ('check-circle', SyrodaIcons.checkCircle),
-    ('x-circle', SyrodaIcons.xCircle),
-    ('phone', SyrodaIcons.phone),
-    ('desktop', SyrodaIcons.desktop),
-    ('image', SyrodaIcons.image),
-    ('file', SyrodaIcons.file),
-    ('qr', SyrodaIcons.qr),
-    ('win-min', SyrodaIcons.winMinimize),
-    ('win-max', SyrodaIcons.winMaximize),
-    ('win-close', SyrodaIcons.winClose),
-  ];
+  static const List<(String, SyrodaIconData)> _icons =
+      <(String, SyrodaIconData)>[
+        ('send', SyrodaIcons.send),
+        ('receive', SyrodaIcons.receive),
+        ('arrow-up', SyrodaIcons.arrowUp),
+        ('clock', SyrodaIcons.clock),
+        ('user', SyrodaIcons.user),
+        ('close', SyrodaIcons.close),
+        ('check-circle', SyrodaIcons.checkCircle),
+        ('x-circle', SyrodaIcons.xCircle),
+        ('phone', SyrodaIcons.phone),
+        ('desktop', SyrodaIcons.desktop),
+        ('image', SyrodaIcons.image),
+        ('file', SyrodaIcons.file),
+        ('qr', SyrodaIcons.qr),
+        ('win-min', SyrodaIcons.winMinimize),
+        ('win-max', SyrodaIcons.winMaximize),
+        ('win-close', SyrodaIcons.winClose),
+      ];
 }
 
 /// Un bloque de la galeria: titulo, subtitulo y las variantes en flujo.

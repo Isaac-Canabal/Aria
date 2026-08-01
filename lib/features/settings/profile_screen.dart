@@ -74,7 +74,11 @@ class ProfileScreen extends ConsumerWidget {
                   onChanged: controller.setNotifications,
                 ),
               ),
-              const SettingTile(label: 'Acerca de Syroda', showChevron: true),
+              SettingTile(
+                label: 'Acerca de Syroda',
+                showChevron: true,
+                onTap: () => _showAbout(context),
+              ),
             ],
           ),
           Align(
@@ -125,6 +129,20 @@ class ProfileScreen extends ConsumerWidget {
     if (name != null) await controller.setDeviceName(name);
   }
 
+  /// Que es Syroda, en lo que de verdad hace.
+  ///
+  /// Sin la palabra "cifrado", sin candados y sin "conexion segura": el canal
+  /// es pass-through en v1 y el copy no puede afirmar lo que no existe. Lo
+  /// que si es cierto y se dice: los archivos van directos entre los dos
+  /// equipos por la red local, y no hay servidores ni cuentas de por medio.
+  Future<void> _showAbout(BuildContext context) => _sheet<void>(
+    context,
+    title: 'Acerca de Syroda',
+    body: const _AboutText(),
+    // No hay nada que cancelar aqui: solo se cierra.
+    dismissLabel: 'Cerrar',
+  );
+
   Future<void> _editVisibility(
     BuildContext context,
     SettingsController controller,
@@ -151,6 +169,44 @@ class ProfileScreen extends ConsumerWidget {
     );
     if (chosen != null) await controller.setVisibility(chosen);
   }
+}
+
+/// El texto de "Acerca de Syroda".
+///
+/// Solo afirma lo que la app hace hoy. Nada de cifrado, y nada que todavia no
+/// exista: sin QR y sin modo claro, que son decisiones diferidas.
+class _AboutText extends StatelessWidget {
+  const _AboutText();
+
+  static const List<String> _paragraphs = <String>[
+    'Syroda envía archivos entre dispositivos que están en la misma red '
+        'local: el teléfono y el computador de tu casa, dos equipos en la '
+        'misma oficina.',
+    'Los archivos van directos de un dispositivo al otro. No pasan por '
+        'ningún servidor, no se suben a ninguna nube y no hacen falta '
+        'cuentas: no hay con qué registrarse.',
+    'Cada transferencia la autoriza un código de 6 dígitos que muestra quien '
+        'recibe. Sin ese código no se acepta la conexión.',
+    'Al terminar se comprueba que el archivo llegó completo y sin cambios. '
+        'Si la comprobación falla, no se guarda a medias.',
+  ];
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: NocturneSpace.s3,
+    children: <Widget>[
+      for (final String paragraph in _paragraphs)
+        Text(
+          paragraph,
+          style: NocturneType.at(
+            13.5,
+            color: NocturneColors.onText(0.75),
+            height: 1.5,
+          ),
+        ),
+    ],
+  );
 }
 
 /// El campo de nombre, dueno de su propio controller.
@@ -202,6 +258,7 @@ Future<T?> _sheet<T>(
   Widget? body,
   Widget Function(void Function(T) pick)? bodyBuilder,
   T Function()? confirm,
+  String dismissLabel = 'Cancelar',
 }) => showDialog<T>(
   context: context,
   barrierColor: NocturneColors.neutral900.withValues(alpha: 0.5),
@@ -235,7 +292,7 @@ Future<T?> _sheet<T>(
                   spacing: NocturneSpace.s2,
                   children: <Widget>[
                     SyrodaButton(
-                      'Cancelar',
+                      dismissLabel,
                       variant: SyrodaButtonVariant.ghost,
                       onPressed: () => Navigator.of(context).pop(),
                     ),

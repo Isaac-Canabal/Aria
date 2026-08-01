@@ -86,11 +86,6 @@ abstract final class SyrodaIcons {
     IconPath(_shoulders),
   ]);
 
-  static const SyrodaIconData gear = SyrodaIconData(<IconShape>[
-    IconCircle(12, 12, 3),
-    IconPath(_gearSpokes),
-  ]);
-
   static const SyrodaIconData close = SyrodaIconData(<IconShape>[
     IconPath(_cross),
   ]);
@@ -137,13 +132,17 @@ abstract final class SyrodaIcons {
     IconRect(0, 4.5, 10, 1, filled: true),
   ], viewBox: 10);
 
-  static const SyrodaIconData winMaximize = SyrodaIconData(<IconShape>[
-    IconRect(0.5, 0.5, 9, 9),
-  ], viewBox: 10, strokeWidth: 1);
+  static const SyrodaIconData winMaximize = SyrodaIconData(
+    <IconShape>[IconRect(0.5, 0.5, 9, 9)],
+    viewBox: 10,
+    strokeWidth: 1,
+  );
 
-  static const SyrodaIconData winClose = SyrodaIconData(<IconShape>[
-    IconPath(_winCross),
-  ], viewBox: 10, strokeWidth: 1);
+  static const SyrodaIconData winClose = SyrodaIconData(
+    <IconShape>[IconPath(_winCross)],
+    viewBox: 10,
+    strokeWidth: 1,
+  );
 }
 
 /// `M12 16V4M12 4l-5 5M12 4l5 5`
@@ -196,28 +195,6 @@ void _shoulders(Path p) {
     ..moveTo(4, 20)
     ..cubicTo(4, 16, 7.6, 13, 12, 13)
     ..cubicTo(16.4, 13, 20, 16, 20, 20);
-}
-
-/// `M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3
-/// M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1`
-void _gearSpokes(Path p) {
-  p
-    ..moveTo(12, 2)
-    ..lineTo(12, 5)
-    ..moveTo(12, 19)
-    ..lineTo(12, 22)
-    ..moveTo(4.2, 4.2)
-    ..lineTo(6.3, 6.3)
-    ..moveTo(17.7, 17.7)
-    ..lineTo(19.8, 19.8)
-    ..moveTo(2, 12)
-    ..lineTo(5, 12)
-    ..moveTo(19, 12)
-    ..lineTo(22, 12)
-    ..moveTo(4.2, 19.8)
-    ..lineTo(6.3, 17.7)
-    ..moveTo(17.7, 6.3)
-    ..lineTo(19.8, 4.2);
 }
 
 /// `M6 6l12 12M18 6L6 18`
