@@ -17,9 +17,7 @@ import 'code_prompt.dart';
 import 'manual_connect.dart';
 
 class SendScreen extends ConsumerStatefulWidget {
-  const SendScreen({super.key, this.onOpenSettings});
-
-  final VoidCallback? onOpenSettings;
+  const SendScreen({super.key});
 
   @override
   ConsumerState<SendScreen> createState() => _SendScreenState();
@@ -57,14 +55,9 @@ class _SendScreenState extends ConsumerState<SendScreen> {
         ref.watch(peersProvider).valueOrNull ?? const <Peer>[];
 
     return SyrodaScreen(
-      topBar: ScreenTopBar(
-        title: 'Syroda',
-        action: RoundButton(
-          icon: SyrodaIcons.gear,
-          semanticLabel: 'Ajustes',
-          onPressed: widget.onOpenSettings,
-        ),
-      ),
+      // Sin accion a la derecha: el engranaje llevaba a Perfil, que ya esta
+      // a un toque en la navegacion inferior. Quitado tambien del mockup.
+      topBar: const ScreenTopBar(title: 'Syroda'),
       body: ScreenBody(
         children: <Widget>[
           const NotificationsPermissionBanner(),

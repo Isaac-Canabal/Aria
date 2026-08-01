@@ -448,6 +448,24 @@ De ahí, y bajo el veto de copy que ya existe:
 
 ## Decisiones diferidas
 
+- **Modo claro. Decidido que no, y no por pereza.** Nocturne no es "un tema
+  con colores oscuros": está construido **sobre** la oscuridad. Los tokens
+  base son cinco, pero casi todo lo demás se deriva de `text` por
+  transparencia — `divider` es `text` al 16%, `label` al 70%, `hoverNeutral`
+  al 7%. Eso funciona porque un blanco translúcido sobre fondo oscuro aclara
+  de forma predecible; invertido, los mismos porcentajes **no** dan el mismo
+  contraste percibido, así que habría que rehacer y recalibrar toda la escala
+  de derivados, no cambiar cinco colores. Las rampas `neutral*` y `accent*`
+  están ordenadas para oscuro (`neutral100` es casi blanco y se usa como
+  tinta), y `NocturneShadow` asume fondo oscuro: en claro la elevación se
+  resuelve con bordes, que es otra decisión de diseño. **Y sobre todo: la
+  paleta clara no existe**, así que hacerlo aquí sería improvisarla, y
+  `css/nocturne.css` es fuente de verdad.
+  **Si alguna vez se retoma, el orden correcto es:** paleta clara en el
+  proyecto de diseño → re-sync de `css/nocturne.css` → `nocturne.dart` deja
+  de ser constantes y pasa a un tema resuelto en runtime. Cualquier otro
+  camino es una bifurcación que se desincroniza en la primera semana.
+
 - **Escanear código QR.** Los mockups traen el botón en la pantalla Recibir
   (`index.html:234-237`). No está implementado: hace falta `qr_flutter` para
   dibujar el código en el receptor y `mobile_scanner` para leerlo en el
