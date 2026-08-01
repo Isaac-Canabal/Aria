@@ -66,56 +66,60 @@ candidatas a estar mal:
 
 ### Checklist de validación en dispositivo
 
-Ninguna de estas líneas se ha visto correr fuera de esta máquina. Marcar cada
-una según se compruebe; una casilla sin marcar al terminar la sesión es una
-razón explícita para no abrir la Fase 5, no un detalle suelto.
+**Validada el 31 de julio de 2026** entre un teléfono Android y un PC en la
+misma red. Lo marcado se vio funcionar; lo que sigue sin marcar es lo que
+**no** se comprobó, y la distinción es el valor de esta lista. No marcar nada
+por inercia.
 
-- [ ] **Descubrimiento mutuo** entre el teléfono y el PC: cada uno ve al otro
+- [x] **Descubrimiento mutuo** entre el teléfono y el PC: cada uno ve al otro
       en su lista de Enviar. Cubre de una vez el `MulticastLock` sostenido
       por el descubrimiento de adorno y el propio workaround del anuncio
       (ver "Deuda con fase asignada") — si el anuncio no sostiene el lock
       como se espera, esta es la línea que lo va a mostrar.
-- [ ] **Handshake**: código correcto autoriza; código incorrecto rechaza sin
+- [x] **Handshake**: código correcto autoriza; código incorrecto rechaza sin
       matar la sesión de un intento; agotar los 3 intentos invalida el
       código vigente y genera uno nuevo.
-- [ ] **Caducidad del código** a los 5 minutos sin usarse
+- [x] **Caducidad del código** a los 5 minutos sin usarse
       (`pairingCodeLifetime`), y que un código ya caducado no gaste
       intentos al fallar.
-- [ ] **Transferencia completa** de un archivo real, con verificación de
+- [x] **Transferencia completa** de un archivo real, con verificación de
       checksum al terminar (el `file_hash` del trailer — confirmar que un
       archivo dañado a propósito se detecta y el `.part` se borra).
-- [ ] **Cancelación a mitad de transferencia, en ambos sentidos**: el emisor
+- [x] **Cancelación a mitad de transferencia, en ambos sentidos**: el emisor
       cancela y el receptor cancela, y ninguno de los dos deja un `.part`
       huérfano.
-- [ ] **Foreground service**: la notificación es visible durante la
+- [x] **Foreground service**: la notificación es visible durante la
       transferencia (con `POST_NOTIFICATIONS` concedido), y la transferencia
       sobrevive a cambiar de app y a bloquear la pantalla.
-- [ ] **Regla de ciclo de vida**: bajar la cortina de notificaciones **no**
+- [x] **Regla de ciclo de vida**: bajar la cortina de notificaciones **no**
       apaga el anuncio (`inactive` no apaga nada); ir a background **sí** lo
       apaga.
-- [ ] **Rechazo por espacio insuficiente**: en Android, con el `StatFs` real
-      (no `DefaultReceivePolicy.withoutSpaceCheck`). En Windows el proveedor
-      de espacio libre todavía no existe (Fase 5): ahí toca verificar que
-      aparece la advertencia de `withoutSpaceCheck`, no un rechazo real —
-      confundir una cosa con la otra invalidaría esta línea.
-- [ ] **Destino en Android, que nunca ha corrido**: que el archivo aparece en
+- [ ] **Rechazo por espacio insuficiente en Windows.** El de Android quedó
+      validado con el `StatFs` real. **Windows no puede pasar esta línea
+      todavía**: no tiene proveedor de espacio libre, así que la política se
+      construye con `DefaultReceivePolicy.withoutSpaceCheck` y lo único
+      observable es su advertencia en el log, no un rechazo. Se cierra cuando
+      la Fase 5 implemente el proveedor.
+- [x] **Destino en Android, que nunca ha corrido**: que el archivo aparece en
       `Descargas/Syroda` desde la app Archivos; que `IS_PENDING` hace su
       trabajo (un archivo a medias **no** se ve como terminado, y un checksum
       que no cuadra no deja nada); que la resolución de colisiones del sistema
       devuelve el nombre real y es el que se muestra; y que el `content://`
       que queda en `localPath` del historial es utilizable —abrirlo— y no una
       ruta que nadie puede usar.
-- [ ] **Rechazo por destino inválido** (`destinationUnavailable`): llega
+- [x] **Rechazo por destino inválido** (`destinationUnavailable`): llega
       **antes** de empezar el primer archivo, con el lote entero, y el emisor
       muestra ese motivo y no otro.
 - [ ] **Elegir la carpeta de recibidos** en Ajustes: que cambiar la colección
       o el nombre en Android manda los archivos siguientes a la carpeta nueva
       —y que la nueva se crea sola—, y que en Windows el diálogo del sistema
-      devuelve una ruta en la que de verdad se puede escribir.
-- [ ] **Estado vacío tras el grace period** en Enviar
+      devuelve una ruta en la que de verdad se puede escribir. **Sin marcar a
+      propósito:** la función se terminó después de la sesión de validación,
+      así que casi con seguridad no estaba en el APK que se probó.
+- [x] **Estado vacío tras el grace period** en Enviar
       (`discoveryGracePeriod`), con "Conectar manualmente" funcionando de
       punta a punta contra el `code-card` del receptor.
-- [ ] **Firewall de Windows** en el primer `bind`: confirmar si Windows pide
+- [x] **Firewall de Windows** en el primer `bind`: confirmar si Windows pide
       permiso o hace falta la regla manual, y que el diagnóstico de "0
       pares" distinga este caso de los demás.
 
