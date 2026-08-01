@@ -156,16 +156,16 @@ final FutureProvider<ReceiveServer> receiveServerProvider =
         destinationOpenerProvider,
       );
       final FreeSpaceProvider space = ref.watch(freeSpaceProvider);
-      // El volumen del destino, no el de la app. En Android MediaStore no
+      // Siempre el volumen del destino, nunca otro. En Android MediaStore no
       // expone ruta, asi que el lado nativo mide sobre
-      // `VOLUME_EXTERNAL_PRIMARY`, que es exactamente donde escribe.
+      // `VOLUME_EXTERNAL_PRIMARY`, que es exactamente donde escribe. En
+      // escritorio se mide la carpeta elegida: ahora se puede elegir una en
+      // otra unidad, y medir Descargas daria una cifra de otro disco.
       final Future<int?> Function() freeBytes;
       if (Platform.isAndroid) {
         freeBytes = MediaStoreDestination.freeBytes;
       } else {
-        final Directory? downloads = await getDownloadsDirectory();
-        final String probe =
-            downloads?.path ?? (await getApplicationDocumentsDirectory()).path;
+        final String probe = await ref.watch(destinationLabelProvider.future);
         freeBytes = () => space.bytesAvailable(probe);
       }
 

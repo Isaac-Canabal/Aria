@@ -95,11 +95,11 @@ por inercia.
       apaga el anuncio (`inactive` no apaga nada); ir a background **sí** lo
       apaga.
 - [ ] **Rechazo por espacio insuficiente en Windows.** El de Android quedó
-      validado con el `StatFs` real. **Windows no puede pasar esta línea
-      todavía**: no tiene proveedor de espacio libre, así que la política se
-      construye con `DefaultReceivePolicy.withoutSpaceCheck` y lo único
-      observable es su advertencia en el log, no un rechazo. Se cierra cuando
-      la Fase 5 implemente el proveedor.
+      validado con el `StatFs` real. El proveedor de Windows ya existe
+      (`GetDiskFreeSpaceExW`) y compila, pero **no se ha ejecutado**: falta
+      ver un rechazo real por espacio en el escritorio, y que la cifra sea la
+      del volumen de la carpeta elegida cuando esa carpeta está en otra
+      unidad.
 - [x] **Destino en Android, que nunca ha corrido**: que el archivo aparece en
       `Descargas/Syroda` desde la app Archivos; que `IS_PENDING` hace su
       trabajo (un archivo a medias **no** se ve como terminado, y un checksum
@@ -477,6 +477,18 @@ De ahí, y bajo el veto de copy que ya existe:
 
 ## Decisiones diferidas
 
+- **Cómo se traduce a Windows "salir de Recibir apaga el anuncio".** En
+  Android el invariante se sostiene sobre `announcementProvider`, que es
+  `autoDispose`: deja de anunciarse cuando ninguna pantalla lo observa, y la
+  pestaña Recibir es lo que lo observa. **La ventana de Windows no tiene
+  pestañas**, así que no hay un "salir de Recibir" equivalente y la regla no
+  se traduce sola. Las opciones no son equivalentes: anunciarse mientras la
+  ventana esté abierta convierte el anuncio en un servicio permanente, que es
+  justo lo que el invariante rechaza; atarlo a una zona de la ventana obliga a
+  decidir cuál. **Se decide explícitamente al implementar la Fase 5, no por
+  omisión.** El riesgo de dejarlo resolverse solo es que el escritorio acabe
+  anunciándose siempre sin que nadie lo haya decidido.
+
 - **`.btn-primary` con relleno sólido.** El botón primario es contorno y
   texto; el acento solo rellena en hover/active, al 12% y 22%. Un relleno
   sólido sería el siguiente escalón real de presencia visual, después de haber
@@ -568,11 +580,20 @@ archivo a medias en vez de un rechazo limpio. De ahí la regla:
   (ver "Destino de lo recibido"): los archivos llegan a `Descargas/Syroda` en
   las dos plataformas y el checksum cuadra.
 
-- **Proveedor nativo de espacio libre.** `dart:io` no lo expone.
-  `DefaultReceivePolicy` lo recibe inyectado; la única forma de construirla sin
-  él es `DefaultReceivePolicy.withoutSpaceCheck`, que registra una advertencia.
-  Nunca se omite en silencio. Falta el proveedor real: **Fase 4** en Android y
-  **Fase 5** en Windows. **La Fase 5 no cierra sin él.**
+- ~~**Proveedor nativo de espacio libre.**~~ **Cerrado.** Android mide con
+  `StatFs` sobre `VOLUME_EXTERNAL_PRIMARY` y Windows con
+  `GetDiskFreeSpaceExW` sobre la carpeta de destino, los dos por el canal
+  `syroda/platform`. Se usa `lpFreeBytesAvailableToCaller` y no
+  `lpTotalNumberOfFreeBytes`: el primero respeta las cuotas de disco del
+  usuario, que es lo que de verdad se puede escribir.
+  **Lo que había en Windows no era `withoutSpaceCheck`, era algo peor:**
+  `receiveServerProvider` sí construía la política con `freeBytes`, pero el
+  canal no implementaba `freeSpace`, así que `NativeFreeSpaceProvider`
+  devolvía `null` ante el `MissingPluginException` y `reviewManifest` se
+  saltaba la comprobación **sin dejar rastro**. La advertencia de
+  `withoutSpaceCheck` existe justamente para que eso no pase, y el camino de
+  Windows la esquivaba. Por eso el lado nativo ahora devuelve un error en vez
+  de un valor vacío cuando no puede medir.
 
 ## Build
 

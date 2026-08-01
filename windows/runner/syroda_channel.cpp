@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace {
@@ -74,6 +75,27 @@ std::string OpenFolder(const std::wstring& path) {
   return reinterpret_cast<INT_PTR>(code) > 32 ? kOpened : kFailed;
 }
 
+// El espacio libre del volumen que contiene [path].
+//
+// `lpFreeBytesAvailableToCaller` y no `lpTotalNumberOfFreeBytes`: el primero
+// respeta las cuotas de disco del usuario, que es lo que de verdad se puede
+// escribir. Sobre un volumen sin cuotas los dos coinciden.
+//
+// Si la carpeta todavia no existe se sube al padre: el destino puede estar
+// sin crear la primera vez, y el volumen es el mismo.
+std::optional<int64_t> FreeBytes(std::wstring path) {
+  for (int depth = 0; depth < 8; ++depth) {
+    ULARGE_INTEGER available{};
+    if (::GetDiskFreeSpaceExW(path.c_str(), &available, nullptr, nullptr)) {
+      return static_cast<int64_t>(available.QuadPart);
+    }
+    const size_t slash = path.find_last_of(L"\\/");
+    if (slash == std::wstring::npos || slash == 0) break;
+    path = path.substr(0, slash);
+  }
+  return std::nullopt;
+}
+
 const std::string* StringArgument(const flutter::EncodableValue* arguments,
                                   const char* key) {
   const auto* map = std::get_if<flutter::EncodableMap>(arguments);
@@ -95,6 +117,23 @@ void RegisterSyrodaChannel(flutter::FlutterEngine* engine) {
       [](const flutter::MethodCall<flutter::EncodableValue>& call,
          std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>>
              result) {
+        if (call.method_name() == "freeSpace") {
+          const std::string* path = StringArgument(call.arguments(), "path");
+          if (path == nullptr) {
+            result->Error("no_path", "falta el argumento path");
+            return;
+          }
+          const std::optional<int64_t> bytes = FreeBytes(Utf16Of(*path));
+          if (bytes.has_value()) {
+            result->Success(flutter::EncodableValue(*bytes));
+          } else {
+            // Nunca en silencio: sin respuesta, la politica se queda sin
+            // comprobacion y eso tiene que quedar registrado.
+            result->Error("bad_path", "no se pudo medir " + *path);
+          }
+          return;
+        }
+
         const std::string* target = StringArgument(call.arguments(), "target");
 
         if (call.method_name() == "openFile") {
